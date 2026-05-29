@@ -3,5 +3,7 @@ export default {
     './pages/**/*.vue',
     './components/**/*.vue',
     './layouts/**/*.vue',
+    './app/**/*.{vue,ts}',
+
   ]
 }
