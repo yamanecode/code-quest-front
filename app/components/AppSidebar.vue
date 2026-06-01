@@ -133,7 +133,7 @@ const MODULE_CONFIG = [
   },
   {
     category: 'pattern',
-    label: 'Reconhecimento de Padrões',
+    label: 'Rec. de Padrões',
     icon: '🔍',
     progressColor: 'bg-purple-500',
   },
@@ -145,7 +145,7 @@ const MODULE_CONFIG = [
   },
   {
     category: 'algorithm',
-    label: 'Construção de Algoritmos',
+    label: 'Algoritmos',
     icon: '⚙️',
     progressColor: 'bg-emerald-500',
   },
