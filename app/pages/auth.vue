@@ -218,10 +218,11 @@ async function submit() {
 .error-msg--success { color: var(--green); }
 .btn-submit {
   width: 100%;
-  background: var(--cyan);
+  background: var(--amber);
   color: #080C14;
   font-weight: 700;
   font-size: 0.9375rem;
+  font-family: var(--font-mono);
   padding: 0.75rem;
   border-radius: 8px;
   border: none;
