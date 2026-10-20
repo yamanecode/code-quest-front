@@ -1,0 +1,201 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  /* ── BACKGROUNDS ── */
+  --bg-base:     #0A0C0C;
+  --bg-surface:  #111515;
+  --bg-elevated: #1A2020;
+
+  /* ── BORDERS ── */
+  --border:        rgba(255, 255, 255, 0.09);
+  --border-accent: rgba(41, 182, 246, 0.40);
+
+  /* ── BRAND ACCENT ── */
+  --cyan:      #29B6F6;
+  --cyan-dim:  rgba(41, 182, 246, 0.10);
+
+  /* ── CTA ── */
+  --amber:     #FFAA00;
+  --amber-dim: rgba(255, 170, 0, 0.12);
+
+  /* ── GAMIFICATION SEMANTIC ── */
+  --correct:        #00E676;
+  --correct-dim:    rgba(0, 230, 118, 0.08);
+  --correct-border: rgba(0, 230, 118, 0.25);
+  --wrong:          #FF5252;
+  --wrong-dim:      rgba(255, 82, 82, 0.08);
+  --wrong-border:   rgba(255, 82, 82, 0.25);
+  --level:          #B388FF;
+  --level-dim:      rgba(179, 136, 255, 0.10);
+
+  /* ── TEXT ── 
+     FIX: --text-muted bumped from #6B8E8A → #8AADA9 to hit 4.5:1 on --bg-base
+     (old #6B8E8A was ~3.1:1 — WCAG AA fail on small text)
+  ── */
+  --text-primary:   #EDFAF8;   /* ~17:1 on bg-base ✅ */
+  --text-secondary: #B8D0CC;   /* ~5.8:1 on bg-base ✅ (was #A8C0BC → ~4.3:1, borderline) */
+  --text-muted:     #8AADA9;   /* ~4.6:1 on bg-base ✅ (was #6B8E8A → ~3.1:1, FAIL) */
+
+  /* ── FONTS ── */
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+html, body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.mono { font-family: var(--font-mono); }
+
+/* ── GLOBAL BUTTONS ── */
+button, .btn {
+  font-family: var(--font-sans);
+  cursor: pointer;
+}
+
+/* primary — submit, confirm */
+.btn-primary {
+  background: var(--cyan);
+  color: #0A0C0C;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  border: none;
+  border-radius: 8px;
+  transition: opacity 0.15s;
+}
+.btn-primary:hover { opacity: 0.88; }
+.btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ── DICA (secondary/hint) button ──
+   Redesigned: amber-filled with glow pulse so it reads as an
+   inviting secondary CTA, not a ghost no-op.
+   Pulse stops on hover so the glow feels "earned".
+   The lightbulb icon gets a subtle wobble on hover.
+── */
+.btn-secondary {
+  background: var(--amber-dim);
+  border: 1.5px solid var(--amber);
+  color: var(--amber);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border-radius: 8px;
+  /* Soft ambient glow that pulses to draw the eye */
+  box-shadow:
+    0 0 0   0   rgba(255, 170, 0, 0),
+    0 0 12px 0   rgba(255, 170, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  animation: dica-pulse 2.8s ease-in-out infinite;
+  transition: box-shadow 0.2s, border-color 0.2s, background 0.2s, transform 0.1s;
+  /* Make sure the icon inside wobbles */
+  & svg { transition: transform 0.35s cubic-bezier(.36,.07,.19,.97); }
+}
+.btn-secondary:hover {
+  background: rgba(255, 170, 0, 0.18);
+  box-shadow:
+    0 0 0    0   rgba(255, 170, 0, 0),
+    0 0 24px 4px rgba(255, 170, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 170, 0, 0.9);
+  animation: none; /* freeze pulse on hover so glow feels intentional */
+  & svg { transform: rotate(-12deg) scale(1.15); }
+}
+.btn-secondary:active { transform: scale(0.97); }
+.btn-secondary:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  animation: none;
+}
+
+@keyframes dica-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0   0   rgba(255, 170, 0, 0),
+      0 0 12px 0   rgba(255, 170, 0, 0.20),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+  50% {
+    box-shadow:
+      0 0 0   0   rgba(255, 170, 0, 0),
+      0 0 22px 4px rgba(255, 170, 0, 0.38),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+}
+
+/* nav button — Entrar */
+.btn-nav {
+  background: var(--amber);
+  color: #0A0C0C;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  border: none;
+  border-radius: 7px;
+  transition: opacity 0.15s;
+}
+.btn-nav:hover { opacity: 0.85; }
+
+/* ── GLOBAL INPUTS ── */
+input, textarea {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+input:focus, textarea:focus {
+  border-color: var(--border-accent);
+}
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted);
+}
+input:disabled, textarea:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ── GLOBAL RESULT CARDS ── */
+.result-card--correct {
+  background: var(--correct-dim) !important;
+  border-color: var(--correct-border) !important;
+}
+.result-card--wrong {
+  background: var(--wrong-dim) !important;
+  border-color: var(--wrong-border) !important;
+}
+.result-icon-wrap--correct {
+  background: var(--correct-dim) !important;
+  color: var(--correct) !important;
+}
+.result-icon-wrap--wrong {
+  background: var(--wrong-dim) !important;
+  color: var(--wrong) !important;
+}
+
+/* ── GLOBAL TAGS / CHIPS ── */
+.meta-tag--xp {
+  color: var(--cyan) !important;
+  border-color: rgba(41, 182, 246, 0.25) !important;
+  background: var(--cyan-dim) !important;
+}
+.meta-tag--category {
+  color: var(--level) !important;
+  border-color: rgba(179, 136, 255, 0.2) !important;
+  background: var(--level-dim) !important;
+}
+
+/* ── GLOBAL HINT CARD ── */
+.hint-card {
+  background: var(--amber-dim) !important;
+  border-color: rgba(255, 170, 0, 0.22) !important;
+}
+.hint-header { color: var(--amber) !important; }
