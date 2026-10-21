@@ -1,0 +1,25 @@
+# CodeQuest web interface — requirements
+
+Each requirement has an ID, the implementation phase, the requirement and its acceptance criterion. Functional tests under `tests/functional/` use a real browser against the running application and carry the Playwright tag `@<ID>`. Rows whose criterion starts with `MANUAL:` are checked by inspection. `scripts/traceability.mjs` builds `docs/evidence/traceability.md` from this table. The column "API" names the backend requirement the screen exposes.
+
+| ID | Phase | Requirement | Acceptance | API |
+|---|---|---|---|---|
+| UI-01 | 1 | Sign-up and login screens | A visitor signs up with username and password, sees the warning not to use their real name, and lands on the student home; an API error is shown in Portuguese. | RF-01, RF-02 |
+| UI-02 | 0 | Access by role | A visitor is sent to the login screen; a student cannot open professor screens; a professor lands on the professor home. | RF-02 |
+| UI-03 | 2 | Student home | The home shows level, title and XP bar first, then streak, the daily challenge card, the class goal of each class and the missions grouped as base game and per class, with progress. | RF-05, RF-07, RF-10, RF-11, RF-19 |
+| UI-04 | 2 | Mission screen | The mission screen lists its challenges in order with skill and solved marks, and any of them can be opened. | RF-05 |
+| UI-05 | 2 | Challenge screen for the four types | Each type is answered with its control (up/down buttons, one select per item, checkboxes, radio buttons), the skill is shown with a help button explaining it, and "Enviar" shows whether the answer is right. | RF-06 |
+| UI-06 | 2 | Feedback after an answer | A correct answer shows a message, the explanation, the XP earned and new badges, and a level-up when it happens; a wrong answer shows a message, the hint when one is returned, and "Tentar novamente". | RF-07, RF-08, RF-13 |
+| UI-07 | 2 | Hint button with counter and wait | "Dica" shows the hints left, shows the hint when clicked, shows a countdown while the wait lasts, and is disabled at 0. | RF-12, SG-04 |
+| UI-08 | 3 | Profile screen | The profile shows level, title, XP, XP to next level, streak, skill progress, first-try solves and the badge collection with earned, locked and secret badges. | RF-08, RF-17 |
+| UI-09 | 3 | Ranking screen | A scope selector (general and each class) and the tabs "Semanal" and "Mensal" show the student and up to two above and below, with the student highlighted; when everyone shown has 0 XP a message explains how to enter the ranking. | RF-09 |
+| UI-10 | 4 | Professor class screens | The professor creates a class, sees its join code, its missions, the weekly goal (and can change it), the progress table with the completion percentage and the full ranking. | RF-03, RF-16, RF-19 |
+| UI-11 | 4 | Challenge editor | The professor fills a challenge of each type with live rule messages, saves a draft, asks for an AI review (suggestions shown, nothing changed), generates an AI draft (it appears as draft), publishes, and duplicates a challenge; for a challenge already answered, structure fields are disabled with an explanation. | RF-03, RF-04, RF-14, RF-15, RF-22 |
+| UI-12 | 2 | No free-text input for students | No student challenge screen contains a textarea or free-text input. | SG-02 |
+| UI-13 | 5 | Portuguese and accessible controls | All visible text is in Portuguese and every button, select, checkbox and radio has an accessible name. | RNF-04 |
+| UI-14 | 4 | Mission editor | The professor adds, removes and reorders challenges in a mission and publishes it; an empty mission cannot be published; a student of the class then sees it. | RF-03, RF-04, RF-05 |
+| UI-15 | 2 | Game elements together | MANUAL: inspect the student screens; badges always appear next to XP, level and title. | SG-11 |
+| UI-16 | 2 | My classes | The student joins a class with its code and sees it listed with its goal; an invalid code shows the error in Portuguese; leaving asks for confirmation and removes the class's missions from the home. | RF-18 |
+| UI-17 | 2 | Help and first steps | On the first visit the home shows a welcome card whose "Começar" opens the first unsolved base challenge, and it does not reappear after being closed; the help page explains the skills and the game rules; help buttons next to XP, streak, hints and ranking open a short explanation. | — |
+| UI-18 | 3 | Public profile | With "Mostrar meu perfil" on, the student's name in the ranking opens their public profile with level, title and earned badges; with it off, the name is not a link. | RF-20 |
+| UI-19 | 2 | Sound and mute | MANUAL: a correct answer plays a short tone together with the visual feedback; with the mute switch on, no tone plays. | — |
