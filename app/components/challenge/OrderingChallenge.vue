@@ -51,7 +51,7 @@ async function keepFocus(id: string, step: -1 | 1, index: number) {
     <li
       v-for="(item, index) in items"
       :key="item.id"
-      class="flex items-center gap-3 border border-line-strong bg-raised px-3 py-2"
+      class="flex items-center gap-3 border-2 border-line-strong bg-bg px-3 py-2"
       :data-testid="`ordering-item-${item.id}`"
     >
       <span class="cq-num w-6 shrink-0 text-center text-xl font-bold text-muted" aria-hidden="true">{{ index + 1 }}</span>
@@ -59,7 +59,7 @@ async function keepFocus(id: string, step: -1 | 1, index: number) {
       <span class="flex shrink-0 gap-1">
         <button
           type="button"
-          class="grid h-10 w-10 place-items-center border border-control text-lg transition-colors hover:border-ink disabled:cursor-not-allowed disabled:opacity-40"
+          class="grid h-10 w-10 place-items-center border-2 border-line-strong bg-panel text-lg text-ink transition-colors hover:bg-raised disabled:cursor-not-allowed disabled:opacity-40"
           :disabled="props.disabled || index === 0"
           :aria-label="`Mover para cima: ${item.text}`"
           :data-testid="`ordering-up-${item.id}`"
@@ -67,7 +67,7 @@ async function keepFocus(id: string, step: -1 | 1, index: number) {
         >▲</button>
         <button
           type="button"
-          class="grid h-10 w-10 place-items-center border border-control text-lg transition-colors hover:border-ink disabled:cursor-not-allowed disabled:opacity-40"
+          class="grid h-10 w-10 place-items-center border-2 border-line-strong bg-panel text-lg text-ink transition-colors hover:bg-raised disabled:cursor-not-allowed disabled:opacity-40"
           :disabled="props.disabled || index === items.length - 1"
           :aria-label="`Mover para baixo: ${item.text}`"
           :data-testid="`ordering-down-${item.id}`"

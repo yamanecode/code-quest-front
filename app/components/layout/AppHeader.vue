@@ -67,15 +67,15 @@ function logout() {
 
 <template>
   <header>
-    <div class="border-b border-top-line bg-top">
+    <div class="border-b-2 border-top-line bg-top">
       <div class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-8 px-4 sm:px-6">
         <NuxtLink
           :to="auth.home"
-          class="flex h-14 items-center font-display text-2xl font-extrabold tracking-wide text-ink sm:h-16"
+          class="flex h-14 items-center font-display text-2xl font-extrabold text-ink sm:h-16"
           aria-label="CodeQuest, página inicial"
           data-testid="nav-home"
         >
-          <span>Code</span><span class="text-go">Quest</span>
+          <span>Code</span><span class="cq-mark">Quest</span>
         </NuxtLink>
 
         <nav aria-label="Principal" class="order-last -mx-4 w-[calc(100%+2rem)] overflow-x-auto px-4 sm:order-none sm:mx-0 sm:w-auto sm:px-0">
@@ -92,12 +92,15 @@ function logout() {
           </ul>
         </nav>
 
-        <button
-          type="button"
-          class="ml-auto px-3 py-2 font-semibold text-muted transition-colors hover:text-ink"
-          data-testid="nav-sair"
-          @click="logout"
-        >Sair</button>
+        <div class="ml-auto flex items-center gap-2">
+          <ThemeToggle />
+          <button
+            type="button"
+            class="px-3 py-2 font-semibold text-muted transition-colors hover:text-ink"
+            data-testid="nav-sair"
+            @click="logout"
+          >Sair</button>
+        </div>
       </div>
     </div>
 
@@ -109,7 +112,7 @@ function logout() {
     >
       <StatPanel v-if="profile" :profile="profile" prefix="header" :pulsing="pulsing" />
 
-      <div v-else class="cq-cut bg-panel px-5 py-4 sm:px-7 sm:py-5">
+      <div v-else class="cq-sheet px-5 py-4 sm:px-7 sm:py-5">
         <p v-if="profileStore.error" class="flex flex-wrap items-center gap-3 text-sm" role="alert">
           <span>Não foi possível carregar seu progresso.</span>
           <button
@@ -127,8 +130,12 @@ function logout() {
 </template>
 
 <style scoped>
+/* The current page is marked like a word underlined with a highlighter. */
 .nav-current {
   color: var(--cq-ink);
-  box-shadow: inset 0 -3px 0 var(--cq-ink);
+  background-image: linear-gradient(var(--cq-mark-nav), var(--cq-mark-nav));
+  background-repeat: no-repeat;
+  background-position: center 62%;
+  background-size: calc(100% - 1rem) 0.6em;
 }
 </style>

@@ -38,8 +38,8 @@ const percent = computed(() => (props.max > 0 ? (clamped.value / props.max) * 10
     aria-valuemin="0"
     :aria-valuemax="props.max"
     :aria-valuetext="props.valueText"
-    class="relative w-full bg-line ring-1 ring-inset ring-control"
-    :class="props.size === 'sm' ? 'h-2' : 'h-3'"
+    class="relative w-full border-2 border-line-strong bg-bg"
+    :class="props.size === 'sm' ? 'h-3' : 'h-3.5'"
   >
     <div
       class="h-full transition-[width] duration-700 ease-out"

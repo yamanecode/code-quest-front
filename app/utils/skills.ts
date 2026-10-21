@@ -4,24 +4,29 @@ import type { ChallengeType } from '~/types/challenge'
 
 export interface Skill {
   label: string
+  short: string // where space is tight, e.g. the skills of a mixed trail; same words as the badge names
   description: string
 }
 
 export const SKILLS: Record<ChallengeType, Skill> = {
   ordering: {
     label: 'Pensamento algorítmico',
+    short: 'Algoritmos',
     description: 'Organizar a solução como uma sequência de passos em que a ordem importa.',
   },
   grouping: {
     label: 'Decomposição',
+    short: 'Decomposição',
     description: 'Dividir um problema grande em partes menores, mais fáceis de resolver.',
   },
   filtering: {
     label: 'Abstração',
+    short: 'Abstração',
     description: 'Separar o que é essencial para o problema do que é detalhe.',
   },
   pattern: {
     label: 'Reconhecimento de padrões',
+    short: 'Padrões',
     description: 'Encontrar a regra que se repete e usá-la para prever o próximo passo.',
   },
 }

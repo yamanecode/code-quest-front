@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import * as studentService from '~/services/student'
 import type { ChallengeSummary, Daily, MissionDetail, Missions } from '~/types/api'
+import { CHALLENGE_TYPES, type ChallengeType } from '~/types/challenge'
 import { errorMessage } from '~/utils/format'
 
 export function challengePath(challengeId: number, missionId: number | null = null): string {
@@ -21,6 +22,9 @@ export const usePlayStore = defineStore('play', () => {
   const daily = ref<Daily | null>(null)
   const homeLoading = ref(false)
   const homeError = ref<string | null>(null)
+  // The skills each mission's challenges use, in the fixed skill order, so trail cards can
+  // take their colours. The mission list does not carry them, so each mission is read once.
+  const missionSkills = ref<Record<number, ChallengeType[]>>({})
 
   const mission = ref<MissionDetail | null>(null)
   const missionLoading = ref(false)
@@ -36,6 +40,7 @@ export const usePlayStore = defineStore('play', () => {
       ])
       missions.value = missionList
       daily.value = dailyChallenge
+      void loadMissionSkills(missionList)
     }
     catch (e) {
       homeError.value = errorMessage(e)
@@ -43,6 +48,21 @@ export const usePlayStore = defineStore('play', () => {
     finally {
       homeLoading.value = false
     }
+  }
+
+  // Fills missionSkills for missions not read yet. A failure only leaves that card uncoloured.
+  async function loadMissionSkills(list: Missions) {
+    const ids = [...list.base, ...list.classrooms.flatMap((classroom) => classroom.missions)]
+      .map((summary) => summary.id)
+      .filter((id) => !(id in missionSkills.value))
+    const details = await Promise.allSettled(ids.map((id) => studentService.getMission(id)))
+    const found: Record<number, ChallengeType[]> = {}
+    details.forEach((result, index) => {
+      if (result.status !== 'fulfilled') return
+      const used = new Set(result.value.challenges.map((challenge) => challenge.type))
+      found[ids[index]!] = CHALLENGE_TYPES.filter((type) => used.has(type))
+    })
+    missionSkills.value = { ...missionSkills.value, ...found }
   }
 
   async function loadMission(id: number) {
@@ -90,6 +110,7 @@ export const usePlayStore = defineStore('play', () => {
     daily,
     homeLoading,
     homeError,
+    missionSkills,
     mission,
     missionLoading,
     missionError,

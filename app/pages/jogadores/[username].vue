@@ -31,7 +31,7 @@ watch(username, (name) => players.load(name), { immediate: true })
     </div>
 
     <article v-else-if="player" class="mt-6" aria-labelledby="player-username">
-      <div class="cq-cut flex flex-wrap items-end gap-x-8 gap-y-3 bg-panel p-5 sm:p-7">
+      <div class="cq-sheet flex flex-wrap items-end gap-x-8 gap-y-3 bg-panel p-5 sm:p-7">
         <p class="cq-num text-6xl font-extrabold leading-[0.8]" data-testid="player-level">
           <span class="sr-only">Nível </span>{{ player.level }}
         </p>

@@ -92,7 +92,7 @@ async function goNext() {
         ✓ Você já resolveu este desafio. Pode responder de novo para treinar, mas não ganha XP outra vez.
       </p>
 
-      <section class="cq-cut mt-6 bg-panel p-4 sm:p-6" aria-label="Sua resposta">
+      <section class="cq-sheet mt-6 bg-panel p-4 sm:p-6" aria-label="Sua resposta">
         <OrderingChallenge
           v-if="challenge.type === 'ordering'"
           :key="`o-${challenge.id}`"
@@ -127,7 +127,7 @@ async function goNext() {
             v-if="!outcome"
             type="button"
             :disabled="!canSubmit"
-            class="bg-go px-6 py-3 font-display text-lg font-bold text-on-color transition-colors hover:bg-go-hover disabled:cursor-not-allowed disabled:opacity-50"
+            class="bg-go px-6 py-3 font-display text-lg font-bold text-on-go transition-colors hover:bg-go-hover disabled:cursor-not-allowed disabled:opacity-50 cq-go-shadow"
             data-testid="challenge-submit"
             @click="submit"
           >{{ sending ? 'Enviando…' : 'Enviar' }}</button>
@@ -152,7 +152,7 @@ async function goNext() {
 
       <section
         v-if="hints.length > 0 || hintError"
-        class="mt-4 border border-line-strong px-5 py-4"
+        class="mt-4 border-2 border-line-strong px-5 py-4"
         aria-label="Dicas"
         data-testid="hints"
       >
@@ -173,7 +173,7 @@ async function goNext() {
         v-if="solved && (outcome?.is_correct ?? true)"
         type="button"
         :disabled="goingNext"
-        class="mt-6 bg-go px-6 py-3 font-display text-lg font-bold text-on-color transition-colors hover:bg-go-hover disabled:cursor-wait disabled:opacity-60"
+        class="mt-6 bg-go px-6 py-3 font-display text-lg font-bold text-on-go transition-colors hover:bg-go-hover disabled:cursor-wait disabled:opacity-60 cq-go-shadow"
         data-testid="challenge-next"
         @click="goNext"
       >Próximo desafio</button>

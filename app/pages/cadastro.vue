@@ -33,7 +33,7 @@ async function submit() {
     <h2 class="font-display text-3xl font-bold">Criar conta</h2>
     <p class="mt-1 text-muted">Só pedimos um nome de usuário e uma senha.</p>
 
-    <p class="mt-5 border border-line-strong bg-raised px-3 py-2 font-semibold" data-testid="signup-real-name-warning">
+    <p class="mt-5 border-2 border-line-strong bg-raised px-3 py-2 font-semibold" data-testid="signup-real-name-warning">
       Não use seu nome real: escolha um apelido.
     </p>
 
@@ -64,7 +64,7 @@ async function submit() {
       <button
         type="submit"
         :disabled="sending"
-        class="bg-go px-5 py-3 font-display text-lg font-bold text-on-color transition-colors hover:bg-go-hover disabled:cursor-wait disabled:opacity-60"
+        class="bg-go px-5 py-3 font-display text-lg font-bold text-on-go transition-colors hover:bg-go-hover disabled:cursor-wait disabled:opacity-60 cq-go-shadow"
         data-testid="signup-submit"
       >{{ sending ? 'Criando conta…' : 'Criar conta' }}</button>
     </form>

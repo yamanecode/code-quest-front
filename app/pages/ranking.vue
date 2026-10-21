@@ -44,7 +44,7 @@ const announcement = computed(() => {
 })
 
 // Podium colours for 1º, 2º and 3º; with dense rank a tie shares the position, so it shares the colour.
-const PODIUM: Record<number, string> = { 1: 'text-gold', 2: 'text-silver', 3: 'text-bronze' }
+const PODIUM: Record<number, string> = { 1: 'text-podium-1', 2: 'text-podium-2', 3: 'text-podium-3' }
 const positionColor = (position: number) => PODIUM[position] ?? 'text-ink'
 
 // Dense rank (spec §5): equal positions are a tie, said in words too.
@@ -123,7 +123,7 @@ onMounted(async () => {
           aria-controls="ranking-panel"
           :tabindex="ranking.period === period.value ? 0 : -1"
           class="h-11 px-5 font-semibold transition-colors"
-          :class="ranking.period === period.value ? 'bg-ink text-on-color' : 'text-muted hover:text-ink'"
+          :class="ranking.period === period.value ? 'bg-ink text-bg' : 'text-muted hover:text-ink'"
           :data-testid="`ranking-tab-${period.value}`"
           @click="ranking.setPeriod(period.value)"
           @keydown="onTabKey($event, index)"
@@ -181,7 +181,7 @@ onMounted(async () => {
 
         <p
           v-if="allZero"
-          class="mt-5 border border-line-strong bg-raised px-4 py-3"
+          class="mt-5 border-2 border-line-strong bg-raised px-4 py-3"
           data-testid="ranking-empty"
         >Nenhum XP neste período ainda. Resolva um desafio para entrar no ranking.</p>
 
@@ -232,7 +232,7 @@ onMounted(async () => {
                   <span v-else class="truncate font-semibold" data-testid="ranking-name">{{ entry.username }}</span>
                   {{ ' ' }}<span
                     v-if="entry.is_me"
-                    class="shrink-0 bg-ink px-1.5 py-0.5 text-xs font-bold text-on-color"
+                    class="shrink-0 bg-ink px-1.5 py-0.5 text-xs font-bold text-bg"
                   >Você</span>
                 </span>
               </td>
@@ -244,7 +244,7 @@ onMounted(async () => {
         <div class="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
           <NuxtLink
             to="/"
-            class="bg-go px-5 py-2.5 font-display text-lg font-bold text-on-color transition-colors hover:bg-go-hover"
+            class="bg-go px-5 py-2.5 font-display text-lg font-bold text-on-go transition-colors hover:bg-go-hover cq-go-shadow"
             data-testid="ranking-play"
           >Resolver um desafio</NuxtLink>
           <p class="text-sm text-muted" data-testid="ranking-resets">{{ periodText.resets }}</p>

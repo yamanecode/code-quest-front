@@ -6,11 +6,23 @@ export default defineNuxtConfig({
   // Components are used by their file name (HelpTip, not GameHelpTip).
   components: [{ path: '~/components', pathPrefix: false }],
   compatibilityDate: '2025-07-15',
+  app: {
+    head: {
+      // Sets the theme before the app loads, so the page never flashes in the wrong theme.
+      // Same rule as stores/settings.ts: a saved choice wins, else the device setting.
+      script: [
+        {
+          innerHTML:
+            "try{var t=localStorage.getItem('cq-theme');if(t!=='light'&&t!=='dark'){t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='light'}",
+        },
+      ],
+    },
+  },
   devtools: { enabled: true },
   fonts: {
     families: [
-      { name: 'Saira', provider: 'google', weights: [400, 500, 600, 700] },
-      { name: 'Saira Condensed', provider: 'google', weights: [600, 700, 800] },
+      { name: 'Atkinson Hyperlegible', provider: 'google', weights: [400, 700] },
+      { name: 'Bricolage Grotesque', provider: 'google', weights: [600, 700, 800] },
     ],
   },
   modules: ['@pinia/nuxt', '@nuxtjs/tailwindcss', '@nuxt/fonts', '@nuxt/eslint'],

@@ -1,54 +1,139 @@
 /* Design tokens and the few global styles Tailwind utilities cannot express.
-   Dark theme only (no toggle, spec §1.2); contrast is kept high for bright classrooms. */
+   The app looks like a graph-paper notebook, in two themes (spec §9.2): light is soft, warm
+   paper with navy ink; dark is a black notebook written with gel pens. The theme is the
+   data-theme attribute on <html>, set by stores/settings.ts (and early by nuxt.config.ts). */
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 
-  /* Ground and surfaces */
-  --cq-bg: #0f1420;
-  --cq-panel: #182033;
-  --cq-raised: #1f2a42;
-  --cq-line: #263049;
-  --cq-line-strong: #3a4766;
-  --cq-control: #6b7a9c; /* control edges and tracks: at least 3:1 on panels (WCAG 1.4.11) */
+  /* Paper and surfaces */
+  --cq-bg: #f5f3ea; /* the page: soft, warm paper, not white, to tire the eyes less */
+  --cq-grid: rgba(27, 42, 82, 0.09); /* the graph-paper lines */
+  --cq-panel: #fffdf6; /* cards and sheets laid on the page */
+  --cq-raised: #ebe8dc; /* popovers, notices, the "você" row */
+  --cq-line: #d6d8e1; /* hairline dividers and empty bar tracks */
+  --cq-line-strong: #1b2a52; /* the pen line around cards, inputs and bars */
+  --cq-control: #4c5672; /* control edges: at least 3:1 on cards (WCAG 1.4.11) */
+  --cq-shadow: rgba(27, 42, 82, 0.12);
 
-  /* Top bar: a darker band above the page so the header reads as its own layer */
-  --cq-top: #080b13;
-  --cq-top-line: #2c3756;
+  /* Top bar */
+  --cq-top: #f5f3ea;
+  --cq-top-line: #1b2a52;
 
-  /* Text, in three levels: ink for titles, names and numbers; soft for running text;
-     label (blue-tinted) for small labels such as "XP" or "Posição". Muted stays for hints. */
-  --cq-ink: #e8ecf4;
-  --cq-soft: #cfd6e4;
-  --cq-label: #8fa2c8;
-  --cq-muted: #a3adc2;
-  --cq-on-color: #0f1420; /* text on skill colours and on lime */
+  /* Ink, in levels: ink for titles, names and numbers; soft for running text;
+     label for small labels such as "XP" or "Posição"; muted for hints. */
+  --cq-ink: #1b2a52;
+  --cq-soft: #2f3a5c;
+  --cq-label: #4f5d86;
+  --cq-muted: #5a6380;
+  --cq-on-color: #1b2a52; /* text on a highlighter swipe */
 
-  /* Lime is reserved for "where to go next": primary actions and the wordmark. */
-  --cq-go: #a3e635;
-  --cq-go-hover: #b9f05a;
+  /* The one primary action per screen: a blue pen button. */
+  --cq-go: #1f62d6;
+  --cq-go-hover: #1a52b4;
+  --cq-on-go: #ffffff;
+  --cq-go-shadow: #1b2a52;
 
-  /* Skill colours (spec §4): one per challenge type */
-  --cq-ordering: #4c8dff;
-  --cq-grouping: #ff5d5d;
-  --cq-filtering: #ffc93c;
-  --cq-pattern: #b57bff;
+  /* "Done" marks (✓ Resposta certa, ✓ Completa) */
+  --cq-success: #17784a;
 
-  /* Progress (XP, missions, class goal). Kept clear of the skill hues, lime and the tiers. */
-  --cq-progress: #2dd4bf;
+  /* Skill colours (spec §4): strong for bars and blocks, highlighter for tags */
+  --cq-ordering: #2e6be6;
+  --cq-grouping: #d6453a;
+  --cq-filtering: #b37c0b;
+  --cq-pattern: #7e4fd6;
+  --cq-on-skill: #ffffff; /* a mark (✓) drawn on a strong skill colour */
+  --cq-ordering-hl: #a9c9ff;
+  --cq-grouping-hl: #ffbcb0;
+  --cq-filtering-hl: #ffe39a;
+  --cq-pattern-hl: #dcc4ff;
+  --cq-mark: #ffe39a; /* the wordmark's highlighter */
+  --cq-mark-nav: #d5ddee; /* the current page in the menu */
 
-  /* Error feedback: a tinted field so it never reads as a skill colour */
-  --cq-error-bg: #2b1621;
-  --cq-error-line: #6b2a3e;
-  --cq-error-ink: #ffb8c4;
+  /* Progress (XP, missions, class goal) */
+  --cq-progress: #0e9a85;
 
-  /* Badge tiers (spec §9.2) */
+  /* Ranking podium text: tier colours darkened enough to read on paper */
+  --cq-podium-1: #85690f;
+  --cq-podium-2: #5c5f66;
+  --cq-podium-3: #95511a;
+
+  /* The daily challenge's sticky note, its tape, and the white edge of earned sticker badges */
+  --cq-sticky: #fff0a0;
+  --cq-sticky-ink: #1b2a52;
+  --cq-tape: rgba(255, 255, 255, 0.7);
+  --cq-sticker-edge: #ffffff;
+  --cq-badge-glyph: #1b2a52; /* the symbol drawn on a badge's tier disc */
+
+  /* Errors: a tinted field, never a skill colour */
+  --cq-error-bg: #fbe5e1;
+  --cq-error-line: #dc998f;
+  --cq-error-ink: #962b1f;
+
+  /* Badge tiers (spec §9.2): the medal fill, the same in both themes */
   --cq-bronze: #cd7f32;
   --cq-silver: #c0c0c0;
   --cq-gold: #d4af37;
 
-  --cq-font: 'Saira', system-ui, sans-serif;
-  --cq-font-display: 'Saira Condensed', 'Saira', system-ui, sans-serif;
+  --cq-font: 'Atkinson Hyperlegible', system-ui, sans-serif;
+  --cq-font-display: 'Bricolage Grotesque', 'Atkinson Hyperlegible', system-ui, sans-serif;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --cq-bg: #1b1c20;
+  --cq-grid: rgba(255, 255, 255, 0.055);
+  --cq-panel: #24262b;
+  --cq-raised: #2e3036;
+  --cq-line: #393b42;
+  --cq-line-strong: #d9d5c9;
+  --cq-control: #9a9ba3;
+  --cq-shadow: rgba(0, 0, 0, 0.45);
+
+  --cq-top: #16171a;
+  --cq-top-line: #d9d5c9;
+
+  --cq-ink: #f2efe6;
+  --cq-soft: #d8d5cc;
+  --cq-label: #b1b7c6;
+  --cq-muted: #a6a7ae;
+  --cq-on-color: #f2efe6;
+
+  --cq-go: #ffe066;
+  --cq-go-hover: #ffea94;
+  --cq-on-go: #1b1c20;
+  --cq-go-shadow: #8a7a2e;
+
+  --cq-success: #7ee2a8;
+
+  --cq-ordering: #6ea8ff;
+  --cq-grouping: #ff7a6b;
+  --cq-filtering: #ffd25a;
+  --cq-pattern: #b98cff;
+  --cq-on-skill: #1b1c20;
+  --cq-ordering-hl: rgba(96, 156, 255, 0.42);
+  --cq-grouping-hl: rgba(255, 112, 96, 0.4);
+  --cq-filtering-hl: rgba(255, 210, 70, 0.38);
+  --cq-pattern-hl: rgba(186, 140, 255, 0.42);
+  --cq-mark: rgba(255, 210, 70, 0.38);
+  --cq-mark-nav: rgba(255, 255, 255, 0.14);
+
+  --cq-progress: #34d3b4;
+
+  --cq-podium-1: #e3c25a;
+  --cq-podium-2: #cfd1d4;
+  --cq-podium-3: #e0965a;
+
+  --cq-sticky: #4d4420;
+  --cq-sticky-ink: #fff3c4;
+  --cq-tape: rgba(255, 255, 255, 0.2);
+  --cq-sticker-edge: #f2efe6;
+  --cq-badge-glyph: #1b1c20;
+
+  --cq-error-bg: #3a1f1d;
+  --cq-error-line: #7a3a32;
+  --cq-error-ink: #ffb3a8;
 }
 
 html,
@@ -59,14 +144,30 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Graph paper under every page. */
+body {
+  background-image:
+    linear-gradient(var(--cq-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--cq-grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* The same graph paper, for a layer that moves on its own (see .cq-drift). */
+.cq-paper {
+  background-image:
+    linear-gradient(var(--cq-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--cq-grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
 /* Headings stay at full ink. :where() keeps this at zero specificity, so any text utility wins. */
 :where(h1, h2, h3, h4, h5, h6) {
   color: var(--cq-ink);
 }
 
 ::selection {
-  background: var(--cq-ink);
-  color: var(--cq-on-color);
+  background: var(--cq-mark);
+  color: var(--cq-ink);
 }
 
 :focus-visible {
@@ -81,7 +182,7 @@ textarea {
 }
 
 * {
-  scrollbar-color: var(--cq-line-strong) var(--cq-bg);
+  scrollbar-color: var(--cq-control) var(--cq-bg);
   scrollbar-width: thin;
 }
 
@@ -91,30 +192,136 @@ textarea {
   font-variant-numeric: tabular-nums;
 }
 
-/* The one clipped corner a broadcast panel carries. Drawn with a pseudo-element
-   so popovers inside the panel are not clipped. */
-.cq-cut {
+/* A sheet laid on the notebook: pen border and a soft shadow. */
+.cq-sheet {
   position: relative;
+  background-color: var(--cq-panel);
+  border: 2px solid var(--cq-line-strong);
+  box-shadow: 0 6px 14px var(--cq-shadow);
 }
-.cq-cut::after {
+
+/* An inverted block (the level and title on the stat card): the tokens flip to the other
+   theme's ink and paper, so text and help buttons inside it stay readable. */
+.cq-invert {
+  --cq-bg: #1b2a52;
+  --cq-panel: #1b2a52;
+  --cq-raised: #2a3a68;
+  --cq-line-strong: #fffdf6;
+  --cq-control: #aab3cc;
+  --cq-ink: #fffdf6;
+  --cq-soft: #e6e9f2;
+  --cq-label: #c9cfe0;
+  --cq-muted: #c3c9da;
+  background-color: var(--cq-bg);
+  color: var(--cq-soft);
+}
+:root[data-theme='dark'] .cq-invert {
+  --cq-bg: #f2efe6;
+  --cq-panel: #f2efe6;
+  --cq-raised: #e2ddd0;
+  --cq-line-strong: #1b1c20;
+  --cq-control: #6d6e76;
+  --cq-ink: #1b1c20;
+  --cq-soft: #2c2d33;
+  --cq-label: #4a4d58;
+  --cq-muted: #4f5058;
+}
+
+/* The daily challenge as a sticky note taped to the page: the one rotated, taped element. */
+.cq-postit {
+  position: relative;
+  background-color: var(--cq-sticky);
+  color: var(--cq-sticky-ink);
+  box-shadow: 0 10px 16px var(--cq-shadow);
+  transform: rotate(-1.4deg);
+}
+.cq-postit::before {
   content: '';
   position: absolute;
-  top: 0;
-  right: 0;
-  border-style: solid;
-  border-width: 0 22px 22px 0;
-  border-color: transparent var(--cq-bg) transparent transparent;
-  pointer-events: none;
+  top: -10px;
+  left: 50%;
+  width: 72px;
+  height: 18px;
+  margin-left: -36px;
+  background: var(--cq-tape);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transform: rotate(2deg);
+}
+.cq-postit :where(h1, h2, h3) {
+  color: var(--cq-sticky-ink);
+}
+
+/* An earned badge sits a little crooked, like a sticker (its die-cut edge is drawn in BadgeIcon). */
+.cq-sticker {
+  transform: rotate(-5deg);
+}
+li:nth-child(even) .cq-sticker {
+  transform: rotate(5deg);
+}
+
+/* The pinned stat card sits slightly crooked on the page. */
+.cq-tilt {
+  transform: rotate(-0.3deg);
+}
+
+/* A highlighter swipe behind text. The colour comes from the modifier. */
+.cq-mark {
+  background-image: linear-gradient(var(--cq-mark-color, var(--cq-mark)), var(--cq-mark-color, var(--cq-mark)));
+  background-repeat: no-repeat;
+  background-position: 0 85%;
+  background-size: 100% 55%;
+}
+.cq-mark-ordering { --cq-mark-color: var(--cq-ordering-hl); }
+.cq-mark-grouping { --cq-mark-color: var(--cq-grouping-hl); }
+.cq-mark-filtering { --cq-mark-color: var(--cq-filtering-hl); }
+.cq-mark-pattern { --cq-mark-color: var(--cq-pattern-hl); }
+.cq-mark-nav { --cq-mark-color: var(--cq-mark-nav); background-position: 0 75%; background-size: 100% 40%; }
+
+/* The primary pen button casts a hard ink shadow, like a sticker on the page. */
+.cq-go-shadow {
+  box-shadow: 3px 3px 0 var(--cq-go-shadow);
 }
 
 /* XP bar after a correct answer: a short glow in the progress colour around the bar. */
 @keyframes cq-xp-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(45, 212, 191, 0); }
-  30% { box-shadow: 0 0 0 6px rgba(45, 212, 191, 0.35); }
-  100% { box-shadow: 0 0 0 0 rgba(45, 212, 191, 0); }
+  0% { box-shadow: 0 0 0 0 transparent; }
+  30% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--cq-progress) 35%, transparent); }
+  100% { box-shadow: 0 0 0 0 transparent; }
 }
 .cq-xp-pulse [role='progressbar'] {
   animation: cq-xp-pulse 1.2s ease-out;
+}
+
+/* Motion marks events only (spec §9.2 feedback); challenge screens stay still. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes cq-swipe {
+    from { background-size: 0% 55%; }
+  }
+  .cq-mark-in {
+    animation: cq-swipe 0.6s 0.15s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+
+  @keyframes cq-sticker-in {
+    from { transform: scale(0.6) rotate(-25deg); opacity: 0; }
+  }
+  .cq-sticker-in {
+    animation: cq-sticker-in 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+  }
+
+  @keyframes cq-medal-in {
+    from { transform: scale(0.6) rotate(-20deg); opacity: 0; }
+  }
+  .cq-medal-in {
+    animation: cq-medal-in 0.6s 0.2s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+  }
+
+  /* Only on the login and sign-up pages: the graph paper drifts slowly. */
+  @keyframes cq-drift {
+    to { background-position: 24px 48px, 48px 24px; }
+  }
+  .cq-drift {
+    animation: cq-drift 60s linear infinite;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

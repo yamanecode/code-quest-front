@@ -140,12 +140,12 @@ onMounted(() => profileStore.load())
           <template #top>
             <h1
               id="profile-username"
-              class="mb-5 break-words font-display text-3xl font-extrabold leading-tight sm:text-4xl"
+              class="mb-4 break-words font-display text-3xl font-extrabold leading-tight sm:text-4xl"
               data-testid="profile-username"
             ><span class="sr-only">Perfil de </span>{{ profile.username }}</h1>
           </template>
 
-          <dl class="mt-5 grid grid-cols-3 gap-x-4 border-t border-line pt-4 sm:grid-cols-[repeat(3,minmax(0,12rem))] sm:gap-x-8">
+          <dl class="mt-4 grid grid-cols-3 gap-x-4 border-t border-line pt-4 sm:grid-cols-[repeat(3,minmax(0,12rem))] sm:gap-x-8">
             <div class="flex flex-col justify-between gap-1" data-testid="profile-first-try">
               <dt class="text-sm leading-snug text-label">
                 Acertos de primeira
@@ -185,7 +185,7 @@ onMounted(() => profileStore.load())
               <p class="mt-1 text-muted">Resolva seu primeiro desafio para conquistar a insígnia Primeiro desafio.</p>
               <NuxtLink
                 to="/"
-                class="mt-4 inline-block bg-go px-5 py-2.5 font-display text-lg font-bold text-on-color transition-colors hover:bg-go-hover"
+                class="mt-4 inline-block bg-go px-5 py-2.5 font-display text-lg font-bold text-on-go transition-colors hover:bg-go-hover cq-go-shadow"
                 data-testid="profile-start"
               >Resolver um desafio</NuxtLink>
             </div>
@@ -214,7 +214,7 @@ onMounted(() => profileStore.load())
           <div v-if="others.length > 0">
             <button
               type="button"
-              class="border border-ink px-4 py-2.5 font-semibold transition-colors hover:bg-ink hover:text-on-color"
+              class="border border-ink px-4 py-2.5 font-semibold transition-colors hover:bg-ink hover:text-bg"
               :aria-expanded="showOthers ? 'true' : 'false'"
               aria-controls="badges-others"
               data-testid="badges-others-toggle"

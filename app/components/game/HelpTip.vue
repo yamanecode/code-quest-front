@@ -58,7 +58,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocumentClick))
     <button
       ref="button"
       type="button"
-      class="relative grid h-6 w-6 place-items-center rounded-full border border-control before:absolute before:-inset-2.5 before:content-[''] text-xs font-bold text-muted transition-colors hover:border-ink hover:text-ink aria-expanded:border-ink aria-expanded:bg-ink aria-expanded:text-on-color"
+      class="relative grid h-6 w-6 place-items-center rounded-full border-2 border-control before:absolute before:-inset-2.5 before:content-[''] text-xs font-bold text-muted transition-colors hover:border-ink hover:text-ink aria-expanded:border-ink aria-expanded:bg-ink aria-expanded:text-bg"
       :aria-label="`Ajuda: ${props.label}`"
       :aria-expanded="open"
       :aria-controls="panelId"
@@ -73,7 +73,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocumentClick))
       ref="panel"
       role="note"
       tabindex="-1"
-      class="absolute left-0 top-full z-30 mt-2 w-max max-w-[min(18rem,calc(100vw-2rem))] border border-line-strong bg-raised px-3 py-2 text-left text-sm font-normal normal-case leading-snug tracking-normal text-ink shadow-[0_8px_24px_rgba(0,0,0,0.45)]"
+      class="absolute left-0 top-full z-30 mt-2 w-max max-w-[min(18rem,calc(100vw-2rem))] border-2 border-line-strong bg-raised px-3 py-2 text-left text-sm font-normal normal-case leading-snug tracking-normal text-ink shadow-[0_8px_24px_rgba(0,0,0,0.45)]"
       :style="{ left: `${offset}px` }"
       :data-testid="`help-${props.topic}-panel`"
     >{{ props.text }}</span>

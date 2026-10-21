@@ -72,7 +72,7 @@ async function confirmLeave() {
       Entre em uma turma com o código que você recebeu na escola. Você pode estar em várias turmas ao mesmo tempo.
     </p>
 
-    <form class="cq-cut mt-6 grid gap-4 bg-panel p-5 sm:grid-cols-[1fr_auto] sm:items-end sm:p-6" novalidate @submit.prevent="join">
+    <form class="cq-sheet mt-6 grid gap-4 bg-panel p-5 sm:grid-cols-[1fr_auto] sm:items-end sm:p-6" novalidate @submit.prevent="join">
       <TextField
         v-model="code"
         label="Código da turma"
@@ -84,7 +84,7 @@ async function confirmLeave() {
       <button
         type="submit"
         :disabled="joining"
-        class="bg-go px-5 py-2.5 font-display text-lg font-bold text-on-color transition-colors hover:bg-go-hover disabled:cursor-wait disabled:opacity-60 sm:mb-[1.875rem]"
+        class="bg-go px-5 py-2.5 font-display text-lg font-bold text-on-go transition-colors hover:bg-go-hover disabled:cursor-wait disabled:opacity-60 sm:mb-[1.875rem] cq-go-shadow"
         data-testid="join-submit"
       >{{ joining ? 'Entrando…' : 'Entrar na turma' }}</button>
       <p
@@ -119,7 +119,7 @@ async function confirmLeave() {
         <li
           v-for="classroom in classrooms.list"
           :key="classroom.id"
-          class="border border-line-strong bg-panel p-5"
+          class="border-2 border-line-strong bg-panel p-5"
           :data-testid="`classroom-${classroom.id}`"
         >
           <div class="flex flex-wrap items-start justify-between gap-3">

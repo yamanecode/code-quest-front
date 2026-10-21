@@ -130,10 +130,10 @@ describe('ranking page', () => {
     const wrapper = await open(top)
     const colorOf = (name: string) => wrapper.get(`[data-testid="ranking-entry-${name}"] [data-testid="ranking-position"]`).classes()
 
-    expect(colorOf('bia')).toContain('text-gold')
-    expect(colorOf('caio')).toContain('text-silver')
-    expect(colorOf('duda')).toContain('text-silver')
-    expect(colorOf('ana_22')).toContain('text-bronze')
+    expect(colorOf('bia')).toContain('text-podium-1')
+    expect(colorOf('caio')).toContain('text-podium-2')
+    expect(colorOf('duda')).toContain('text-podium-2')
+    expect(colorOf('ana_22')).toContain('text-podium-3')
     expect(colorOf('enzo')).toContain('text-ink')
   })
 

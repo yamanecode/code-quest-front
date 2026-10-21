@@ -105,7 +105,7 @@ describe('profile page', () => {
     expect(codesIn(wrapper, 'next')).toEqual(['badge-skill_ordering_7', 'badge-skill_grouping_15'])
     const locked = wrapper.get('[data-testid="badge-skill_ordering_7"]')
     expect(locked.attributes('data-earned')).toBe('false')
-    expect(locked.get('[data-testid="badge-emoji"]').classes()).toContain('grayscale')
+    expect(locked.get('[data-testid="badge-disc"]').attributes('stroke-dasharray')).toBe('5 4')
     expect(locked.get('[data-testid="badge-condition"]').text()).toBe('Para conquistar: 7 desafios de ordenação resolvidos')
     expect(locked.get('[data-testid="badge-progress"]').text()).toBe('Progresso: 4 de 7')
 

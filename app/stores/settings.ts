@@ -1,9 +1,12 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-// Per-browser conveniences kept in localStorage: the mute switch (spec §9.2)
-// and whether each student closed the welcome card (spec §9.3).
+// Per-browser conveniences kept in localStorage: the mute switch and the light/dark
+// theme (spec §9.2), and whether each student closed the welcome card (spec §9.3).
+export type Theme = 'light' | 'dark'
+
 const MUTED_KEY = 'cq-muted'
+const THEME_KEY = 'cq-theme'
 const welcomeKey = (username: string) => `cq-welcome-${username}`
 
 // Storage can be blocked (private windows, strict settings); the app still works without it.
@@ -25,9 +28,31 @@ function write(key: string, value: string) {
   }
 }
 
+function deviceTheme(): Theme {
+  try {
+    return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  }
+  catch {
+    return 'light'
+  }
+}
+
+// A saved choice wins; a first visit follows the device. Nothing is saved until the student chooses.
+function initialTheme(): Theme {
+  const saved = read(THEME_KEY)
+  return saved === 'light' || saved === 'dark' ? saved : deviceTheme()
+}
+
+// The tokens in main.css switch on this attribute.
+function applyTheme(theme: Theme) {
+  document.documentElement.dataset.theme = theme
+}
+
 export const useSettingsStore = defineStore('settings', () => {
   const muted = ref(read(MUTED_KEY) === 'true')
   const dismissedWelcome = ref<Set<string>>(new Set())
+  const theme = ref<Theme>(initialTheme())
+  applyTheme(theme.value)
 
   function setMuted(value: boolean) {
     muted.value = value
@@ -36,6 +61,16 @@ export const useSettingsStore = defineStore('settings', () => {
 
   function toggleMuted() {
     setMuted(!muted.value)
+  }
+
+  function setTheme(value: Theme) {
+    theme.value = value
+    write(THEME_KEY, value)
+    applyTheme(value)
+  }
+
+  function toggleTheme() {
+    setTheme(theme.value === 'dark' ? 'light' : 'dark')
   }
 
   function isWelcomeDismissed(username: string): boolean {
@@ -47,5 +82,5 @@ export const useSettingsStore = defineStore('settings', () => {
     write(welcomeKey(username), 'dismissed')
   }
 
-  return { muted, setMuted, toggleMuted, isWelcomeDismissed, dismissWelcome }
+  return { muted, setMuted, toggleMuted, theme, setTheme, toggleTheme, isWelcomeDismissed, dismissWelcome }
 })

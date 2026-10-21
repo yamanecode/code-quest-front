@@ -1,17 +1,16 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Tier } from '~/types/api'
-import { SECRET_BADGE_NAME, TIER_LABEL, type BadgeProgress } from '~/utils/badges'
+import { badgeFamily, SECRET_BADGE_NAME, TIER_LABEL, type BadgeProgress } from '~/utils/badges'
 import { formatDayMonth } from '~/utils/format'
 
-// One badge (spec §9.2): a tier-coloured disc with its emoji once earned; a dashed
-// outline with a greyed emoji while locked. Shape and text carry the state, not colour
-// alone, since silver itself is grey.
+// One badge (spec §9.2): a sticker in the tier colour with the symbol of its family once
+// earned (BadgeIcon); a dashed outline with a grey symbol while locked. Shape and text carry
+// the state, not colour alone, since silver itself is grey.
 interface MedalBadge {
   code: string
   name: string
   tier: Tier
-  emoji: string
   description?: string
 }
 
@@ -23,11 +22,10 @@ const props = withDefaults(
     secret?: boolean // hidden and not earned yet: no name, no tier, no condition
     progress?: BadgeProgress | null
     isNew?: boolean // earned in the last few days
+    showCondition?: boolean // false where space is tight (the home strip)
   }>(),
-  { earnedAt: null, secret: false, progress: null, isNew: false },
+  { earnedAt: null, secret: false, progress: null, isNew: false, showCondition: true },
 )
-
-const TIER_FILL: Record<Tier, string> = { bronze: 'bg-bronze', silver: 'bg-silver', gold: 'bg-gold' }
 
 // A non-breaking space keeps a tier numeral with its word ("Decomposição I" never ends a line on "I").
 const name = computed(() => (props.secret ? SECRET_BADGE_NAME : props.badge.name.replace(/ (I{1,3})$/, ' $1')))
@@ -35,9 +33,10 @@ const name = computed(() => (props.secret ? SECRET_BADGE_NAME : props.badge.name
 // The outline already shows a badge is still to earn, so the visible text stays calm
 // ("Prata", "Para conquistar: …"); screen readers get the state in words.
 const tier = computed(() => (props.secret ? '' : TIER_LABEL[props.badge.tier]))
+const family = computed(() => (props.secret ? 'secret' : badgeFamily(props.badge.code)))
 const earnedOn = computed(() => (props.earned && props.earnedAt ? formatDayMonth(props.earnedAt) : ''))
 
-const condition = computed(() => (props.earned || props.secret ? '' : (props.badge.description ?? '')))
+const condition = computed(() => (props.earned || props.secret || !props.showCondition ? '' : (props.badge.description ?? '')))
 </script>
 
 <template>
@@ -46,22 +45,16 @@ const condition = computed(() => (props.earned || props.secret ? '' : (props.bad
     :data-testid="`badge-${props.badge.code}`"
     :data-earned="String(props.earned)"
   >
-    <span
-      class="flex h-12 w-12 items-center justify-center rounded-full text-2xl sm:h-16 sm:w-16 sm:text-3xl"
-      :class="props.earned ? [TIER_FILL[props.badge.tier], 'ring-2 ring-inset ring-black/25'] : 'border-2 border-dashed border-control'"
-      aria-hidden="true"
-      data-testid="badge-circle"
-    ><span
-      :class="props.earned ? '' : props.secret ? 'font-display font-bold text-muted' : 'opacity-50 grayscale'"
-      data-testid="badge-emoji"
-    >{{ props.secret ? '?' : props.badge.emoji }}</span></span>
+    <span class="block h-12 w-12 sm:h-16 sm:w-16" :class="{ 'cq-sticker': props.earned }" aria-hidden="true" data-testid="badge-circle">
+      <BadgeIcon class="h-full w-full" :family="family" :tier="props.badge.tier" :earned="props.earned" />
+    </span>
     <figcaption class="mt-2 w-full max-w-[9rem]">
       <span
         class="block leading-tight"
         :class="props.earned ? 'font-semibold text-ink' : 'text-muted'"
         data-testid="badge-name"
       >{{ name }}</span>
-      <span v-if="props.isNew" class="mt-1 inline-block bg-ink px-1.5 text-xs font-bold text-on-color" data-testid="badge-new">Nova</span>
+      <span v-if="props.isNew" class="mt-1 inline-block bg-ink px-1.5 text-xs font-bold text-bg" data-testid="badge-new">Nova</span>
       <span class="block text-xs text-muted" data-testid="badge-status">{{ tier }}<span v-if="!props.earned" class="sr-only">{{ tier ? ', ' : '' }}ainda não conquistada</span></span>
       <span v-if="earnedOn" class="block text-xs text-muted" data-testid="badge-earned-on"><span class="sr-only">Conquistada em </span>{{ earnedOn }}</span>
       <span

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { AnswerOutcome } from '~/composables/useChallenge'
-import { TIER_LABEL } from '~/utils/badges'
+import { badgeFamily, TIER_LABEL } from '~/utils/badges'
 
 // Result of one answer (spec §9.2). Badges always appear together with XP, level and title.
 const props = defineProps<{ outcome: AnswerOutcome }>()
@@ -10,15 +10,15 @@ const emit = defineEmits<{ retry: [] }>()
 <template>
   <div
     v-if="props.outcome.is_correct"
-    class="cq-cut bg-panel px-5 py-4"
+    class="cq-sheet px-5 py-4"
     data-testid="feedback-correct"
   >
-    <p class="text-sm font-semibold text-go">✓ Resposta certa</p>
+    <p class="text-sm font-semibold text-success">✓ Resposta certa</p>
     <p class="mt-1 font-display text-2xl font-bold text-ink" data-testid="feedback-message">{{ props.outcome.message }}</p>
 
     <p class="mt-2" data-testid="feedback-xp">
       <template v-if="props.outcome.xp_earned > 0">
-        <span class="cq-num text-xl font-bold text-go">+{{ props.outcome.xp_earned }} XP</span>
+        <span class="cq-num text-xl font-bold text-success">+{{ props.outcome.xp_earned }} XP</span>
       </template>
       <template v-else>Você já tinha resolvido este desafio, então não há XP novo.</template>
     </p>
@@ -36,10 +36,10 @@ const emit = defineEmits<{ retry: [] }>()
         <li
           v-for="badge in props.outcome.new_badges"
           :key="badge.code"
-          class="flex items-center gap-2 border border-line-strong px-3 py-2"
+          class="flex items-center gap-2 border-2 border-line-strong px-3 py-2"
           :data-testid="`feedback-badge-${badge.code}`"
         >
-          <span class="text-2xl" aria-hidden="true">{{ badge.emoji }}</span>
+          <BadgeIcon class="h-10 w-10 shrink-0" :family="badgeFamily(badge.code)" :tier="badge.tier" earned />
           <span>
             <span class="block font-semibold">{{ badge.name }}</span>
             <span class="block text-sm text-muted">{{ TIER_LABEL[badge.tier] }} · {{ badge.description }}</span>
@@ -63,7 +63,7 @@ const emit = defineEmits<{ retry: [] }>()
     </div>
     <button
       type="button"
-      class="mt-4 border border-ink px-4 py-2 font-semibold transition-colors hover:bg-ink hover:text-on-color"
+      class="mt-4 border border-ink px-4 py-2 font-semibold transition-colors hover:bg-ink hover:text-bg"
       data-testid="feedback-retry"
       @click="emit('retry')"
     >Tentar novamente</button>

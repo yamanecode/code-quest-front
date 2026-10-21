@@ -1,4 +1,4 @@
-// Badge display helpers (spec §5.1, §9.2). Badges are CSS + emoji, never image files.
+// Badge display helpers (spec §5.1, §9.2). Badges are CSS + inline SVG symbols, never image files.
 
 import type { Profile, ProfileBadge, Tier } from '~/types/api'
 
@@ -9,6 +9,31 @@ export const TIER_LABEL: Record<Tier, string> = {
 }
 
 export const SECRET_BADGE_NAME = 'Insígnia secreta'
+
+// The symbol a badge is drawn with (components/game/BadgeIcon.vue): one per family of spec §5.1.
+export type BadgeFamily =
+  | 'first_solve' | 'ordering' | 'grouping' | 'filtering' | 'pattern' | 'level' | 'mission'
+  | 'streak' | 'first_try' | 'daily' | 'class_goal' | 'all_types_day' | 'no_hint_mission'
+
+const FAMILY_PREFIXES: [string, BadgeFamily][] = [
+  ['skill_ordering_', 'ordering'],
+  ['skill_grouping_', 'grouping'],
+  ['skill_filtering_', 'filtering'],
+  ['skill_pattern_', 'pattern'],
+  ['level_', 'level'],
+  ['mission_', 'mission'],
+  ['streak_', 'streak'],
+  ['first_try_', 'first_try'],
+  ['daily_', 'daily'],
+  ['class_goal_', 'class_goal'],
+]
+const SINGLE_FAMILIES: BadgeFamily[] = ['first_solve', 'all_types_day', 'no_hint_mission']
+
+export function badgeFamily(code: string): BadgeFamily {
+  const single = SINGLE_FAMILIES.find((family) => family === code)
+  if (single) return single
+  return FAMILY_PREFIXES.find(([prefix]) => code.startsWith(prefix))?.[1] ?? 'first_solve'
+}
 
 export interface BadgeProgress {
   current: number

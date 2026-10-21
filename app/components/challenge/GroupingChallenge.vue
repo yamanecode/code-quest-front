@@ -37,7 +37,7 @@ function emitAnswer() {
       <li
         v-for="item in props.content.items"
         :key="item.id"
-        class="grid gap-2 border border-line-strong bg-raised px-3 py-2 sm:grid-cols-[1fr_16rem] sm:items-center"
+        class="grid gap-2 border-2 border-line-strong bg-bg px-3 py-2 sm:grid-cols-[1fr_16rem] sm:items-center"
       >
         <label :for="`${baseId}-${item.id}`" class="leading-snug">
           <span class="sr-only">Etapa de: </span><span data-testid="grouping-item-text">{{ item.text }}</span>
@@ -46,7 +46,7 @@ function emitAnswer() {
           :id="`${baseId}-${item.id}`"
           :value="assignment[item.id] ?? ''"
           :disabled="props.disabled"
-          class="w-full border border-control bg-bg px-3 py-2 text-ink transition-colors hover:border-muted focus:border-ink disabled:cursor-not-allowed disabled:opacity-60"
+          class="w-full border-2 border-line-strong bg-panel px-3 py-2 text-ink transition-colors hover:border-muted focus:border-ink disabled:cursor-not-allowed disabled:opacity-60"
           :data-testid="`grouping-select-${item.id}`"
           @change="assign(item.id, ($event.target as HTMLSelectElement).value)"
         >

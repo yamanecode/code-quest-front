@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Profile, ProfileBadge } from '~/types/api'
-import { badgeProgress, nextBadges } from '~/utils/badges'
+import { badgeFamily, badgeProgress, nextBadges } from '~/utils/badges'
 import { formatDayMonth } from '~/utils/format'
 
 type Stats = Pick<Profile, 'xp' | 'level' | 'streak' | 'missions_completed' | 'first_try_solves' | 'solved_by_skill'>
@@ -69,6 +69,26 @@ describe('badge progress', () => {
     expect(picked).not.toContain('level_5')
     expect(picked).not.toContain('level_8')
     expect(picked).not.toContain('skill_ordering_7')
+  })
+})
+
+describe('badgeFamily', () => {
+  it('T-FE-BADGE-02 maps every badge code of spec §5.1 to the symbol of its family', () => {
+    expect(badgeFamily('first_solve')).toBe('first_solve')
+    expect(badgeFamily('skill_ordering_15')).toBe('ordering')
+    expect(badgeFamily('skill_grouping_3')).toBe('grouping')
+    expect(badgeFamily('skill_filtering_7')).toBe('filtering')
+    expect(badgeFamily('skill_pattern_3')).toBe('pattern')
+    expect(badgeFamily('level_11')).toBe('level')
+    expect(badgeFamily('mission_5')).toBe('mission')
+    expect(badgeFamily('streak_14')).toBe('streak')
+    expect(badgeFamily('first_try_20')).toBe('first_try')
+    expect(badgeFamily('daily_7')).toBe('daily')
+    expect(badgeFamily('class_goal_1')).toBe('class_goal')
+    expect(badgeFamily('all_types_day')).toBe('all_types_day')
+    expect(badgeFamily('no_hint_mission')).toBe('no_hint_mission')
+    // A code added later still gets a symbol.
+    expect(badgeFamily('something_new')).toBe('first_solve')
   })
 })
 

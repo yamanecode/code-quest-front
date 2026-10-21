@@ -28,7 +28,7 @@ const hintId = `${id}-hint`
       :aria-describedby="props.hint ? hintId : undefined"
       autocapitalize="none"
       spellcheck="false"
-      class="w-full border border-control bg-bg px-3 py-2.5 text-ink transition-colors placeholder:text-muted hover:border-muted focus:border-ink focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+      class="w-full border-2 border-line-strong bg-panel px-3 py-2.5 text-ink transition-colors placeholder:text-muted hover:border-muted focus:border-ink focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
       :data-testid="props.testid"
     >
     <p v-if="props.hint" :id="hintId" class="mt-1.5 text-sm text-muted">{{ props.hint }}</p>

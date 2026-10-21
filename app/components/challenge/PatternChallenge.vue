@@ -31,7 +31,7 @@ function choose(optionId: string) {
       <li
         v-for="(term, index) in props.content.sequence"
         :key="index"
-        class="cq-num min-w-12 border border-line-strong bg-raised px-3 py-2 text-center text-2xl font-bold"
+        class="cq-num min-w-12 border-2 border-line-strong bg-bg px-3 py-2 text-center text-2xl font-bold"
         data-testid="pattern-term"
       >{{ term }}</li>
       <li class="cq-num min-w-12 border border-dashed border-control px-3 py-2 text-center text-2xl font-bold text-muted">
@@ -44,7 +44,7 @@ function choose(optionId: string) {
         <li v-for="option in props.content.options" :key="option.id">
           <label
             :for="`${baseId}-${option.id}`"
-            class="flex cursor-pointer items-center gap-3 border border-line-strong bg-raised px-3 py-2.5 has-[:checked]:border-ink has-[:disabled]:cursor-not-allowed"
+            class="flex cursor-pointer items-center gap-3 border-2 border-line-strong bg-bg px-3 py-2.5 has-[:checked]:border-ink has-[:disabled]:cursor-not-allowed"
           >
             <input
               :id="`${baseId}-${option.id}`"

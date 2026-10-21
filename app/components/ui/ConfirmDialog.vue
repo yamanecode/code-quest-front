@@ -41,14 +41,14 @@ function trapTab(event: KeyboardEvent) {
 </script>
 
 <template>
-  <div class="fixed inset-0 z-40 grid place-items-center bg-[rgba(15,20,32,0.85)] px-4" @keydown.esc="cancel">
+  <div class="fixed inset-0 z-40 grid place-items-center bg-[rgba(0,0,0,0.55)] px-4" @keydown.esc="cancel">
     <div
       ref="panel"
       role="alertdialog"
       aria-modal="true"
       :aria-labelledby="titleId"
       :aria-describedby="messageId"
-      class="cq-cut w-full max-w-md border border-line-strong bg-panel p-6 shadow-[0_8px_24px_rgba(0,0,0,0.45)]"
+      class="cq-sheet w-full max-w-md p-6"
       :data-testid="props.testid"
       @keydown.tab="trapTab"
     >
@@ -65,7 +65,7 @@ function trapTab(event: KeyboardEvent) {
         <button
           type="button"
           :disabled="props.busy"
-          class="border border-error-line bg-error-bg px-4 py-2.5 font-semibold text-error-ink transition-colors hover:border-error-ink disabled:cursor-wait disabled:opacity-60"
+          class="border-2 border-error-line bg-error-bg px-4 py-2.5 font-semibold text-error-ink transition-colors hover:border-error-ink disabled:cursor-wait disabled:opacity-60"
           :data-testid="`${props.testid}-confirm`"
           @click="emit('confirm')"
         >{{ props.confirmLabel }}</button>

@@ -54,7 +54,7 @@ const reached = computed(() => MILESTONES.filter((mark) => percent.value >= mark
           <span v-if="reached.includes(mark)" aria-hidden="true">✓ </span>{{ mark }}%<span v-if="reached.includes(mark)" class="sr-only"> alcançado</span>
         </li>
       </ol>
-      <p v-if="props.goal.completed" class="mt-2 font-semibold text-go" data-testid="goal-completed">
+      <p v-if="props.goal.completed" class="mt-2 font-semibold text-success" data-testid="goal-completed">
         Meta concluída! Bom trabalho em equipe.
       </p>
     </template>

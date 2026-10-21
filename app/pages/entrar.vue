@@ -46,7 +46,7 @@ async function submit() {
       <button
         type="submit"
         :disabled="sending"
-        class="bg-go px-5 py-3 font-display text-lg font-bold text-on-color transition-colors hover:bg-go-hover disabled:cursor-wait disabled:opacity-60"
+        class="bg-go px-5 py-3 font-display text-lg font-bold text-on-go transition-colors hover:bg-go-hover disabled:cursor-wait disabled:opacity-60 cq-go-shadow"
         data-testid="login-submit"
       >{{ sending ? 'Entrando…' : 'Entrar' }}</button>
     </form>
