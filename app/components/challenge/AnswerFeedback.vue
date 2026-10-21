@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import type { Tier } from '~/types/api'
 import type { AnswerOutcome } from '~/composables/useChallenge'
+import { TIER_LABEL } from '~/utils/badges'
 
 // Result of one answer (spec §9.2). Badges always appear together with XP, level and title.
 const props = defineProps<{ outcome: AnswerOutcome }>()
 const emit = defineEmits<{ retry: [] }>()
-
-const TIER_LABEL: Record<Tier, string> = { bronze: 'Bronze', silver: 'Prata', gold: 'Ouro' }
 </script>
 
 <template>
@@ -16,7 +14,7 @@ const TIER_LABEL: Record<Tier, string> = { bronze: 'Bronze', silver: 'Prata', go
     data-testid="feedback-correct"
   >
     <p class="text-sm font-semibold text-go">✓ Resposta certa</p>
-    <p class="mt-1 font-display text-2xl font-bold" data-testid="feedback-message">{{ props.outcome.message }}</p>
+    <p class="mt-1 font-display text-2xl font-bold text-ink" data-testid="feedback-message">{{ props.outcome.message }}</p>
 
     <p class="mt-2" data-testid="feedback-xp">
       <template v-if="props.outcome.xp_earned > 0">
@@ -58,7 +56,7 @@ const TIER_LABEL: Record<Tier, string> = { bronze: 'Bronze', silver: 'Prata', go
 
   <div v-else class="border border-error-line bg-error-bg px-5 py-4" data-testid="feedback-wrong">
     <p class="text-sm font-semibold text-error-ink">✗ Resposta incorreta</p>
-    <p class="mt-1 font-display text-2xl font-bold" data-testid="feedback-message">{{ props.outcome.message }}</p>
+    <p class="mt-1 font-display text-2xl font-bold text-ink" data-testid="feedback-message">{{ props.outcome.message }}</p>
     <div v-if="props.outcome.hint" class="mt-3" data-testid="feedback-hint">
       <p class="text-sm font-semibold text-muted">Dica</p>
       <p class="mt-1 leading-relaxed">{{ props.outcome.hint }}</p>

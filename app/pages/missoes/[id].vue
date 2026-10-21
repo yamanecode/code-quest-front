@@ -48,7 +48,7 @@ watch(id, (missionId) => play.loadMission(missionId), { immediate: true })
       <template v-else>
         <div class="mt-6 max-w-sm">
           <p class="cq-num mb-1.5 text-lg" data-testid="mission-progress">{{ solvedCount }} de {{ mission.challenges.length }} resolvidos</p>
-          <ProgressBar :value="solvedCount" :max="mission.challenges.length" :label="`Progresso em ${mission.title}`" />
+          <ProgressBar :value="solvedCount" :max="mission.challenges.length" :label="`Progresso em ${mission.title}`" tone="progress" />
         </div>
         <p class="mt-4 text-sm text-muted">Você pode abrir os desafios na ordem que quiser.</p>
 

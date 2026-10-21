@@ -12,8 +12,15 @@
   --cq-line-strong: #3a4766;
   --cq-control: #6b7a9c; /* control edges and tracks: at least 3:1 on panels (WCAG 1.4.11) */
 
-  /* Text */
+  /* Top bar: a darker band above the page so the header reads as its own layer */
+  --cq-top: #080b13;
+  --cq-top-line: #2c3756;
+
+  /* Text, in three levels: ink for titles, names and numbers; soft for running text;
+     label (blue-tinted) for small labels such as "XP" or "Posição". Muted stays for hints. */
   --cq-ink: #e8ecf4;
+  --cq-soft: #cfd6e4;
+  --cq-label: #8fa2c8;
   --cq-muted: #a3adc2;
   --cq-on-color: #0f1420; /* text on skill colours and on lime */
 
@@ -26,6 +33,9 @@
   --cq-grouping: #ff5d5d;
   --cq-filtering: #ffc93c;
   --cq-pattern: #b57bff;
+
+  /* Progress (XP, missions, class goal). Kept clear of the skill hues, lime and the tiers. */
+  --cq-progress: #2dd4bf;
 
   /* Error feedback: a tinted field so it never reads as a skill colour */
   --cq-error-bg: #2b1621;
@@ -44,9 +54,14 @@
 html,
 body {
   background-color: var(--cq-bg);
-  color: var(--cq-ink);
+  color: var(--cq-soft);
   font-family: var(--cq-font);
   -webkit-font-smoothing: antialiased;
+}
+
+/* Headings stay at full ink. :where() keeps this at zero specificity, so any text utility wins. */
+:where(h1, h2, h3, h4, h5, h6) {
+  color: var(--cq-ink);
 }
 
 ::selection {
@@ -92,11 +107,11 @@ textarea {
   pointer-events: none;
 }
 
-/* XP bar after a correct answer: a short lime glow around the bar. */
+/* XP bar after a correct answer: a short glow in the progress colour around the bar. */
 @keyframes cq-xp-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(163, 230, 53, 0); }
-  30% { box-shadow: 0 0 0 6px rgba(163, 230, 53, 0.35); }
-  100% { box-shadow: 0 0 0 0 rgba(163, 230, 53, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(45, 212, 191, 0); }
+  30% { box-shadow: 0 0 0 6px rgba(45, 212, 191, 0.35); }
+  100% { box-shadow: 0 0 0 0 rgba(45, 212, 191, 0); }
 }
 .cq-xp-pulse [role='progressbar'] {
   animation: cq-xp-pulse 1.2s ease-out;

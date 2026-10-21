@@ -17,7 +17,7 @@ const reached = computed(() => MILESTONES.filter((mark) => percent.value >= mark
 
 <template>
   <div :data-testid="props.testid">
-    <p class="flex items-center gap-2 text-sm font-semibold">
+    <p class="flex items-center gap-2 text-sm font-semibold text-label">
       Meta da turma
       <HelpTip
         :topic="props.testid"
@@ -35,13 +35,13 @@ const reached = computed(() => MILESTONES.filter((mark) => percent.value >= mark
         <span class="cq-num text-lg" data-testid="goal-count">
           {{ props.goal.progress }} de {{ props.goal.target }} desafios
         </span>
-        <span class="cq-num text-lg font-bold" data-testid="goal-percent">{{ percent }}%</span>
+        <span class="cq-num text-lg font-bold text-ink" data-testid="goal-percent">{{ percent }}%</span>
       </div>
       <ProgressBar
         :value="props.goal.progress"
         :max="props.goal.target"
         :label="`Meta da semana de ${props.name}`"
-        tone="go"
+        tone="progress"
         :milestones="MILESTONES"
       />
       <ol class="mt-2 flex justify-between text-xs text-muted" aria-label="Marcos da meta" data-testid="goal-milestones">

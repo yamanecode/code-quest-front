@@ -11,7 +11,7 @@ const props = defineProps<{ mission: MissionSummary }>()
     class="flex h-full flex-col border border-line-strong bg-panel p-4 transition-colors hover:border-ink"
     :data-testid="`mission-${props.mission.id}`"
   >
-    <span class="font-display text-xl font-bold leading-tight">{{ props.mission.title }}</span>
+    <span class="font-display text-xl font-bold leading-tight text-ink">{{ props.mission.title }}</span>
     <span v-if="props.mission.description" class="mt-1 text-sm leading-snug text-muted">{{ props.mission.description }}</span>
     <span class="mt-auto pt-4">
       <span v-if="props.mission.total === 0" class="text-sm text-muted" data-testid="mission-empty">
@@ -27,6 +27,7 @@ const props = defineProps<{ mission: MissionSummary }>()
           :max="props.mission.total"
           :label="`Progresso em ${props.mission.title}`"
           size="sm"
+          tone="progress"
         />
       </template>
     </span>

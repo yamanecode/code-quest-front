@@ -26,6 +26,12 @@ export const useProfileStore = defineStore('profile', () => {
     }
   }
 
+  // Opt-in public profile (spec §5). Errors reach the caller, which keeps the old value.
+  async function setPublic(value: boolean) {
+    const settings = await studentService.updateSettings({ profile_public: value })
+    if (profile.value) profile.value.profile_public = settings.profile_public
+  }
+
   function celebrateXp() {
     xpPulse.value += 1
   }
@@ -35,5 +41,5 @@ export const useProfileStore = defineStore('profile', () => {
     error.value = null
   }
 
-  return { profile, loading, error, xpPulse, load, celebrateXp, clear }
+  return { profile, loading, error, xpPulse, load, setPublic, celebrateXp, clear }
 })

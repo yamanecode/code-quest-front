@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 
 // Accessible progress bar for XP, missions and the class goal (spec §9.2).
-type Tone = 'ink' | 'go' | 'ordering' | 'grouping' | 'filtering' | 'pattern'
+type Tone = 'ink' | 'progress' | 'ordering' | 'grouping' | 'filtering' | 'pattern'
 
 const props = withDefaults(
   defineProps<{
@@ -12,13 +12,14 @@ const props = withDefaults(
     tone?: Tone
     size?: 'sm' | 'md'
     milestones?: number[] // percentages drawn as ticks (visual only)
+    valueText?: string // read instead of "N of M" when the numbers need words
   }>(),
-  { tone: 'ink', size: 'md', milestones: () => [] },
+  { tone: 'ink', size: 'md', milestones: () => [], valueText: undefined },
 )
 
 const FILL: Record<Tone, string> = {
   ink: 'bg-ink',
-  go: 'bg-go',
+  progress: 'bg-progress',
   ordering: 'bg-ordering',
   grouping: 'bg-grouping',
   filtering: 'bg-filtering',
@@ -36,6 +37,7 @@ const percent = computed(() => (props.max > 0 ? (clamped.value / props.max) * 10
     :aria-valuenow="clamped"
     aria-valuemin="0"
     :aria-valuemax="props.max"
+    :aria-valuetext="props.valueText"
     class="relative w-full bg-line ring-1 ring-inset ring-control"
     :class="props.size === 'sm' ? 'h-2' : 'h-3'"
   >

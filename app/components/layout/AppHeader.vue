@@ -4,14 +4,14 @@ import { useAuthStore } from '~/stores/auth'
 import { useProfileStore } from '~/stores/profile'
 
 // Logged-in header: navigation for the role and, for students, level, title, XP and streak.
-const XP_PER_LEVEL = 50
-
+// A page that shows its own stat panel sets `hideStats` in its page meta.
 const auth = useAuthStore()
 const profileStore = useProfileStore()
+const route = useRoute()
 
 const isStudent = computed(() => auth.role === 'student')
+const showStats = computed(() => isStudent.value && route.meta.hideStats !== true)
 const profile = computed(() => profileStore.profile)
-const xpInLevel = computed(() => (profile.value ? XP_PER_LEVEL - profile.value.xp_to_next_level : 0))
 
 interface NavLink {
   to: string
@@ -67,11 +67,11 @@ function logout() {
 
 <template>
   <header>
-    <div class="border-b border-line">
+    <div class="border-b border-top-line bg-top">
       <div class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-8 px-4 sm:px-6">
         <NuxtLink
           :to="auth.home"
-          class="flex h-14 items-center font-display text-2xl font-extrabold tracking-wide sm:h-16"
+          class="flex h-14 items-center font-display text-2xl font-extrabold tracking-wide text-ink sm:h-16"
           aria-label="CodeQuest, página inicial"
           data-testid="nav-home"
         >
@@ -102,58 +102,15 @@ function logout() {
     </div>
 
     <section
-      v-if="isStudent"
+      v-if="showStats"
       aria-label="Seu progresso"
       class="mx-auto max-w-6xl px-4 pt-6 sm:px-6"
       data-testid="header-stats"
     >
-      <div class="cq-cut grid grid-cols-[auto_1fr] items-end gap-x-5 gap-y-4 bg-panel px-5 py-4 sm:grid-cols-[auto_minmax(12rem,auto)_1fr_auto] sm:gap-x-8 sm:px-7 sm:py-5">
-        <template v-if="profile">
-          <p class="cq-num text-6xl font-extrabold leading-[0.8] sm:text-8xl sm:leading-[0.8]" data-testid="header-level">
-            <span class="sr-only">Nível </span>{{ profile.level }}
-          </p>
+      <StatPanel v-if="profile" :profile="profile" prefix="header" :pulsing="pulsing" />
 
-          <div data-testid="header-title">
-            <p class="flex items-center gap-2 font-display text-2xl font-bold leading-tight">
-              {{ profile.title }}
-              <HelpTip
-                topic="title"
-                label="Título"
-                text="Seu título muda com o nível: Aprendiz, Explorador(a), Estrategista, Arquiteto(a) de soluções e Mestre do pensamento."
-              />
-            </p>
-            <p class="text-sm text-muted" aria-hidden="true">Nível {{ profile.level }}</p>
-          </div>
-
-          <div class="col-span-2 sm:col-span-1" :class="{ 'cq-xp-pulse': pulsing }" data-testid="header-xp">
-            <div class="mb-2 flex items-center justify-between gap-3 text-sm">
-              <span class="flex items-center gap-2 font-semibold">
-                XP
-                <HelpTip
-                  topic="xp"
-                  label="XP"
-                  text="Você ganha XP só na primeira vez que acerta cada desafio: 10 XP de primeira, 5 XP depois de 1 ou 2 erros e 2 XP depois de 3 erros ou mais."
-                />
-              </span>
-              <span class="cq-num text-lg text-muted">
-                <span class="text-ink">{{ profile.xp }} XP</span> · faltam {{ profile.xp_to_next_level }} para o nível {{ profile.level + 1 }}
-              </span>
-            </div>
-            <ProgressBar :value="xpInLevel" :max="XP_PER_LEVEL" label="XP do nível atual" />
-          </div>
-
-          <div class="col-span-2 flex items-center gap-3 sm:col-span-1 sm:justify-end" data-testid="header-streak">
-            <span class="cq-num text-4xl font-extrabold leading-none">{{ profile.streak }}</span>
-            <span class="text-sm leading-tight text-muted">{{ profile.streak === 1 ? 'dia seguido' : 'dias seguidos' }}</span>
-            <HelpTip
-              topic="streak"
-              label="Sequência de dias"
-              text="Conta os dias seguidos em que você resolveu pelo menos um desafio; ela não dá XP."
-            />
-          </div>
-        </template>
-
-        <p v-else-if="profileStore.error" class="col-span-full flex flex-wrap items-center gap-3 text-sm" role="alert">
+      <div v-else class="cq-cut bg-panel px-5 py-4 sm:px-7 sm:py-5">
+        <p v-if="profileStore.error" class="flex flex-wrap items-center gap-3 text-sm" role="alert">
           <span>Não foi possível carregar seu progresso.</span>
           <button
             type="button"
@@ -163,7 +120,7 @@ function logout() {
           >Tentar de novo</button>
         </p>
 
-        <p v-else class="col-span-full text-sm text-muted" aria-live="polite">Carregando seu progresso…</p>
+        <p v-else class="text-sm text-muted" aria-live="polite">Carregando seu progresso…</p>
       </div>
     </section>
   </header>

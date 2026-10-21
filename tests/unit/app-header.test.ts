@@ -58,6 +58,17 @@ describe('AppHeader', () => {
     }
   })
 
+  it('the profile page shows its own stat panel, so the header leaves it out there', async () => {
+    signIn('student')
+    vi.mocked(studentService.getMe).mockResolvedValue(profile)
+
+    const wrapper = await mountSuspended(AppHeader, { route: '/perfil' })
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="header-stats"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="nav-perfil"]').exists()).toBe(true)
+  })
+
   it('T-FE-LAYOUT-01 a professor sees only professor links and no game stats', async () => {
     signIn('professor')
 
