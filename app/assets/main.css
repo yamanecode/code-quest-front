@@ -1,201 +1,102 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap');
-
-*, *::before, *::after { box-sizing: border-box; }
+/* Design tokens and the few global styles Tailwind utilities cannot express.
+   Dark theme only (no toggle, spec §1.2); contrast is kept high for bright classrooms. */
 
 :root {
-  /* ── BACKGROUNDS ── */
-  --bg-base:     #0A0C0C;
-  --bg-surface:  #111515;
-  --bg-elevated: #1A2020;
+  color-scheme: dark;
 
-  /* ── BORDERS ── */
-  --border:        rgba(255, 255, 255, 0.09);
-  --border-accent: rgba(41, 182, 246, 0.40);
+  /* Ground and surfaces */
+  --cq-bg: #0f1420;
+  --cq-panel: #182033;
+  --cq-raised: #1f2a42;
+  --cq-line: #263049;
+  --cq-line-strong: #3a4766;
+  --cq-control: #6b7a9c; /* control edges and tracks: at least 3:1 on panels (WCAG 1.4.11) */
 
-  /* ── BRAND ACCENT ── */
-  --cyan:      #29B6F6;
-  --cyan-dim:  rgba(41, 182, 246, 0.10);
+  /* Text */
+  --cq-ink: #e8ecf4;
+  --cq-muted: #a3adc2;
+  --cq-on-color: #0f1420; /* text on skill colours and on lime */
 
-  /* ── CTA ── */
-  --amber:     #FFAA00;
-  --amber-dim: rgba(255, 170, 0, 0.12);
+  /* Lime is reserved for "where to go next": primary actions and the wordmark. */
+  --cq-go: #a3e635;
+  --cq-go-hover: #b9f05a;
 
-  /* ── GAMIFICATION SEMANTIC ── */
-  --correct:        #00E676;
-  --correct-dim:    rgba(0, 230, 118, 0.08);
-  --correct-border: rgba(0, 230, 118, 0.25);
-  --wrong:          #FF5252;
-  --wrong-dim:      rgba(255, 82, 82, 0.08);
-  --wrong-border:   rgba(255, 82, 82, 0.25);
-  --level:          #B388FF;
-  --level-dim:      rgba(179, 136, 255, 0.10);
+  /* Skill colours (spec §4): one per challenge type */
+  --cq-ordering: #4c8dff;
+  --cq-grouping: #ff5d5d;
+  --cq-filtering: #ffc93c;
+  --cq-pattern: #b57bff;
 
-  /* ── TEXT ── 
-     FIX: --text-muted bumped from #6B8E8A → #8AADA9 to hit 4.5:1 on --bg-base
-     (old #6B8E8A was ~3.1:1 — WCAG AA fail on small text)
-  ── */
-  --text-primary:   #EDFAF8;   /* ~17:1 on bg-base ✅ */
-  --text-secondary: #B8D0CC;   /* ~5.8:1 on bg-base ✅ (was #A8C0BC → ~4.3:1, borderline) */
-  --text-muted:     #8AADA9;   /* ~4.6:1 on bg-base ✅ (was #6B8E8A → ~3.1:1, FAIL) */
+  /* Error feedback: a tinted field so it never reads as a skill colour */
+  --cq-error-bg: #2b1621;
+  --cq-error-line: #6b2a3e;
+  --cq-error-ink: #ffb8c4;
 
-  /* ── FONTS ── */
-  --font-sans: 'Plus Jakarta Sans', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  /* Badge tiers (spec §9.2) */
+  --cq-bronze: #cd7f32;
+  --cq-silver: #c0c0c0;
+  --cq-gold: #d4af37;
+
+  --cq-font: 'Saira', system-ui, sans-serif;
+  --cq-font-display: 'Saira Condensed', 'Saira', system-ui, sans-serif;
 }
 
-html, body {
-  background-color: var(--bg-base);
-  color: var(--text-primary);
-  font-family: var(--font-sans);
+html,
+body {
+  background-color: var(--cq-bg);
+  color: var(--cq-ink);
+  font-family: var(--cq-font);
   -webkit-font-smoothing: antialiased;
 }
 
-.mono { font-family: var(--font-mono); }
-
-/* ── GLOBAL BUTTONS ── */
-button, .btn {
-  font-family: var(--font-sans);
-  cursor: pointer;
+::selection {
+  background: var(--cq-ink);
+  color: var(--cq-on-color);
 }
 
-/* primary — submit, confirm */
-.btn-primary {
-  background: var(--cyan);
-  color: #0A0C0C;
-  font-family: var(--font-mono);
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  border: none;
-  border-radius: 8px;
-  transition: opacity 0.15s;
-}
-.btn-primary:hover { opacity: 0.88; }
-.btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
-
-/* ── DICA (secondary/hint) button ──
-   Redesigned: amber-filled with glow pulse so it reads as an
-   inviting secondary CTA, not a ghost no-op.
-   Pulse stops on hover so the glow feels "earned".
-   The lightbulb icon gets a subtle wobble on hover.
-── */
-.btn-secondary {
-  background: var(--amber-dim);
-  border: 1.5px solid var(--amber);
-  color: var(--amber);
-  font-family: var(--font-mono);
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  border-radius: 8px;
-  /* Soft ambient glow that pulses to draw the eye */
-  box-shadow:
-    0 0 0   0   rgba(255, 170, 0, 0),
-    0 0 12px 0   rgba(255, 170, 0, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  animation: dica-pulse 2.8s ease-in-out infinite;
-  transition: box-shadow 0.2s, border-color 0.2s, background 0.2s, transform 0.1s;
-  /* Make sure the icon inside wobbles */
-  & svg { transition: transform 0.35s cubic-bezier(.36,.07,.19,.97); }
-}
-.btn-secondary:hover {
-  background: rgba(255, 170, 0, 0.18);
-  box-shadow:
-    0 0 0    0   rgba(255, 170, 0, 0),
-    0 0 24px 4px rgba(255, 170, 0, 0.42),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 170, 0, 0.9);
-  animation: none; /* freeze pulse on hover so glow feels intentional */
-  & svg { transform: rotate(-12deg) scale(1.15); }
-}
-.btn-secondary:active { transform: scale(0.97); }
-.btn-secondary:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
-  animation: none;
+:focus-visible {
+  outline: 2px solid var(--cq-ink);
+  outline-offset: 2px;
 }
 
-@keyframes dica-pulse {
-  0%, 100% {
-    box-shadow:
-      0 0 0   0   rgba(255, 170, 0, 0),
-      0 0 12px 0   rgba(255, 170, 0, 0.20),
-      inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  }
-  50% {
-    box-shadow:
-      0 0 0   0   rgba(255, 170, 0, 0),
-      0 0 22px 4px rgba(255, 170, 0, 0.38),
-      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+input,
+select,
+textarea {
+  caret-color: var(--cq-ink);
+}
+
+* {
+  scrollbar-color: var(--cq-line-strong) var(--cq-bg);
+  scrollbar-width: thin;
+}
+
+/* Numbers in stats and tables keep their columns aligned. */
+.cq-num {
+  font-family: var(--cq-font-display);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The one clipped corner a broadcast panel carries. Drawn with a pseudo-element
+   so popovers inside the panel are not clipped. */
+.cq-cut {
+  position: relative;
+}
+.cq-cut::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-style: solid;
+  border-width: 0 22px 22px 0;
+  border-color: transparent var(--cq-bg) transparent transparent;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
   }
 }
-
-/* nav button — Entrar */
-.btn-nav {
-  background: var(--amber);
-  color: #0A0C0C;
-  font-family: var(--font-mono);
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  border: none;
-  border-radius: 7px;
-  transition: opacity 0.15s;
-}
-.btn-nav:hover { opacity: 0.85; }
-
-/* ── GLOBAL INPUTS ── */
-input, textarea {
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text-primary);
-  font-family: var(--font-sans);
-  font-size: 0.9375rem;
-  outline: none;
-  transition: border-color 0.15s;
-}
-input:focus, textarea:focus {
-  border-color: var(--border-accent);
-}
-input::placeholder, textarea::placeholder {
-  color: var(--text-muted);
-}
-input:disabled, textarea:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-/* ── GLOBAL RESULT CARDS ── */
-.result-card--correct {
-  background: var(--correct-dim) !important;
-  border-color: var(--correct-border) !important;
-}
-.result-card--wrong {
-  background: var(--wrong-dim) !important;
-  border-color: var(--wrong-border) !important;
-}
-.result-icon-wrap--correct {
-  background: var(--correct-dim) !important;
-  color: var(--correct) !important;
-}
-.result-icon-wrap--wrong {
-  background: var(--wrong-dim) !important;
-  color: var(--wrong) !important;
-}
-
-/* ── GLOBAL TAGS / CHIPS ── */
-.meta-tag--xp {
-  color: var(--cyan) !important;
-  border-color: rgba(41, 182, 246, 0.25) !important;
-  background: var(--cyan-dim) !important;
-}
-.meta-tag--category {
-  color: var(--level) !important;
-  border-color: rgba(179, 136, 255, 0.2) !important;
-  background: var(--level-dim) !important;
-}
-
-/* ── GLOBAL HINT CARD ── */
-.hint-card {
-  background: var(--amber-dim) !important;
-  border-color: rgba(255, 170, 0, 0.22) !important;
-}
-.hint-header { color: var(--amber) !important; }

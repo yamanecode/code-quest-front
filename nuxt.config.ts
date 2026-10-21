@@ -3,12 +3,14 @@ export default defineNuxtConfig({
   ssr: false,
   srcDir: 'app/',
   css: ['assets/main.css'],
+  // Components are used by their file name (HelpTip, not GameHelpTip).
+  components: [{ path: '~/components', pathPrefix: false }],
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   fonts: {
     families: [
-      { name: 'Inter', provider: 'google' },
-      { name: 'JetBrains Mono', provider: 'google' },
+      { name: 'Saira', provider: 'google', weights: [400, 500, 600, 700] },
+      { name: 'Saira Condensed', provider: 'google', weights: [600, 700, 800] },
     ],
   },
   modules: ['@pinia/nuxt', '@nuxtjs/tailwindcss', '@nuxt/fonts', '@nuxt/eslint'],
