@@ -112,7 +112,7 @@ async function confirmLeave() {
         >Tentar de novo</button>
       </div>
       <p v-else-if="classrooms.list.length === 0" class="mt-3 text-muted" data-testid="classrooms-empty">
-        Você ainda não está em nenhuma turma. Enquanto isso, as trilhas para todos estão liberadas no início.
+        Você ainda não está em nenhuma turma. Enquanto isso, as missões da Trilha CodeQuest estão liberadas no início.
       </p>
 
       <ul v-else class="mt-4 grid gap-3">

@@ -12,6 +12,10 @@ function signIn(role: 'student' | 'professor') {
   auth.restore()
 }
 
+// v-show hides with an inline display: none.
+const shown = (wrapper: Awaited<ReturnType<typeof mountSuspended>>, selector: string) =>
+  (wrapper.get(selector).element as HTMLElement).style.display !== 'none'
+
 beforeEach(() => {
   localStorage.clear()
 })
@@ -33,5 +37,26 @@ describe('help page', () => {
 
     expect(wrapper.find('[data-testid="help-skills"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="help-professor"]').exists()).toBe(true)
+  })
+
+  it('T-FE-HELP-03 only a professor gets the tabs, opening on the professor guide', async () => {
+    signIn('student')
+    const student = await mountSuspended(AjudaPage)
+    expect(student.find('[data-testid="help-tabs"]').exists()).toBe(false)
+    expect(shown(student, '[data-testid="help-game"]')).toBe(true)
+
+    signIn('professor')
+    const wrapper = await mountSuspended(AjudaPage)
+    expect(wrapper.get('[data-testid="help-tab-professor"]').attributes('aria-selected')).toBe('true')
+    expect(shown(wrapper, '[data-testid="help-professor"]')).toBe(true)
+    expect(shown(wrapper, '[data-testid="help-game"]')).toBe(false)
+
+    await wrapper.get('[data-testid="help-tab-game"]').trigger('click')
+    expect(wrapper.get('[data-testid="help-tab-game"]').attributes('aria-selected')).toBe('true')
+    expect(shown(wrapper, '[data-testid="help-game"]')).toBe(true)
+    expect(shown(wrapper, '[data-testid="help-professor"]')).toBe(false)
+
+    await wrapper.get('[data-testid="help-tab-game"]').trigger('keydown', { key: 'ArrowLeft' })
+    expect(wrapper.get('[data-testid="help-tab-professor"]').attributes('aria-selected')).toBe('true')
   })
 })

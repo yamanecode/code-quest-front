@@ -13,3 +13,10 @@ export function formatDayMonth(iso: string): string {
 export function errorMessage(error: unknown): string {
   return error instanceof Error && error.message ? error.message : FALLBACK_ERROR
 }
+
+// Lines to list under a form: the content-rule errors when the API sent them, else its message.
+export function errorLines(error: unknown): string[] {
+  const errors = (error as { errors?: unknown } | null)?.errors
+  if (Array.isArray(errors) && errors.length > 0) return errors.map(String)
+  return [errorMessage(error)]
+}

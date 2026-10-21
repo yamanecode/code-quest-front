@@ -11,4 +11,6 @@ export const HELP = {
     'Insígnias marcam conquistas, como resolver desafios de uma habilidade ou manter uma sequência: vêm em bronze, prata e ouro, não dão XP e algumas ficam secretas até você conquistá-las.',
   ranking:
     'Mostra o XP ganho nesta semana ou neste mês, não o total, com você e até dois colegas acima e abaixo; nomes sublinhados abrem o perfil público.',
+  weeklyGoal:
+    'Quantos desafios a turma resolve pela primeira vez, somando todos os alunos, em uma semana. Digite um número inteiro de 1 a 1000. Deixando vazio, a meta é automática: 5 desafios por aluno, no mínimo 10, e nunca mais do que os desafios novos que a turma ainda pode resolver.',
 } as const

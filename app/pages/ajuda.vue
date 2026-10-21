@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed, nextTick, ref } from 'vue'
 import { useAuthStore } from '~/stores/auth'
 import type { ChallengeType } from '~/types/challenge'
 import { LEVEL_BANDS } from '~/utils/levels'
@@ -8,6 +9,34 @@ useHead({ title: 'Como funciona · CodeQuest' })
 
 // Students see only the game rules; professors also see how to manage content.
 const auth = useAuthStore()
+
+const isProfessor = computed(() => auth.role === 'professor')
+
+// Professors get two tabs so their guide is one click away; they open on it.
+type HelpTab = 'game' | 'professor'
+const TABS: { value: HelpTab; label: string }[] = [
+  { value: 'professor', label: 'Para professores' },
+  { value: 'game', label: 'Para alunos' },
+]
+const tab = ref<HelpTab>('professor')
+const tabButtons = ref<HTMLButtonElement[]>([])
+const showGame = computed(() => !isProfessor.value || tab.value === 'game')
+
+// Arrow keys, Home and End move between the tabs (WAI-ARIA tabs pattern).
+async function onTabKey(event: KeyboardEvent, index: number) {
+  const last = TABS.length - 1
+  const target = {
+    ArrowRight: index === last ? 0 : index + 1,
+    ArrowLeft: index === 0 ? last : index - 1,
+    Home: 0,
+    End: last,
+  }[event.key]
+  if (target === undefined) return
+  event.preventDefault()
+  tab.value = TABS[target]!.value
+  await nextTick()
+  tabButtons.value[target]?.focus()
+}
 
 const SKILL_ORDER: ChallengeType[] = ['ordering', 'grouping', 'filtering', 'pattern']
 
@@ -26,7 +55,40 @@ function levelRange(from: number, to: number | null) {
 <template>
   <article class="max-w-2xl">
     <h1 class="font-display text-4xl font-extrabold">Como funciona</h1>
-    <p class="mt-3 text-lg leading-relaxed text-muted">
+
+    <div
+      v-if="isProfessor"
+      role="tablist"
+      aria-label="Seções da ajuda"
+      class="mt-6 flex w-fit flex-wrap border border-control"
+      data-testid="help-tabs"
+    >
+      <button
+        v-for="(item, index) in TABS"
+        :id="`help-tab-${item.value}`"
+        :key="item.value"
+        ref="tabButtons"
+        type="button"
+        role="tab"
+        :aria-selected="tab === item.value ? 'true' : 'false'"
+        :aria-controls="`help-panel-${item.value}`"
+        :tabindex="tab === item.value ? 0 : -1"
+        class="h-11 px-5 font-semibold transition-colors"
+        :class="tab === item.value ? 'bg-ink text-bg' : 'text-muted hover:text-ink'"
+        :data-testid="`help-tab-${item.value}`"
+        @click="tab = item.value"
+        @keydown="onTabKey($event, index)"
+      >{{ item.label }}</button>
+    </div>
+
+    <div
+      v-show="showGame"
+      id="help-panel-game"
+      :role="isProfessor ? 'tabpanel' : undefined"
+      :aria-labelledby="isProfessor ? 'help-tab-game' : undefined"
+      data-testid="help-game"
+    >
+    <p class="mt-3 text-lg leading-relaxed text-muted" :class="{ 'mt-6': isProfessor }">
       No CodeQuest você treina pensamento computacional com desafios de lógica, sem escrever código.
       Você resolve os desafios na ordem que quiser e pode tentar quantas vezes precisar.
     </p>
@@ -128,10 +190,15 @@ function levelRange(from: number, to: number | null) {
       </p>
     </section>
 
+    </div>
+
     <section
-      v-if="auth.role === 'professor'"
-      class="mt-16 border-t border-line pt-10"
-      aria-labelledby="h-prof"
+      v-if="isProfessor"
+      v-show="tab === 'professor'"
+      id="help-panel-professor"
+      role="tabpanel"
+      aria-labelledby="help-tab-professor"
+      class="mt-6"
       data-testid="help-professor"
     >
       <h2 id="h-prof" class="font-display text-2xl font-bold">Para professores</h2>

@@ -101,8 +101,8 @@ onMounted(() => {
       </div>
 
       <section aria-labelledby="h-base" data-testid="home-base">
-        <h2 id="h-base" class="font-display text-2xl font-bold">Trilhas para todos</h2>
-        <p class="mt-1 text-muted">Uma trilha para cada habilidade, liberada para todos os estudantes. Resolva na ordem que quiser.</p>
+        <h2 id="h-base" class="font-display text-2xl font-bold">Trilha CodeQuest</h2>
+        <p class="mt-1 text-muted">Uma missão para cada habilidade, liberada para todos os estudantes. Resolva na ordem que quiser.</p>
         <ul class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <li v-for="mission in missions.base" :key="mission.id">
             <MissionCard :mission="mission" :skills="play.missionSkills[mission.id]" />

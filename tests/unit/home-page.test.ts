@@ -25,7 +25,7 @@ const missions: Missions = {
     { id: 12, title: 'Trilha da decomposição', description: null, total: 3, solved: 0 },
   ],
   classrooms: [
-    { id: 4, name: 'Turma Demo', missions: [{ id: 21, title: 'Missão de exemplo', description: null, total: 4, solved: 2 }] },
+    { id: 4, name: 'Turma Demo', missions: [{ id: 21, title: 'Trilha de exemplo', description: null, total: 4, solved: 2 }] },
     { id: 5, name: 'Turma Nova', missions: [] },
   ],
 }
@@ -124,7 +124,7 @@ describe('student home', () => {
   it('T-FE-HOME-04 trail cards take the colours of the skills their challenges use', async () => {
     const mixed: MissionDetail = {
       id: 21,
-      title: 'Missão de exemplo',
+      title: 'Trilha de exemplo',
       description: null,
       challenges: [
         { id: 201, title: 'A', type: 'pattern', skill: 'Reconhecimento de padrões', solved: false },
@@ -182,7 +182,7 @@ describe('student home', () => {
 
     expect(wrapper.get('[data-testid="home-classroom-empty-5"]').text()).toBe('Seu professor ainda não publicou missões')
     expect(wrapper.find('[data-testid="home-classroom-empty-4"]').exists()).toBe(false)
-    expect(wrapper.get('[data-testid="home-classroom-4"]').text()).toContain('Missão de exemplo')
+    expect(wrapper.get('[data-testid="home-classroom-4"]').text()).toContain('Trilha de exemplo')
   })
 
   it('a published mission with no challenge shows a note instead of a progress bar', async () => {

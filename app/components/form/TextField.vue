@@ -8,6 +8,8 @@ const props = defineProps<{
   type?: 'text' | 'password'
   autocomplete?: string
   hint?: string
+  placeholder?: string
+  help?: string // text of a "?" balloon next to the label
   maxlength?: number
 }>()
 
@@ -18,13 +20,17 @@ const hintId = `${id}-hint`
 
 <template>
   <div>
-    <label :for="id" class="mb-1.5 block font-semibold">{{ props.label }}</label>
+    <div class="mb-1.5 flex items-center gap-2">
+      <label :for="id" class="font-semibold">{{ props.label }}</label>
+      <HelpTip v-if="props.help" :topic="props.testid" :label="props.label" :text="props.help" />
+    </div>
     <input
       :id="id"
       v-model="model"
       :type="props.type ?? 'text'"
       :autocomplete="props.autocomplete"
       :maxlength="props.maxlength"
+      :placeholder="props.placeholder"
       :aria-describedby="props.hint ? hintId : undefined"
       autocapitalize="none"
       spellcheck="false"
