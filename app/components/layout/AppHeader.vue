@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useAuthStore } from '~/stores/auth'
 import { useProfileStore } from '~/stores/profile'
 
@@ -33,6 +33,24 @@ const PROFESSOR_LINKS: NavLink[] = [
   { to: '/professor/desafios', label: 'Desafios', testid: 'nav-prof-desafios' },
   { to: '/ajuda', label: 'Ajuda', testid: 'nav-ajuda' },
 ]
+
+// A short glow on the XP bar after a correct answer that earned XP (spec §9.2).
+const pulsing = ref(false)
+let pulseTimer: ReturnType<typeof setTimeout> | null = null
+watch(
+  () => profileStore.xpPulse,
+  () => {
+    pulsing.value = false
+    if (pulseTimer) clearTimeout(pulseTimer)
+    requestAnimationFrame(() => {
+      pulsing.value = true
+      pulseTimer = setTimeout(() => (pulsing.value = false), 1200)
+    })
+  },
+)
+onBeforeUnmount(() => {
+  if (pulseTimer) clearTimeout(pulseTimer)
+})
 
 const links = computed(() => (isStudent.value ? STUDENT_LINKS : PROFESSOR_LINKS))
 
@@ -107,7 +125,7 @@ function logout() {
             <p class="text-sm text-muted" aria-hidden="true">Nível {{ profile.level }}</p>
           </div>
 
-          <div class="col-span-2 sm:col-span-1" data-testid="header-xp">
+          <div class="col-span-2 sm:col-span-1" :class="{ 'cq-xp-pulse': pulsing }" data-testid="header-xp">
             <div class="mb-2 flex items-center justify-between gap-3 text-sm">
               <span class="flex items-center gap-2 font-semibold">
                 XP

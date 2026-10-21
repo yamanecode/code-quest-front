@@ -8,6 +8,7 @@ const props = defineProps<{
   type?: 'text' | 'password'
   autocomplete?: string
   hint?: string
+  maxlength?: number
 }>()
 
 const model = defineModel<string>({ required: true })
@@ -23,6 +24,7 @@ const hintId = `${id}-hint`
       v-model="model"
       :type="props.type ?? 'text'"
       :autocomplete="props.autocomplete"
+      :maxlength="props.maxlength"
       :aria-describedby="props.hint ? hintId : undefined"
       autocapitalize="none"
       spellcheck="false"

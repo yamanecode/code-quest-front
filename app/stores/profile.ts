@@ -9,6 +9,8 @@ export const useProfileStore = defineStore('profile', () => {
   const profile = ref<Profile | null>(null)
   const loading = ref(false)
   const error = ref<string | null>(null)
+  // Bumped after a correct answer that earned XP, so the header can celebrate it.
+  const xpPulse = ref(0)
 
   async function load() {
     loading.value = true
@@ -24,10 +26,14 @@ export const useProfileStore = defineStore('profile', () => {
     }
   }
 
+  function celebrateXp() {
+    xpPulse.value += 1
+  }
+
   function clear() {
     profile.value = null
     error.value = null
   }
 
-  return { profile, loading, error, load, clear }
+  return { profile, loading, error, xpPulse, load, celebrateXp, clear }
 })

@@ -92,6 +92,16 @@ textarea {
   pointer-events: none;
 }
 
+/* XP bar after a correct answer: a short lime glow around the bar. */
+@keyframes cq-xp-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(163, 230, 53, 0); }
+  30% { box-shadow: 0 0 0 6px rgba(163, 230, 53, 0.35); }
+  100% { box-shadow: 0 0 0 0 rgba(163, 230, 53, 0); }
+}
+.cq-xp-pulse [role='progressbar'] {
+  animation: cq-xp-pulse 1.2s ease-out;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
