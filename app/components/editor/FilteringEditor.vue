@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { nextItemId, type FormState } from '~/utils/challengeForm'
+import { SMALL_BUTTON, TEXT_FIELD } from '~/utils/styles'
 
 // A question and a list of pieces of information; the professor marks the relevant ones.
 const form = defineModel<FormState>({ required: true })
@@ -17,7 +18,8 @@ function remove(index: number) {
   form.value.relevant = form.value.relevant.filter((id) => id !== removed!.id)
 }
 
-const button = 'border-2 border-line-strong px-2.5 py-1.5 font-semibold transition-colors hover:border-ink disabled:cursor-not-allowed disabled:opacity-40'
+const button = SMALL_BUTTON
+const field = TEXT_FIELD
 </script>
 
 <template>
@@ -29,7 +31,7 @@ const button = 'border-2 border-line-strong px-2.5 py-1.5 font-semibold transiti
         v-model="form.question"
         type="text"
         maxlength="200"
-        class="border-2 border-line-strong bg-panel px-3 py-2 text-ink focus:border-ink focus:outline-none"
+        :class="field"
         data-testid="editor-question"
       >
     </label>
@@ -50,7 +52,7 @@ const button = 'border-2 border-line-strong px-2.5 py-1.5 font-semibold transiti
           type="text"
           maxlength="120"
           :aria-label="`Informação ${index + 1}`"
-          class="min-w-0 flex-1 border-2 border-line-strong bg-panel px-3 py-2 text-ink focus:border-ink focus:outline-none"
+          :class="field"
           :data-testid="`editor-item-${index}`"
         >
         <button type="button" :class="button" :disabled="locked || form.items.length <= MIN" :aria-label="`Remover a informação ${index + 1}`" :data-testid="`editor-remove-${index}`" @click="remove(index)">Remover</button>

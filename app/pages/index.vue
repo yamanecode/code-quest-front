@@ -37,6 +37,7 @@ onMounted(() => {
 
 <template>
   <div class="grid gap-10">
+    <h1 class="sr-only">Início</h1>
     <p class="max-w-2xl text-lg leading-relaxed text-muted" data-testid="home-purpose">
       Pense como quem resolve problemas: treine as 4 habilidades do pensamento computacional
     </p>
@@ -45,7 +46,7 @@ onMounted(() => {
 
     <p v-if="play.homeLoading && !missions" class="text-muted" aria-live="polite">Carregando suas missões…</p>
 
-    <div v-else-if="play.homeError" role="alert" data-testid="home-error">
+    <div v-else-if="play.homeError" role="alert" class="cq-alert px-4 py-3" data-testid="home-error">
       <p>{{ play.homeError }}</p>
       <button
         type="button"

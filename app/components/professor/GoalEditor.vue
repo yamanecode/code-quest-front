@@ -54,7 +54,7 @@ async function save() {
       :maxlength="4"
       autocomplete="off"
     />
-    <ul v-if="errors.length" role="alert" class="list-disc border border-error-line bg-error-bg py-2 pl-8 pr-3 text-error-ink" data-testid="goal-errors">
+    <ul v-if="errors.length" role="alert" class="list-disc cq-alert py-2 pl-8 pr-3 text-error-ink" data-testid="goal-errors">
       <li v-for="message in errors" :key="message">{{ message }}</li>
     </ul>
     <p class="min-h-6 font-semibold" role="status" data-testid="goal-status">{{ status }}</p>

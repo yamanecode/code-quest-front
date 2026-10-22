@@ -73,7 +73,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocumentClick))
       ref="panel"
       role="note"
       tabindex="-1"
-      class="absolute left-0 top-full z-30 mt-2 w-max max-w-[min(18rem,calc(100vw-2rem))] border-2 border-line-strong bg-raised px-3 py-2 text-left text-sm font-normal normal-case leading-snug tracking-normal text-ink shadow-[0_8px_24px_rgba(0,0,0,0.45)]"
+      class="absolute left-0 top-full z-30 mt-2 w-max max-w-[min(18rem,calc(100vw-2rem))] border-2 border-line-strong bg-raised px-3 py-2 text-left text-sm font-normal normal-case leading-snug tracking-normal text-ink shadow-[var(--cq-pop-shadow)]"
       :style="{ left: `${offset}px` }"
       :data-testid="`help-${props.topic}-panel`"
     >{{ props.text }}</span>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { SMALL_BUTTON } from '~/utils/styles'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useProfessorStore } from '~/stores/professor'
 import { CHALLENGE_TYPES, type ChallengeType } from '~/types/challenge'
@@ -124,7 +125,7 @@ const remove = () => run(async () => {
   await navigateTo(`/professor/turmas/${classroomId}`)
 })
 
-const button = 'border-2 border-line-strong px-2.5 py-1.5 font-semibold transition-colors hover:border-ink disabled:cursor-not-allowed disabled:opacity-40'
+const button = SMALL_BUTTON
 const input = 'h-11 border-2 border-line-strong bg-panel px-3'
 </script>
 
@@ -137,7 +138,7 @@ const input = 'h-11 border-2 border-line-strong bg-panel px-3'
     <p v-else-if="!professor.mission || professor.mission.id !== missionId" class="text-muted">Carregando missão…</p>
 
     <template v-else>
-      <NuxtLink :to="`/professor/turmas/${professor.mission.classroom_id}`" class="font-semibold underline underline-offset-4" data-testid="back-classroom">← Turma</NuxtLink>
+      <NuxtLink :to="`/professor/turmas/${professor.mission.classroom_id}`" class="inline-flex min-h-11 items-center font-semibold underline underline-offset-4" data-testid="back-classroom">← Turma</NuxtLink>
       <div class="mt-4 flex flex-wrap items-center gap-3">
         <h1 class="font-display text-4xl font-extrabold" data-testid="mission-heading">{{ professor.mission.title }}</h1>
         <span class="border-2 border-line-strong px-2 py-0.5 text-sm font-semibold" data-testid="mission-status">{{ professor.mission.status === 'published' ? 'Publicada' : 'Rascunho' }}</span>
@@ -147,7 +148,7 @@ const input = 'h-11 border-2 border-line-strong bg-panel px-3'
         <h2 class="font-display text-xl font-bold">Dados da missão</h2>
         <TextField v-model="title" label="Título" testid="mission-title-input" :maxlength="80" autocomplete="off" />
         <TextField v-model="description" label="Descrição (opcional)" testid="mission-description-input" :maxlength="400" autocomplete="off" />
-        <TextField v-model="position" label="Posição na lista" testid="mission-position-input" hint="0 aparece primeiro." :maxlength="4" autocomplete="off" />
+        <TextField v-model="position" label="Posição na lista" testid="mission-position-input" hint="Quanto menor o número, mais cedo a missão aparece na lista. O 0 é a primeira." :maxlength="4" autocomplete="off" />
         <div>
           <button type="submit" :disabled="busy" :class="button" data-testid="mission-save">Salvar missão</button>
         </div>
@@ -195,7 +196,7 @@ const input = 'h-11 border-2 border-line-strong bg-panel px-3'
         </div>
       </form>
 
-      <ul v-if="errors.length" role="alert" class="mt-6 list-disc border border-error-line bg-error-bg py-3 pl-8 pr-4 text-error-ink" data-testid="mission-errors">
+      <ul v-if="errors.length" role="alert" class="mt-6 list-disc cq-alert py-3 pl-8 pr-4 text-error-ink" data-testid="mission-errors">
         <li v-for="message in errors" :key="message">{{ message }}</li>
       </ul>
       <p class="mt-4 min-h-6 font-semibold" role="status" data-testid="mission-feedback">{{ status }}</p>

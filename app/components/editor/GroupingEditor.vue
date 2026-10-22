@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { nextGroupId, nextItemId, type FormState } from '~/utils/challengeForm'
+import { SMALL_BUTTON, TEXT_FIELD } from '~/utils/styles'
 
 // Etapas (groups) and tasks (items); each task is assigned to the etapa it belongs to.
 const form = defineModel<FormState>({ required: true })
@@ -29,8 +30,8 @@ function removeItem(index: number) {
   )
 }
 
-const button = 'border-2 border-line-strong px-2.5 py-1.5 font-semibold transition-colors hover:border-ink disabled:cursor-not-allowed disabled:opacity-40'
-const field = 'min-w-0 flex-1 border-2 border-line-strong bg-panel px-3 py-2 text-ink focus:border-ink focus:outline-none'
+const button = SMALL_BUTTON
+const field = TEXT_FIELD
 </script>
 
 <template>

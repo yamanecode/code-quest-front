@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { FOCUS_RING } from '~/utils/styles'
 import { computed } from 'vue'
 import type { FormState } from '~/utils/challengeForm'
 import { validateForm } from '~/utils/rules'
@@ -10,7 +11,7 @@ const props = defineProps<{ locked: boolean }>()
 
 const rules = computed(() => validateForm(form.value))
 
-const area = 'w-full border-2 border-line-strong bg-panel px-3 py-2.5 text-ink focus:border-ink focus:outline-none'
+const area = `w-full border-2 border-line-strong bg-panel px-3 py-2.5 text-ink ${FOCUS_RING}`
 </script>
 
 <template>

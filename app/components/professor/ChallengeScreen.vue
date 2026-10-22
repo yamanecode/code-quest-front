@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 import { useProfessorStore } from '~/stores/professor'
 import type { ProfChallenge, Review } from '~/types/api'
 import { CHALLENGE_TYPES, type ChallengeType } from '~/types/challenge'
@@ -19,6 +19,7 @@ const loadError = ref<string | null>(null)
 const errors = ref<string[]>([])
 const status = ref('')
 const busy = ref(false)
+const reviewHeading = ref<HTMLElement | null>(null)
 const review = ref<Review | null>(null)
 const draftType = ref<ChallengeType>('ordering')
 const draftTopic = ref('')
@@ -115,6 +116,9 @@ const duplicate = () => run(async () => {
 const runReview = () => run(async () => {
   if (!challenge.value) return
   review.value = await professor.reviewChallenge(challenge.value.id)
+  await nextTick()
+  reviewHeading.value?.focus()
+  reviewHeading.value?.scrollIntoView({ block: 'center' })
 })
 
 const generate = () => run(async () => {
@@ -134,13 +138,13 @@ const remove = () => run(async () => {
   await navigateTo('/professor/desafios')
 })
 
-const primary = 'bg-go px-5 py-2.5 font-display text-lg font-bold text-on-go transition-colors hover:bg-go-hover disabled:cursor-wait disabled:opacity-60 cq-go-shadow'
-const secondary = 'border-2 border-line-strong px-4 py-2.5 font-semibold transition-colors hover:border-ink disabled:cursor-not-allowed disabled:opacity-50'
+const primary = 'min-h-11 bg-go px-5 py-2.5 font-display text-lg font-bold text-on-go transition-colors hover:bg-go-hover disabled:cursor-wait disabled:opacity-60 cq-go-shadow'
+const secondary = 'min-h-11 border-2 border-line-strong px-4 py-2.5 font-semibold transition-colors hover:border-ink disabled:cursor-not-allowed disabled:opacity-50'
 </script>
 
 <template>
   <div class="max-w-3xl">
-    <p v-if="loadError" role="alert" class="border border-error-line bg-error-bg px-4 py-3 text-error-ink" data-testid="challenge-load-error">{{ loadError }}</p>
+    <p v-if="loadError" role="alert" class="cq-alert px-4 py-3 text-error-ink" data-testid="challenge-load-error">{{ loadError }}</p>
 
     <template v-else>
       <div class="flex flex-wrap items-center gap-3">
@@ -186,7 +190,7 @@ const secondary = 'border-2 border-line-strong px-4 py-2.5 font-semibold transit
         <ChallengeForm v-model="form" :locked="locked" />
       </div>
 
-      <ul v-if="errors.length" role="alert" class="mt-6 list-disc border border-error-line bg-error-bg py-3 pl-8 pr-4 text-error-ink" data-testid="form-errors">
+      <ul v-if="errors.length" role="alert" class="mt-6 list-disc cq-alert py-3 pl-8 pr-4 text-error-ink" data-testid="form-errors">
         <li v-for="message in errors" :key="message">{{ message }}</li>
       </ul>
       <p class="mt-4 min-h-6 font-semibold" role="status" data-testid="form-status">{{ status }}</p>
@@ -197,12 +201,12 @@ const secondary = 'border-2 border-line-strong px-4 py-2.5 font-semibold transit
         <button v-if="challenge?.status === 'published'" type="button" :disabled="busy" :class="secondary" data-testid="unpublish" @click="unpublish">Voltar para rascunho</button>
         <button type="button" :disabled="busy || !challenge" :class="secondary" data-testid="review" @click="runReview">Revisar com IA</button>
         <button type="button" :disabled="busy || !challenge" :class="secondary" data-testid="duplicate" @click="duplicate">Duplicar</button>
-        <button v-if="challenge" type="button" :disabled="busy" :class="secondary" data-testid="delete" @click="askDelete = true">Excluir</button>
+        <button v-if="challenge" type="button" :disabled="busy" class="ml-auto min-h-11 px-4 py-2.5 font-semibold text-error-ink underline underline-offset-4 disabled:cursor-not-allowed disabled:opacity-50" data-testid="delete" @click="askDelete = true">Excluir</button>
       </div>
       <p v-if="!challenge" class="mt-2 text-sm text-muted">Salve o rascunho para revisar com IA ou duplicar.</p>
 
       <section v-if="review" class="cq-sheet mt-8 grid gap-3 bg-panel p-5" aria-labelledby="h-review" data-testid="review-panel">
-        <h2 id="h-review" class="font-display text-xl font-bold">Revisão da IA</h2>
+        <h2 id="h-review" ref="reviewHeading" tabindex="-1" class="font-display text-xl font-bold">Revisão da IA</h2>
         <p class="text-sm text-muted">São só sugestões: o desafio não foi alterado.</p>
         <div>
           <h3 class="font-semibold">Regras do modelo</h3>

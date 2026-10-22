@@ -41,7 +41,7 @@ function trapTab(event: KeyboardEvent) {
 </script>
 
 <template>
-  <div class="fixed inset-0 z-40 grid place-items-center bg-[rgba(0,0,0,0.55)] px-4" @keydown.esc="cancel">
+  <div class="fixed inset-0 z-40 grid place-items-center bg-[var(--cq-scrim)] px-4" @keydown.esc="cancel">
     <div
       ref="panel"
       role="alertdialog"

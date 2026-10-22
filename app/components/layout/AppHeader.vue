@@ -12,6 +12,8 @@ const route = useRoute()
 const isStudent = computed(() => auth.role === 'student')
 const showStats = computed(() => isStudent.value && route.meta.hideStats !== true)
 const profile = computed(() => profileStore.profile)
+// Pages where the task comes first show the stats on one row (page meta `compactStats`).
+const compactStats = computed(() => route.meta.compactStats === true)
 
 interface NavLink {
   to: string
@@ -96,7 +98,7 @@ function logout() {
           <ThemeToggle />
           <button
             type="button"
-            class="px-3 py-2 font-semibold text-muted transition-colors hover:text-ink"
+            class="min-h-11 px-3 py-2 font-semibold text-muted transition-colors hover:text-ink"
             data-testid="nav-sair"
             @click="logout"
           >Sair</button>
@@ -110,7 +112,7 @@ function logout() {
       class="mx-auto max-w-6xl px-4 pt-6 sm:px-6"
       data-testid="header-stats"
     >
-      <StatPanel v-if="profile" :profile="profile" prefix="header" :pulsing="pulsing" />
+      <StatPanel v-if="profile" :profile="profile" prefix="header" :pulsing="pulsing" :compact="compactStats" />
 
       <div v-else class="cq-sheet px-5 py-4 sm:px-7 sm:py-5">
         <p v-if="profileStore.error" class="flex flex-wrap items-center gap-3 text-sm" role="alert">

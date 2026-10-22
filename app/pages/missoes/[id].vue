@@ -37,13 +37,13 @@ watch(id, (missionId) => play.loadMission(missionId), { immediate: true })
   <div class="max-w-3xl">
     <NuxtLink
       to="/"
-      class="text-sm font-semibold text-muted underline-offset-4 hover:text-ink hover:underline"
+      class="inline-flex min-h-11 items-center text-sm font-semibold text-muted underline-offset-4 hover:text-ink hover:underline"
       data-testid="mission-back"
     >← Voltar ao início</NuxtLink>
 
     <p v-if="play.missionLoading" class="mt-6 text-muted" aria-live="polite">Carregando missão…</p>
 
-    <div v-else-if="play.missionError" class="mt-6" role="alert" data-testid="mission-error">
+    <div v-else-if="play.missionError" class="cq-alert mt-6 px-4 py-3" role="alert" data-testid="mission-error">
       <p>{{ play.missionError }}</p>
       <button
         type="button"

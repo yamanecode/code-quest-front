@@ -103,7 +103,7 @@ onMounted(async () => {
         <span class="text-sm font-semibold">Ranking de</span>
         <select
           v-model="scopeValue"
-          class="h-11 w-full border border-control bg-panel px-3"
+          class="h-11 w-full border-2 border-line-strong bg-panel px-3"
           data-testid="ranking-scope"
         >
           <option value="global">Geral</option>
@@ -111,7 +111,7 @@ onMounted(async () => {
         </select>
       </label>
 
-      <div role="tablist" aria-label="Período do ranking" class="flex border border-control">
+      <div role="tablist" aria-label="Período do ranking" class="flex border-2 border-line-strong">
         <button
           v-for="(period, index) in PERIODS"
           :id="`ranking-tab-${period.value}`"
@@ -138,14 +138,14 @@ onMounted(async () => {
       role="tabpanel"
       :aria-labelledby="`ranking-tab-${shown ? shownPeriod.value : ranking.period}`"
       :aria-busy="ranking.loading ? 'true' : 'false'"
-      class="mt-6 bg-panel px-5 py-5 sm:px-7 sm:py-6"
+      class="cq-sheet mt-6 px-5 py-5 sm:px-7 sm:py-6"
     >
       <p v-if="ranking.loading && !shown && !ranking.error" class="text-muted" aria-live="polite">Carregando ranking…</p>
 
       <div
         v-else-if="ranking.error"
         role="alert"
-        class="border border-error-line bg-error-bg px-4 py-3 text-error-ink"
+        class="cq-alert px-4 py-3 text-error-ink"
         data-testid="ranking-error"
       >
         <p>{{ ranking.error }}</p>

@@ -44,7 +44,7 @@ function choose(optionId: string) {
         <li v-for="option in props.content.options" :key="option.id">
           <label
             :for="`${baseId}-${option.id}`"
-            class="flex cursor-pointer items-center gap-3 border-2 border-line-strong bg-bg px-3 py-2.5 has-[:checked]:border-ink has-[:disabled]:cursor-not-allowed"
+            class="flex cursor-pointer items-center gap-3 border-2 border-line-strong bg-bg px-3 py-2.5 cq-choice [--cq-choice-hl:var(--cq-pattern-hl)] has-[:disabled]:cursor-not-allowed"
           >
             <input
               :id="`${baseId}-${option.id}`"

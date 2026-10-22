@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { nextItemId, type FormState } from '~/utils/challengeForm'
+import { SMALL_BUTTON, TEXT_FIELD } from '~/utils/styles'
 
 // Steps typed in the correct order: the list order is the solution. With `locked`, only the texts change.
 const form = defineModel<FormState>({ required: true })
@@ -24,7 +25,8 @@ function move(index: number, by: -1 | 1) {
   items.splice(target, 0, moved!)
 }
 
-const button = 'border-2 border-line-strong px-2.5 py-1.5 font-semibold transition-colors hover:border-ink disabled:cursor-not-allowed disabled:opacity-40'
+const button = SMALL_BUTTON
+const field = TEXT_FIELD
 </script>
 
 <template>
@@ -39,7 +41,7 @@ const button = 'border-2 border-line-strong px-2.5 py-1.5 font-semibold transiti
           type="text"
           maxlength="120"
           :aria-label="`Passo ${index + 1}`"
-          class="min-w-0 flex-1 border-2 border-line-strong bg-panel px-3 py-2 text-ink focus:border-ink focus:outline-none"
+          :class="field"
           :data-testid="`editor-item-${index}`"
         >
         <button type="button" :class="button" :disabled="locked || index === 0" :aria-label="`Subir o passo ${index + 1}`" :data-testid="`editor-up-${index}`" @click="move(index, -1)">▲</button>

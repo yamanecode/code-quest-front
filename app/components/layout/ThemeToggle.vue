@@ -12,7 +12,7 @@ const label = computed(() => (toDark.value ? 'Mudar para o modo escuro' : 'Mudar
 <template>
   <button
     type="button"
-    class="inline-flex items-center gap-1.5 border-2 border-line-strong bg-panel px-2.5 py-1 text-sm font-bold text-ink transition-colors hover:bg-raised"
+    class="inline-flex items-center gap-1.5 border-2 border-line-strong bg-panel min-h-11 px-3 py-1 text-sm font-bold text-ink transition-colors hover:bg-raised"
     :aria-label="label"
     data-testid="theme-toggle"
     @click="settings.toggleTheme()"

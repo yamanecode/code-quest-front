@@ -214,7 +214,7 @@ onMounted(() => profileStore.load())
           <div v-if="others.length > 0">
             <button
               type="button"
-              class="border border-ink px-4 py-2.5 font-semibold transition-colors hover:bg-ink hover:text-bg"
+              class="cq-btn-outline"
               :aria-expanded="showOthers ? 'true' : 'false'"
               aria-controls="badges-others"
               data-testid="badges-others-toggle"
@@ -254,7 +254,7 @@ onMounted(() => profileStore.load())
               :tone="type"
               :milestones="SKILL_MARKS"
             />
-            <div class="relative mt-1.5 h-4 text-xs text-muted" aria-hidden="true">
+            <div class="relative mt-1.5 h-5 text-sm text-muted" aria-hidden="true">
               <span
                 v-for="(mark, index) in SKILL_MARKS"
                 :key="mark"
@@ -297,7 +297,7 @@ onMounted(() => profileStore.load())
             <p
               v-if="settingsError"
               role="alert"
-              class="ml-8 mt-2 border border-error-line bg-error-bg px-3 py-2 text-error-ink"
+              class="ml-8 mt-2 cq-alert px-3 py-2 text-error-ink"
               data-testid="profile-settings-error"
             >{{ settingsError }}</p>
           </div>

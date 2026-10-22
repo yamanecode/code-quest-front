@@ -29,7 +29,7 @@ const SKILL_SQUARES = [
         stroke-width="3"
         data-testid="badge-disc"
       />
-      <circle cx="32" cy="31" r="20.5" fill="none" stroke="rgba(255, 255, 255, 0.55)" stroke-width="1.5" />
+      <circle cx="32" cy="31" r="20.5" fill="none" style="stroke: var(--cq-sticker-edge); stroke-opacity: 0.55" stroke-width="1.5" />
     </template>
     <circle
       v-else

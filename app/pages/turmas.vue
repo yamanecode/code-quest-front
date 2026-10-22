@@ -4,7 +4,7 @@ import { useClassroomsStore } from '~/stores/classrooms'
 import type { MyClassroom } from '~/types/api'
 import { errorMessage } from '~/utils/format'
 
-definePageMeta({ layout: 'app' })
+definePageMeta({ layout: 'app', compactStats: true })
 useHead({ title: 'Minhas turmas · CodeQuest' })
 
 const classrooms = useClassroomsStore()
@@ -90,7 +90,7 @@ async function confirmLeave() {
       <p
         v-if="joinError"
         role="alert"
-        class="border border-error-line bg-error-bg px-3 py-2 text-error-ink sm:col-span-2"
+        class="cq-alert px-3 py-2 text-error-ink sm:col-span-2"
         data-testid="join-error"
       >{{ joinError }}</p>
     </form>
@@ -126,7 +126,7 @@ async function confirmLeave() {
             <h3 class="font-display text-xl font-bold" data-testid="classroom-name">{{ classroom.name }}</h3>
             <button
               type="button"
-              class="text-sm font-semibold text-muted underline underline-offset-4 hover:text-ink"
+              class="min-h-11 px-2 text-sm font-semibold text-muted underline underline-offset-4 hover:text-ink"
               :aria-label="`Sair da turma ${classroom.name}`"
               :data-testid="`classroom-leave-${classroom.id}`"
               @click="askLeave(classroom)"

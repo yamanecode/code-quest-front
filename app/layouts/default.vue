@@ -2,13 +2,13 @@
 import type { ChallengeType } from '~/types/challenge'
 
 // Public shell for the login and sign-up pages. On phones the form comes right
-// after the name; on wide screens the skill blocks sit under the name. The graph
-// paper drifts slowly here (only here), and the theme toggle sits at the top.
+// after the name; on wide screens the skill blocks sit under the name. The theme
+// toggle sits at the top.
 const SKILL_ORDER: ChallengeType[] = ['ordering', 'grouping', 'filtering', 'pattern']
 </script>
 
 <template>
-  <div class="cq-paper cq-drift min-h-screen">
+  <div class="cq-paper min-h-screen">
     <div class="mx-auto flex max-w-6xl justify-end px-4 pt-4 sm:px-6">
       <ThemeToggle />
     </div>

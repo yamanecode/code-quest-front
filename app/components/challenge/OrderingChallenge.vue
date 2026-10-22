@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, ref, watch } from 'vue'
+import { nextTick, ref, watch, type ComponentPublicInstance } from 'vue'
 import type { Item, OrderingAnswer, OrderingContent } from '~/types/challenge'
 
 // Pensamento algorítmico: the student puts the steps in order with ▲/▼ buttons.
@@ -8,7 +8,7 @@ const props = withDefaults(defineProps<{ content: OrderingContent; disabled?: bo
 const emit = defineEmits<{ change: [answer: OrderingAnswer] }>()
 
 const items = ref<Item[]>([])
-const list = ref<HTMLElement | null>(null)
+const list = ref<ComponentPublicInstance | null>(null)
 
 watch(
   () => props.content,
@@ -42,12 +42,13 @@ async function keepFocus(id: string, step: -1 | 1, index: number) {
   const forward = step === -1 ? 'up' : 'down'
   const back = step === -1 ? 'down' : 'up'
   const direction = atEnd ? back : forward
-  list.value?.querySelector<HTMLButtonElement>(`[data-testid="ordering-${direction}-${id}"]`)?.focus()
+  const root = list.value?.$el as HTMLElement | undefined
+  root?.querySelector<HTMLButtonElement>(`[data-testid="ordering-${direction}-${id}"]`)?.focus()
 }
 </script>
 
 <template>
-  <ol ref="list" class="grid gap-2" aria-label="Passos na ordem escolhida" data-testid="ordering-list">
+  <TransitionGroup ref="list" tag="ol" name="cq-swap" class="grid gap-2" aria-label="Passos na ordem escolhida" data-testid="ordering-list">
     <li
       v-for="(item, index) in items"
       :key="item.id"
@@ -59,7 +60,7 @@ async function keepFocus(id: string, step: -1 | 1, index: number) {
       <span class="flex shrink-0 gap-1">
         <button
           type="button"
-          class="grid h-10 w-10 place-items-center border-2 border-line-strong bg-panel text-lg text-ink transition-colors hover:bg-raised disabled:cursor-not-allowed disabled:opacity-40"
+          class="grid h-11 w-11 place-items-center border-2 border-line-strong bg-panel text-lg text-ink transition-colors hover:bg-raised disabled:cursor-not-allowed disabled:opacity-40"
           :disabled="props.disabled || index === 0"
           :aria-label="`Mover para cima: ${item.text}`"
           :data-testid="`ordering-up-${item.id}`"
@@ -67,7 +68,7 @@ async function keepFocus(id: string, step: -1 | 1, index: number) {
         >▲</button>
         <button
           type="button"
-          class="grid h-10 w-10 place-items-center border-2 border-line-strong bg-panel text-lg text-ink transition-colors hover:bg-raised disabled:cursor-not-allowed disabled:opacity-40"
+          class="grid h-11 w-11 place-items-center border-2 border-line-strong bg-panel text-lg text-ink transition-colors hover:bg-raised disabled:cursor-not-allowed disabled:opacity-40"
           :disabled="props.disabled || index === items.length - 1"
           :aria-label="`Mover para baixo: ${item.text}`"
           :data-testid="`ordering-down-${item.id}`"
@@ -75,5 +76,5 @@ async function keepFocus(id: string, step: -1 | 1, index: number) {
         >▼</button>
       </span>
     </li>
-  </ol>
+  </TransitionGroup>
 </template>

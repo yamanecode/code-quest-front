@@ -41,7 +41,7 @@ function emitAnswer() {
       <li v-for="item in props.content.items" :key="item.id">
         <label
           :for="`${baseId}-${item.id}`"
-          class="flex cursor-pointer items-center gap-3 border-2 border-line-strong bg-bg px-3 py-2.5 has-[:checked]:border-ink has-[:disabled]:cursor-not-allowed"
+          class="flex cursor-pointer items-center gap-3 border-2 border-line-strong bg-bg px-3 py-2.5 cq-choice [--cq-choice-hl:var(--cq-filtering-hl)] has-[:disabled]:cursor-not-allowed"
         >
           <input
             :id="`${baseId}-${item.id}`"

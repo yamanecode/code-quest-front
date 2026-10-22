@@ -54,18 +54,21 @@ const emit = defineEmits<{ retry: [] }>()
     </div>
   </div>
 
-  <div v-else class="border border-error-line bg-error-bg px-5 py-4" data-testid="feedback-wrong">
-    <p class="text-sm font-semibold text-error-ink">✗ Resposta incorreta</p>
-    <p class="mt-1 font-display text-2xl font-bold text-ink" data-testid="feedback-message">{{ props.outcome.message }}</p>
-    <div v-if="props.outcome.hint" class="mt-3" data-testid="feedback-hint">
-      <p class="text-sm font-semibold text-muted">Dica</p>
-      <p class="mt-1 leading-relaxed">{{ props.outcome.hint }}</p>
+  <div v-else class="cq-sheet overflow-hidden" data-testid="feedback-wrong">
+    <p class="cq-alert border-0 border-b-2 px-5 py-2 text-sm font-semibold" style="border-bottom-color: var(--cq-line-strong)">✗ Resposta incorreta</p>
+    <div class="px-5 py-4">
+      <p class="font-display text-2xl font-bold text-ink" data-testid="feedback-message">{{ props.outcome.message }}</p>
+      <p class="mt-1 text-sm text-muted">Sem pressa: você pode tentar quantas vezes quiser e nada se perde.</p>
+      <div v-if="props.outcome.hint" class="mt-3" data-testid="feedback-hint">
+        <p class="text-sm font-semibold text-muted">Dica</p>
+        <p class="mt-1 leading-relaxed">{{ props.outcome.hint }}</p>
+      </div>
+      <button
+        type="button"
+        class="mt-4 min-h-11 bg-go px-6 py-2.5 font-display text-lg font-bold text-on-go transition-colors hover:bg-go-hover cq-go-shadow"
+        data-testid="feedback-retry"
+        @click="emit('retry')"
+      >Tentar novamente</button>
     </div>
-    <button
-      type="button"
-      class="mt-4 border border-ink px-4 py-2 font-semibold transition-colors hover:bg-ink hover:text-bg"
-      data-testid="feedback-retry"
-      @click="emit('retry')"
-    >Tentar novamente</button>
   </div>
 </template>

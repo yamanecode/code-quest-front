@@ -55,14 +55,14 @@ const condition = computed(() => (props.earned || props.secret || !props.showCon
         data-testid="badge-name"
       >{{ name }}</span>
       <span v-if="props.isNew" class="mt-1 inline-block bg-ink px-1.5 text-xs font-bold text-bg" data-testid="badge-new">Nova</span>
-      <span class="block text-xs text-muted" data-testid="badge-status">{{ tier }}<span v-if="!props.earned" class="sr-only">{{ tier ? ', ' : '' }}ainda não conquistada</span></span>
-      <span v-if="earnedOn" class="block text-xs text-muted" data-testid="badge-earned-on"><span class="sr-only">Conquistada em </span>{{ earnedOn }}</span>
+      <span class="block text-sm text-muted" data-testid="badge-status">{{ tier }}<span v-if="!props.earned" class="sr-only">{{ tier ? ', ' : '' }}ainda não conquistada</span></span>
+      <span v-if="earnedOn" class="block text-sm text-muted" data-testid="badge-earned-on"><span class="sr-only">Conquistada em </span>{{ earnedOn }}</span>
       <span
         v-if="props.progress && !props.earned"
         class="cq-num mt-1 block text-base font-bold"
         data-testid="badge-progress"
       ><span class="sr-only">Progresso: </span>{{ props.progress.current }} de {{ props.progress.target }}</span>
-      <span v-if="condition" class="mt-1 block text-xs leading-snug text-muted sm:text-sm" data-testid="badge-condition">Para conquistar: {{ condition }}</span>
+      <span v-if="condition" class="mt-1 block text-sm leading-snug text-muted" data-testid="badge-condition">Para conquistar: {{ condition }}</span>
     </figcaption>
   </figure>
 </template>

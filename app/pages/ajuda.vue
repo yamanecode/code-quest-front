@@ -4,7 +4,7 @@ import { useAuthStore } from '~/stores/auth'
 import type { ChallengeType } from '~/types/challenge'
 import { LEVEL_BANDS } from '~/utils/levels'
 
-definePageMeta({ layout: 'app' })
+definePageMeta({ layout: 'app', compactStats: true })
 useHead({ title: 'Como funciona · CodeQuest' })
 
 // Students see only the game rules; professors also see how to manage content.
@@ -60,7 +60,7 @@ function levelRange(from: number, to: number | null) {
       v-if="isProfessor"
       role="tablist"
       aria-label="Seções da ajuda"
-      class="mt-6 flex w-fit flex-wrap border border-control"
+      class="mt-6 flex w-fit flex-wrap border-2 border-line-strong"
       data-testid="help-tabs"
     >
       <button

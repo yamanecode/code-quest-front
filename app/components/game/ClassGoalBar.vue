@@ -44,7 +44,7 @@ const reached = computed(() => MILESTONES.filter((mark) => percent.value >= mark
         tone="progress"
         :milestones="MILESTONES"
       />
-      <ol class="mt-2 flex justify-between text-xs text-muted" aria-label="Marcos da meta" data-testid="goal-milestones">
+      <ol class="mt-2 flex justify-between text-sm text-muted" aria-label="Marcos da meta" data-testid="goal-milestones">
         <li
           v-for="mark in MILESTONES"
           :key="mark"

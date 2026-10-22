@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { nextItemId, type FormState } from '~/utils/challengeForm'
+import { SMALL_BUTTON, TEXT_FIELD } from '~/utils/styles'
 
 // The shown terms of the sequence and 4–5 options; one option is the correct next term.
 const form = defineModel<FormState>({ required: true })
@@ -22,8 +23,8 @@ function removeOption(index: number) {
   if (form.value.correct === removed!.id) form.value.correct = ''
 }
 
-const button = 'border-2 border-line-strong px-2.5 py-1.5 font-semibold transition-colors hover:border-ink disabled:cursor-not-allowed disabled:opacity-40'
-const field = 'min-w-0 flex-1 border-2 border-line-strong bg-panel px-3 py-2 text-ink focus:border-ink focus:outline-none'
+const button = SMALL_BUTTON
+const field = TEXT_FIELD
 </script>
 
 <template>

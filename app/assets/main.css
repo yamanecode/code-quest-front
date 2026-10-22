@@ -64,6 +64,21 @@
   --cq-tape: rgba(255, 255, 255, 0.7);
   --cq-sticker-edge: #ffffff;
   --cq-badge-glyph: #1b2a52; /* the symbol drawn on a badge's tier disc */
+  --cq-tape-edge: rgba(0, 0, 0, 0.06);
+
+  /* Dialog backdrop and the shadow under popovers */
+  --cq-scrim: rgba(27, 42, 82, 0.55);
+  --cq-pop-shadow: 0 8px 24px rgba(27, 42, 82, 0.25);
+
+  /* The inverted block (stat card level): navy ink in the light theme, cream in the dark one */
+  --cq-inv-bg: #1b2a52;
+  --cq-inv-raised: #2a3a68;
+  --cq-inv-line: #fffdf6;
+  --cq-inv-control: #aab3cc;
+  --cq-inv-ink: #fffdf6;
+  --cq-inv-soft: #e6e9f2;
+  --cq-inv-label: #c9cfe0;
+  --cq-inv-muted: #c3c9da;
 
   /* Errors: a tinted field, never a skill colour */
   --cq-error-bg: #fbe5e1;
@@ -130,6 +145,19 @@
   --cq-tape: rgba(255, 255, 255, 0.2);
   --cq-sticker-edge: #f2efe6;
   --cq-badge-glyph: #1b1c20;
+  --cq-tape-edge: rgba(255, 255, 255, 0.08);
+
+  --cq-scrim: rgba(0, 0, 0, 0.65);
+  --cq-pop-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+
+  --cq-inv-bg: #f2efe6;
+  --cq-inv-raised: #e2ddd0;
+  --cq-inv-line: #1b1c20;
+  --cq-inv-control: #6d6e76;
+  --cq-inv-ink: #1b1c20;
+  --cq-inv-soft: #2c2d33;
+  --cq-inv-label: #4a4d58;
+  --cq-inv-muted: #4f5058;
 
   --cq-error-bg: #3a1f1d;
   --cq-error-line: #7a3a32;
@@ -152,7 +180,7 @@ body {
   background-size: 24px 24px;
 }
 
-/* The same graph paper, for a layer that moves on its own (see .cq-drift). */
+/* The same graph paper, for a layer that is not the body (the login and sign-up shell). */
 .cq-paper {
   background-image:
     linear-gradient(var(--cq-grid) 1px, transparent 1px),
@@ -203,28 +231,17 @@ textarea {
 /* An inverted block (the level and title on the stat card): the tokens flip to the other
    theme's ink and paper, so text and help buttons inside it stay readable. */
 .cq-invert {
-  --cq-bg: #1b2a52;
-  --cq-panel: #1b2a52;
-  --cq-raised: #2a3a68;
-  --cq-line-strong: #fffdf6;
-  --cq-control: #aab3cc;
-  --cq-ink: #fffdf6;
-  --cq-soft: #e6e9f2;
-  --cq-label: #c9cfe0;
-  --cq-muted: #c3c9da;
+  --cq-bg: var(--cq-inv-bg);
+  --cq-panel: var(--cq-inv-bg);
+  --cq-raised: var(--cq-inv-raised);
+  --cq-line-strong: var(--cq-inv-line);
+  --cq-control: var(--cq-inv-control);
+  --cq-ink: var(--cq-inv-ink);
+  --cq-soft: var(--cq-inv-soft);
+  --cq-label: var(--cq-inv-label);
+  --cq-muted: var(--cq-inv-muted);
   background-color: var(--cq-bg);
   color: var(--cq-soft);
-}
-:root[data-theme='dark'] .cq-invert {
-  --cq-bg: #f2efe6;
-  --cq-panel: #f2efe6;
-  --cq-raised: #e2ddd0;
-  --cq-line-strong: #1b1c20;
-  --cq-control: #6d6e76;
-  --cq-ink: #1b1c20;
-  --cq-soft: #2c2d33;
-  --cq-label: #4a4d58;
-  --cq-muted: #4f5058;
 }
 
 /* The daily challenge as a sticky note taped to the page: the one rotated, taped element. */
@@ -244,8 +261,13 @@ textarea {
   height: 18px;
   margin-left: -36px;
   background: var(--cq-tape);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--cq-tape-edge);
   transform: rotate(2deg);
+}
+/* Small controls on the note (the "?" help) take the note's ink so they stay readable in both themes. */
+.cq-postit {
+  --cq-muted: var(--cq-sticky-ink);
+  --cq-control: var(--cq-sticky-ink);
 }
 .cq-postit :where(h1, h2, h3) {
   color: var(--cq-sticky-ink);
@@ -305,30 +327,66 @@ li:nth-child(even) .cq-sticker {
     from { transform: scale(0.6) rotate(-25deg); opacity: 0; }
   }
   .cq-sticker-in {
-    animation: cq-sticker-in 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+    animation: cq-sticker-in 0.5s cubic-bezier(0.25, 1, 0.5, 1) both;
   }
 
   @keyframes cq-medal-in {
     from { transform: scale(0.6) rotate(-20deg); opacity: 0; }
   }
   .cq-medal-in {
-    animation: cq-medal-in 0.6s 0.2s cubic-bezier(0.2, 1.4, 0.4, 1) both;
-  }
-
-  /* Only on the login and sign-up pages: the graph paper drifts slowly. */
-  @keyframes cq-drift {
-    to { background-position: 24px 48px, 48px 24px; }
-  }
-  .cq-drift {
-    animation: cq-drift 60s linear infinite;
+    animation: cq-medal-in 0.6s 0.2s cubic-bezier(0.25, 1, 0.5, 1) both;
   }
 }
 
+/* Reduced motion: events stop animating, but a bar still moves to its new value. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
-    transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
+  [role='progressbar'] > div {
+    transition-duration: 0.2s !important;
+  }
+}
+
+/* An answer row in a checkbox or radio list: the checked row is filled with the skill's
+   highlighter and gets a thick bar on the left, so the state does not rest on the small control. */
+.cq-choice:has(:checked) {
+  background-color: var(--cq-choice-hl, var(--cq-raised));
+  border-color: var(--cq-ink);
+  box-shadow: inset 6px 0 0 var(--cq-ink);
+  color: var(--cq-on-color);
+  font-weight: 600;
+}
+
+/* Secondary buttons and message boxes share one look (2px pen line). */
+.cq-btn-outline {
+  min-height: 2.75rem;
+  border: 2px solid var(--cq-line-strong);
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  transition: background-color 0.15s, color 0.15s;
+}
+.cq-btn-outline:hover:not(:disabled) {
+  background-color: var(--cq-ink);
+  color: var(--cq-bg);
+}
+.cq-btn-outline:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.cq-alert {
+  border: 2px solid var(--cq-error-line);
+  background-color: var(--cq-error-bg);
+  color: var(--cq-error-ink);
+}
+
+/* Ordering list: when a step moves, the two cards slide past each other instead of jumping. */
+.cq-swap-move {
+  position: relative;
+  z-index: 1;
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }

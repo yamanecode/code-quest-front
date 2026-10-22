@@ -13,15 +13,40 @@ const props = withDefaults(
     profile: Profile
     prefix: string // data-testid and HelpTip prefix, e.g. "header" or "profile"
     pulsing?: boolean // short glow on the XP bar after a correct answer
+    compact?: boolean // one row, for pages where the task comes first (challenge, turmas, ajuda)
   }>(),
-  { pulsing: false },
+  { pulsing: false, compact: false },
 )
 
 const xpInLevel = computed(() => XP_PER_LEVEL - props.profile.xp_to_next_level)
 </script>
 
 <template>
-  <div class="cq-sheet cq-tilt">
+  <div v-if="props.compact" class="cq-sheet flex flex-wrap items-center gap-x-5 gap-y-2 px-4 py-2" :data-testid="`${props.prefix}-compact`">
+    <div class="cq-invert flex items-center gap-2 px-3 py-1" :data-testid="`${props.prefix}-level`">
+      <span class="cq-num text-2xl font-extrabold leading-none text-ink"><span class="sr-only">Nível </span>{{ props.profile.level }}</span>
+      <span class="text-sm text-muted" aria-hidden="true">nível</span>
+    </div>
+
+    <p class="flex items-center gap-1 font-display text-lg font-bold" :data-testid="`${props.prefix}-title`">
+      {{ props.profile.title }}
+      <HelpTip :topic="`${props.prefix}-title`" label="Título" :text="HELP.title" />
+    </p>
+
+    <div :class="{ 'cq-xp-pulse': props.pulsing }" class="flex min-w-40 flex-1 items-center gap-2" :data-testid="`${props.prefix}-xp`">
+      <ProgressBar class="flex-1" :value="xpInLevel" :max="XP_PER_LEVEL" label="XP do nível atual" tone="progress" />
+      <span class="cq-num whitespace-nowrap text-sm text-ink">{{ props.profile.xp }} XP</span>
+      <HelpTip :topic="`${props.prefix}-xp`" label="XP" :text="HELP.xp" />
+    </div>
+
+    <div class="flex items-center gap-2" :data-testid="`${props.prefix}-streak`">
+      <span class="cq-num text-xl font-extrabold leading-none text-ink">{{ props.profile.streak }}</span>
+      <span class="text-sm text-muted">{{ props.profile.streak === 1 ? 'dia seguido' : 'dias seguidos' }}</span>
+      <HelpTip :topic="`${props.prefix}-streak`" label="Sequência de dias" :text="HELP.streak" />
+    </div>
+  </div>
+
+  <div v-else class="cq-sheet cq-tilt">
     <div v-if="$slots.top" class="px-5 pt-4 sm:px-7 sm:pt-5">
       <slot name="top" />
     </div>

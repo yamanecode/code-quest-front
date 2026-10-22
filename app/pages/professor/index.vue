@@ -16,6 +16,19 @@ const busy = ref(false)
 
 onMounted(() => professor.loadClassrooms())
 
+const copiedId = ref<number | null>(null)
+
+async function copyCode(code: string, classroomId: number) {
+  try {
+    await navigator.clipboard.writeText(code)
+    copiedId.value = classroomId
+    setTimeout(() => (copiedId.value = null), 2000)
+  }
+  catch {
+    copiedId.value = null // the code stays visible next to the button
+  }
+}
+
 async function create() {
   errors.value = []
   const text = goal.value.trim()
@@ -61,7 +74,7 @@ async function create() {
         :maxlength="4"
         autocomplete="off"
       />
-      <ul v-if="errors.length" role="alert" class="list-disc border border-error-line bg-error-bg py-2 pl-8 pr-3 text-error-ink" data-testid="create-errors">
+      <ul v-if="errors.length" role="alert" class="list-disc cq-alert py-2 pl-8 pr-3 text-error-ink" data-testid="create-errors">
         <li v-for="message in errors" :key="message">{{ message }}</li>
       </ul>
       <div>
@@ -90,8 +103,17 @@ async function create() {
           :data-testid="`classroom-${classroom.id}`"
         >
           <NuxtLink :to="`/professor/turmas/${classroom.id}`" class="font-display text-xl font-bold underline underline-offset-4" data-testid="classroom-name">{{ classroom.name }}</NuxtLink>
-          <p class="text-sm">
-            Código: <strong class="cq-num text-lg tracking-widest" data-testid="join-code">{{ classroom.join_code }}</strong>
+          <p class="flex flex-wrap items-center gap-3 text-sm">
+            <span class="inline-flex items-center bg-sticky px-3 py-1 text-sticky-ink">
+              Código: <strong class="cq-num ml-2 text-lg tracking-widest" data-testid="join-code">{{ classroom.join_code }}</strong>
+            </span>
+            <button
+              type="button"
+              class="cq-btn-outline"
+              :aria-label="`Copiar o código da turma ${classroom.name}`"
+              :data-testid="`copy-code-${classroom.id}`"
+              @click="copyCode(classroom.join_code, classroom.id)"
+            >{{ copiedId === classroom.id ? 'Copiado!' : 'Copiar código' }}</button>
           </p>
         </li>
       </ul>

@@ -247,14 +247,14 @@ describe('public player page', () => {
     expect(wrapper.get('[data-testid="badge-first_solve"]').attributes('data-earned')).toBe('true')
   })
 
-  it('shows the API message for a private or unknown player', async () => {
+  it('T-FE-RANK-PRIVATE shows that the profile is private when the API answers player_not_found', async () => {
     vi.mocked(studentService.getPlayer).mockRejectedValue(
       new ApiError(404, 'player_not_found', 'Perfil não encontrado.'),
     )
     const wrapper = await mountSuspended(PlayerPage, { route: '/jogadores/caio' })
     await flushPromises()
 
-    expect(wrapper.get('[data-testid="player-error"]').text()).toContain('Perfil não encontrado.')
+    expect(wrapper.get('[data-testid="player-error"]').text()).toContain('Este perfil é privado.')
     expect(wrapper.find('[data-testid="player-username"]').exists()).toBe(false)
   })
 })

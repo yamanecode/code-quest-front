@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import { useChallenge } from '~/composables/useChallenge'
 import { usePlayStore } from '~/stores/play'
 
-definePageMeta({ layout: 'app' })
+definePageMeta({ layout: 'app', compactStats: true })
 
 const route = useRoute()
 const play = usePlayStore()
@@ -51,6 +51,18 @@ const hintLabel = computed(() => {
   return `Dica (${hintsLeft.value} ${hintsLeft.value === 1 ? 'restante' : 'restantes'})`
 })
 
+// Why Enviar is disabled, in the words of the challenge type (shown under the buttons).
+const SUBMIT_HELP: Record<string, string> = {
+  ordering: 'Mexa nos passos para montar a sequência.',
+  grouping: 'Escolha uma etapa para cada tarefa para enviar.',
+  filtering: 'Marque pelo menos uma informação para enviar.',
+  pattern: 'Escolha uma opção para enviar.',
+}
+const submitHelp = computed(() => {
+  if (!challenge.value || outcome.value || sending.value || canSubmit.value) return ''
+  return SUBMIT_HELP[challenge.value.type] ?? ''
+})
+
 const goingNext = ref(false)
 
 async function goNext() {
@@ -68,13 +80,13 @@ async function goNext() {
   <div class="max-w-3xl">
     <NuxtLink
       :to="backLink.to"
-      class="text-sm font-semibold text-muted underline-offset-4 hover:text-ink hover:underline"
+      class="inline-flex min-h-11 items-center text-sm font-semibold text-muted underline-offset-4 hover:text-ink hover:underline"
       data-testid="challenge-back"
     >← {{ backLink.label }}</NuxtLink>
 
     <p v-if="loading" class="mt-6 text-muted" aria-live="polite">Carregando desafio…</p>
 
-    <div v-else-if="loadError" class="mt-6" role="alert" data-testid="challenge-error">
+    <div v-else-if="loadError" class="cq-alert mt-6 px-4 py-3" role="alert" data-testid="challenge-error">
       <p>{{ loadError }}</p>
       <button
         type="button"
@@ -128,6 +140,7 @@ async function goNext() {
             type="button"
             :disabled="!canSubmit"
             class="bg-go px-6 py-3 font-display text-lg font-bold text-on-go transition-colors hover:bg-go-hover disabled:cursor-not-allowed disabled:opacity-50 cq-go-shadow"
+            :aria-describedby="submitHelp ? 'submit-help' : undefined"
             data-testid="challenge-submit"
             @click="submit"
           >{{ sending ? 'Enviando…' : 'Enviar' }}</button>
@@ -136,7 +149,7 @@ async function goNext() {
             <button
               type="button"
               :disabled="!canHint"
-              class="border border-control px-4 py-3 font-semibold transition-colors hover:border-ink disabled:cursor-not-allowed disabled:opacity-50"
+              class="cq-btn-outline px-4 py-3"
               data-testid="challenge-hint"
               @click="requestHint"
             >{{ hintLabel }}</button>
@@ -147,6 +160,7 @@ async function goNext() {
             />
           </span>
         </div>
+        <p v-if="submitHelp" id="submit-help" class="mt-3 text-sm text-muted" data-testid="submit-help">{{ submitHelp }}</p>
         <p v-if="submitError" role="alert" class="mt-3 text-error-ink" data-testid="challenge-submit-error">{{ submitError }}</p>
       </section>
 

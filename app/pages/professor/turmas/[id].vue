@@ -49,7 +49,7 @@ async function createMission() {
 
 <template>
   <div class="max-w-4xl">
-    <NuxtLink to="/professor" class="font-semibold underline underline-offset-4" data-testid="back-classrooms">← Turmas</NuxtLink>
+    <NuxtLink to="/professor" class="inline-flex min-h-11 items-center font-semibold underline underline-offset-4" data-testid="back-classrooms">← Turmas</NuxtLink>
 
     <div v-if="professor.error" role="alert" class="mt-4" data-testid="classroom-error">
       <p>{{ professor.error }}</p>
@@ -92,7 +92,7 @@ async function createMission() {
           <h3 class="font-display text-xl font-bold">Nova missão</h3>
           <TextField v-model="missionTitle" label="Título" testid="new-mission-title" :maxlength="80" autocomplete="off" />
           <TextField v-model="missionDescription" label="Descrição (opcional)" testid="new-mission-description" :maxlength="400" autocomplete="off" />
-          <ul v-if="missionErrors.length" role="alert" class="list-disc border border-error-line bg-error-bg py-2 pl-8 pr-3 text-error-ink" data-testid="mission-errors">
+          <ul v-if="missionErrors.length" role="alert" class="list-disc cq-alert py-2 pl-8 pr-3 text-error-ink" data-testid="mission-errors">
             <li v-for="message in missionErrors" :key="message">{{ message }}</li>
           </ul>
           <div>
@@ -138,7 +138,7 @@ async function createMission() {
 
       <section class="mt-10" aria-labelledby="h-ranking">
         <h2 id="h-ranking" class="font-display text-2xl font-bold">Ranking da turma</h2>
-        <div class="mt-3 flex border border-control w-fit" role="group" aria-label="Período do ranking">
+        <div class="mt-3 flex border-2 border-line-strong w-fit" role="group" aria-label="Período do ranking">
           <button
             v-for="period in PERIODS"
             :key="period.value"

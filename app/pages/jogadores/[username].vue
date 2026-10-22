@@ -3,7 +3,7 @@ import { computed, watch } from 'vue'
 import { usePlayersStore } from '~/stores/players'
 
 // Public profile of another student (spec §5): username, level, title and earned badges only.
-definePageMeta({ layout: 'app' })
+definePageMeta({ layout: 'app', compactStats: true })
 
 const route = useRoute()
 const players = usePlayersStore()
@@ -20,13 +20,13 @@ watch(username, (name) => players.load(name), { immediate: true })
   <div class="max-w-3xl">
     <NuxtLink
       to="/ranking"
-      class="text-sm font-semibold text-muted underline-offset-4 hover:text-ink hover:underline"
+      class="inline-flex min-h-11 items-center text-sm font-semibold text-muted underline-offset-4 hover:text-ink hover:underline"
       data-testid="player-back"
     >← Voltar ao ranking</NuxtLink>
 
     <p v-if="players.loading" class="mt-6 text-muted" aria-live="polite">Carregando perfil…</p>
 
-    <div v-else-if="players.error" class="mt-6" role="alert" data-testid="player-error">
+    <div v-else-if="players.error" class="cq-alert mt-6 px-4 py-3" role="alert" data-testid="player-error">
       <p>{{ players.error }}</p>
     </div>
 
