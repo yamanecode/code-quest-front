@@ -8,6 +8,8 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   app: {
     head: {
+      // Screen readers pick the voice and pronunciation from the page language.
+      htmlAttrs: { lang: 'pt-BR' },
       // Sets the theme before the app loads, so the page never flashes in the wrong theme.
       // Same rule as stores/settings.ts: a saved choice wins, else the device setting.
       script: [

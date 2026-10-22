@@ -10,7 +10,8 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "typecheck": "nuxt typecheck",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:functional": "powershell -File scripts/functional.ps1"
   },
   "dependencies": {
     "@nuxt/fonts": "^0.14.0",
