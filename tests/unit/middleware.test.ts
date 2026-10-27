@@ -28,7 +28,7 @@ beforeEach(() => {
 
 describe('auth.global middleware', () => {
   it('T-FE-MW-01 a visitor is sent to /entrar from protected pages', () => {
-    expect(visit('/')).toBe('/entrar')
+    expect(visit('/inicio')).toBe('/entrar')
     expect(visit('/perfil')).toBe('/entrar')
     expect(visit('/professor')).toBe('/entrar')
     expect(visit('/ajuda')).toBe('/entrar')
@@ -42,17 +42,18 @@ describe('auth.global middleware', () => {
   it('T-FE-MW-02 a student cannot open professor pages', () => {
     saveSession('student')
 
-    expect(visit('/professor')).toBe('/')
-    expect(visit('/professor/turmas/3')).toBe('/')
+    expect(visit('/professor')).toBe('/inicio')
+    expect(visit('/professor/turmas/3')).toBe('/inicio')
     expect(visit('/missoes/1')).toBeUndefined()
+    expect(visit('/inicio')).toBeUndefined()
     expect(visit('/ajuda')).toBeUndefined()
-    expect(visit('/entrar')).toBe('/')
+    expect(visit('/entrar')).toBe('/inicio')
   })
 
   it('T-FE-MW-02 a professor is redirected to /professor from student pages', () => {
     saveSession('professor')
 
-    expect(visit('/')).toBe('/professor')
+    expect(visit('/inicio')).toBe('/professor')
     expect(visit('/ranking')).toBe('/professor')
     expect(visit('/professor/desafios')).toBeUndefined()
     expect(visit('/ajuda')).toBeUndefined()
@@ -63,5 +64,30 @@ describe('auth.global middleware', () => {
     saveSession('student')
 
     expect(visit('/professores')).toBeUndefined()
+  })
+
+  it('T-FE-ROUTE-01 a visitor may open the landing page and the limitations page', () => {
+    expect(visit('/')).toBeUndefined()
+    expect(visit('/limitacoes')).toBeUndefined()
+  })
+
+  it('T-FE-ROUTE-02 a logged-in user who opens the landing page goes to their home', () => {
+    saveSession('student')
+    expect(visit('/')).toBe('/inicio')
+
+    localStorage.clear()
+    setActivePinia(createPinia())
+    saveSession('professor')
+    expect(visit('/')).toBe('/professor')
+  })
+
+  it('T-FE-ROUTE-03 the limitations page stays open for both roles', () => {
+    saveSession('student')
+    expect(visit('/limitacoes')).toBeUndefined()
+
+    localStorage.clear()
+    setActivePinia(createPinia())
+    saveSession('professor')
+    expect(visit('/limitacoes')).toBeUndefined()
   })
 })

@@ -51,7 +51,7 @@ describe('login page', () => {
     await fill(wrapper, 'login', 'ana', 'segredo123')
 
     expect(authService.login).toHaveBeenCalledWith({ username: 'ana', password: 'segredo123' })
-    expect(navigateToMock).toHaveBeenCalledWith('/')
+    expect(navigateToMock).toHaveBeenCalledWith('/inicio')
   })
 
   it('T-FE-AUTH-PAGE-02 a professor goes to the professor home after login', async () => {
@@ -96,6 +96,6 @@ describe('sign-up page', () => {
     await fill(wrapper, 'signup', 'bia', 'segredo123')
 
     expect(authService.register).toHaveBeenCalledWith({ username: 'bia', password: 'segredo123' })
-    expect(navigateToMock).toHaveBeenCalledWith('/')
+    expect(navigateToMock).toHaveBeenCalledWith('/inicio')
   })
 })

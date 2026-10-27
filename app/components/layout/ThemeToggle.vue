@@ -3,6 +3,8 @@ import { computed } from 'vue'
 import { useSettingsStore } from '~/stores/settings'
 
 // Light/dark switch (spec §9.2). The button names the mode it switches to.
+// `compact` hides the word on narrow screens (the landing bar is tight); the button keeps its accessible name.
+const props = defineProps<{ compact?: boolean }>()
 const settings = useSettingsStore()
 
 const toDark = computed(() => settings.theme === 'light')
@@ -38,6 +40,6 @@ const label = computed(() => (toDark.value ? 'Mudar para o modo escuro' : 'Mudar
       stroke-linecap="round"
       aria-hidden="true"
     ><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
-    <span>{{ toDark ? 'Escuro' : 'Claro' }}</span>
+    <span :class="props.compact ? 'sr-only sm:not-sr-only' : ''">{{ toDark ? 'Escuro' : 'Claro' }}</span>
   </button>
 </template>

@@ -94,14 +94,14 @@ export const usePlayStore = defineStore('play', () => {
   // Where "Próximo desafio" leads (spec §9.1). Without a mission (daily challenge)
   // or with nothing left to solve, the student goes back home.
   async function nextChallengePath(missionId: number | null, currentId: number): Promise<string> {
-    if (missionId === null) return '/'
+    if (missionId === null) return '/inicio'
     try {
       const detail = await studentService.getMission(missionId)
       const next = nextUnsolved(detail.challenges, currentId)
-      return next ? challengePath(next.id, missionId) : '/'
+      return next ? challengePath(next.id, missionId) : '/inicio'
     }
     catch {
-      return '/'
+      return '/inicio'
     }
   }
 

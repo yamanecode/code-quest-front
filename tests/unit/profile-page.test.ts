@@ -152,7 +152,7 @@ describe('profile page', () => {
     const first = wrapper.get('[data-testid="badges-first"]')
     expect(first.text()).toContain('Nenhuma insígnia ainda')
     expect(first.find('[data-testid="badge-first_solve"]').exists()).toBe(true)
-    expect(wrapper.get('[data-testid="profile-start"]').attributes('href')).toBe('/')
+    expect(wrapper.get('[data-testid="profile-start"]').attributes('href')).toBe('/inicio')
     // One clear goal: no shelf, no list of other near badges, and the first badge is not repeated.
     expect(wrapper.find('[data-testid="badges-earned"]').exists()).toBe(false)
     expect(wrapper.find('[data-testid="badges-next"]').exists()).toBe(false)

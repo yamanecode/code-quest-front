@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises } from '@vue/test-utils'
 import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime'
-import HomePage from '~/pages/index.vue'
+import HomePage from '~/pages/inicio.vue'
 import * as studentService from '~/services/student'
 import * as classroomService from '~/services/classrooms'
 import { useAuthStore } from '~/stores/auth'

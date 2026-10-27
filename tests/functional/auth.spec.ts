@@ -11,7 +11,7 @@ test('FT-UI-01 a visitor signs up with username and password and lands on the st
   await page.getByTestId('signup-password').fill(STUDENT_PASSWORD)
   await page.getByTestId('signup-submit').click()
 
-  await expect(page).toHaveURL('/')
+  await expect(page).toHaveURL('/inicio')
   await expect(page.getByTestId('header-level')).toBeVisible()
 })
 
@@ -33,11 +33,11 @@ test('FT-UI-01 a wrong password shows the error in Portuguese and an existing st
   await expect(page).toHaveURL(/\/entrar/)
 
   await loginUi(page, student.username, student.password)
-  await expect(page).toHaveURL('/')
+  await expect(page).toHaveURL('/inicio')
 })
 
 test('FT-UI-02 a visitor is sent to the login screen', { tag: ['@UI-02'] }, async ({ page }) => {
-  for (const path of ['/', '/turmas', '/ranking', '/perfil', '/professor']) {
+  for (const path of ['/inicio', '/turmas', '/ranking', '/perfil', '/professor']) {
     await page.goto(path)
     await expect(page).toHaveURL(/\/entrar/)
   }
@@ -46,7 +46,7 @@ test('FT-UI-02 a visitor is sent to the login screen', { tag: ['@UI-02'] }, asyn
 test('FT-UI-02 a student cannot open professor screens', { tag: ['@UI-02'] }, async ({ page }) => {
   const student = await createStudent()
   await loginUi(page, student.username, student.password)
-  await expect(page).toHaveURL('/')
+  await expect(page).toHaveURL('/inicio')
 
   await page.goto('/professor')
   await expect(page).not.toHaveURL(/\/professor/)

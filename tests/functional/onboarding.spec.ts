@@ -16,7 +16,7 @@ test('FT-UI-17 the welcome card "Começar" opens the first unsolved base challen
   const firstChallenge = page.locator('[data-testid^=mission-challenge-]').first()
   await expect(firstChallenge).toBeVisible()
   const href = (await firstChallenge.getAttribute('href'))!.split('?')[0]!
-  await page.goto('/')
+  await page.goto('/inicio')
   await page.getByTestId('welcome-start').click()
   await expect(page).toHaveURL(new RegExp(href))
   await expect(page.getByTestId('challenge-title')).toBeVisible()

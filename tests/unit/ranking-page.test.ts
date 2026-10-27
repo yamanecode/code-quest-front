@@ -112,7 +112,7 @@ describe('ranking page', () => {
     expect(wrapper.find('[data-testid="ranking-entry-caio"] [data-testid="ranking-tie"]').exists()).toBe(false)
     expect(wrapper.get('[data-testid="ranking-announcement"]').text()).toBe('Semanal, geral: você está em 5º, com 30 XP.')
     expect(wrapper.get('thead').text()).toContain('XP da semana')
-    expect(wrapper.get('[data-testid="ranking-play"]').attributes('href')).toBe('/')
+    expect(wrapper.get('[data-testid="ranking-play"]').attributes('href')).toBe('/inicio')
   })
 
   it('T-FE-RANK-01 the podium is gold, silver and bronze, and a tie shares the colour', async () => {

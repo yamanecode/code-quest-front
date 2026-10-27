@@ -52,6 +52,13 @@ test('FT-UI-13 public screens are in Portuguese and every control has an accessi
   }
   // the theme button names the action, not just an icon
   await expect(page.getByTestId('theme-toggle')).toHaveAccessibleName(/modo (escuro|claro)/i)
+
+  // the landing page and the limitations page are public too
+  for (const path of ['/', '/limitacoes']) {
+    await page.goto(path)
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+    await expectAccessible(page, path)
+  }
 })
 
 test('FT-UI-13 student screens are in Portuguese and every control has an accessible name', { tag: ['@UI-13'] }, async ({ page }) => {
@@ -65,7 +72,7 @@ test('FT-UI-13 student screens are in Portuguese and every control has an access
   await solveViaApi(student, challenges[0]!)
   await loginStudentUi(page, student)
 
-  const paths = ['/', '/turmas', `/missoes/${mission.id}`, '/perfil', '/ranking', '/ajuda', ...challenges.map((c) => `/desafios/${c.id}`)]
+  const paths = ['/inicio', '/turmas', `/missoes/${mission.id}`, '/perfil', '/ranking', '/ajuda', ...challenges.map((c) => `/desafios/${c.id}`)]
   for (const path of paths) {
     await page.goto(path)
     await expect(page.getByTestId('nav-sair')).toBeVisible()

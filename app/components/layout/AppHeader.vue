@@ -23,7 +23,7 @@ interface NavLink {
 }
 
 const STUDENT_LINKS: NavLink[] = [
-  { to: '/', label: 'Início', testid: 'nav-inicio', exact: true },
+  { to: '/inicio', label: 'Início', testid: 'nav-inicio', exact: true },
   { to: '/turmas', label: 'Turmas', testid: 'nav-turmas' },
   { to: '/ranking', label: 'Ranking', testid: 'nav-ranking' },
   { to: '/perfil', label: 'Perfil', testid: 'nav-perfil' },

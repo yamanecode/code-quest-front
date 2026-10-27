@@ -35,7 +35,7 @@ export const useAuthStore = defineStore('auth', () => {
   const username = ref<string | null>(null)
 
   const isLoggedIn = computed(() => token.value !== null)
-  const home = computed(() => (role.value === 'professor' ? '/professor' : '/'))
+  const home = computed(() => (role.value === 'professor' ? '/professor' : '/inicio'))
 
   function setSession(session: Session | null) {
     token.value = session?.token ?? null

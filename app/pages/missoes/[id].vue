@@ -36,7 +36,7 @@ watch(id, (missionId) => play.loadMission(missionId), { immediate: true })
 <template>
   <div class="max-w-3xl">
     <NuxtLink
-      to="/"
+      to="/inicio"
       class="inline-flex min-h-11 items-center text-sm font-semibold text-muted underline-offset-4 hover:text-ink hover:underline"
       data-testid="mission-back"
     >← Voltar ao início</NuxtLink>

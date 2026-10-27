@@ -19,7 +19,7 @@ test('FT-UI-16 the student joins a class with its code and sees it with its goal
   await expect(item).toContainText(classroom.name)
   await expect(item.getByTestId(`goal-${classroom.id}`)).toContainText('0 de 1')
 
-  await page.goto('/')
+  await page.goto('/inicio')
   await expect(page.getByTestId(`home-classroom-${classroom.id}`)).toContainText('Missão da turma Alfa')
 })
 
@@ -58,7 +58,7 @@ test('FT-UI-16 leaving asks for confirmation and removes the class missions from
   await page.getByTestId('leave-dialog-confirm').click()
   await expect(page.getByTestId(`classroom-${classroom.id}`)).toHaveCount(0)
 
-  await page.goto('/')
+  await page.goto('/inicio')
   await expect(page.getByTestId('header-level')).toBeVisible()
   await expect(page.getByTestId(`home-classroom-${classroom.id}`)).toHaveCount(0)
   await expect(page.getByText('Missão que vai sumir')).toHaveCount(0)
@@ -74,7 +74,7 @@ test('FT-UI-03 a joined class without published missions shows the empty state a
   await page.getByTestId('join-submit').click()
   await expect(page.getByTestId(`classroom-${classroom.id}`)).toContainText('Sem meta esta semana')
 
-  await page.goto('/')
+  await page.goto('/inicio')
   const section = page.getByTestId(`home-classroom-${classroom.id}`)
   await expect(section).toContainText('Seu professor ainda não publicou missões')
   await expect(section).toContainText('Sem meta esta semana')

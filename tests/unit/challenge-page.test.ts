@@ -308,7 +308,7 @@ describe('next challenge', () => {
       challenges: mission.challenges.map((c) => ({ ...c, solved: true })),
     })
     await clickNext(wrapper)
-    expect(navigateToMock).toHaveBeenLastCalledWith('/')
+    expect(navigateToMock).toHaveBeenLastCalledWith('/inicio')
   })
 
   it('T-FE-HOME-03 without ?missao (daily challenge) it goes back home', async () => {
@@ -318,6 +318,6 @@ describe('next challenge', () => {
     await clickNext(wrapper)
 
     expect(studentService.getMission).not.toHaveBeenCalled()
-    expect(navigateToMock).toHaveBeenCalledWith('/')
+    expect(navigateToMock).toHaveBeenCalledWith('/inicio')
   })
 })

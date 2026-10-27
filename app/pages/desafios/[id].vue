@@ -41,7 +41,7 @@ useHead({ title: () => `${challenge.value?.title ?? 'Desafio'} · CodeQuest` })
 
 const backLink = computed(() =>
   missionId.value === null
-    ? { to: '/', label: 'Voltar ao início' }
+    ? { to: '/inicio', label: 'Voltar ao início' }
     : { to: `/missoes/${missionId.value}`, label: 'Voltar à missão' },
 )
 

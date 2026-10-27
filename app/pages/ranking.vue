@@ -243,7 +243,7 @@ onMounted(async () => {
 
         <div class="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
           <NuxtLink
-            to="/"
+            to="/inicio"
             class="bg-go px-5 py-2.5 font-display text-lg font-bold text-on-go transition-colors hover:bg-go-hover cq-go-shadow"
             data-testid="ranking-play"
           >Resolver um desafio</NuxtLink>

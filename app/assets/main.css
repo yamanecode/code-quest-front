@@ -90,6 +90,13 @@
   --cq-silver: #c0c0c0;
   --cq-gold: #d4af37;
 
+  /* Octalysis map on the landing page: the numbered disc of the chosen core, and the three hats */
+  --cq-badge: #ffe39a;
+  --cq-on-badge: #1b2a52;
+  --cq-hat-white: #f2c53d;
+  --cq-hat-black: #1b2a52;
+  --cq-hat-neutral: #0e9a85;
+
   --cq-font: 'Atkinson Hyperlegible', system-ui, sans-serif;
   --cq-font-display: 'Bricolage Grotesque', 'Atkinson Hyperlegible', system-ui, sans-serif;
 }
@@ -162,6 +169,17 @@
   --cq-error-bg: #3a1f1d;
   --cq-error-line: #7a3a32;
   --cq-error-ink: #ffb3a8;
+
+  --cq-badge: #ffd25a;
+  --cq-on-badge: #1b1c20;
+  --cq-hat-white: #e3b93a;
+  --cq-hat-black: #d9d5c9;
+  --cq-hat-neutral: #34d3b4;
+}
+
+/* Anchors on the landing page stop below its sticky bar. */
+html {
+  scroll-padding-top: 4.5rem;
 }
 
 html,

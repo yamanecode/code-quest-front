@@ -17,7 +17,7 @@ async function submit() {
   sending.value = true
   try {
     await auth.register({ username: username.value, password: password.value })
-    await navigateTo('/')
+    await navigateTo('/inicio')
   }
   catch (e) {
     error.value = errorMessage(e)
