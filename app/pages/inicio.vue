@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useClassroomsStore } from '~/stores/classrooms'
 import { challengePath, usePlayStore } from '~/stores/play'
 import { useProfileStore } from '~/stores/profile'
@@ -28,6 +28,15 @@ const recentBadges = computed(() =>
 const closeBadges = computed(() =>
   profileStore.profile ? nextBadges(profileStore.profile.badges, profileStore.profile, NEXT_BADGES) : [],
 )
+
+// Each group of missions can be folded, for students in many turmas. Everything starts open.
+const folded = ref<Set<string>>(new Set())
+const isOpen = (key: string) => !folded.value.has(key)
+function toggleGroup(key: string) {
+  const next = new Set(folded.value)
+  if (!next.delete(key)) next.add(key)
+  folded.value = next
+}
 
 onMounted(() => {
   play.loadHome()
@@ -102,9 +111,21 @@ onMounted(() => {
       </div>
 
       <section aria-labelledby="h-base" data-testid="home-base">
-        <h2 id="h-base" class="font-display text-2xl font-bold">Trilha CodeQuest</h2>
+        <h2 id="h-base" class="font-display text-2xl font-bold">
+          <button
+            type="button"
+            class="flex min-h-11 items-center gap-2 text-left"
+            :aria-expanded="isOpen('base')"
+            aria-controls="group-base"
+            data-testid="group-toggle-base"
+            @click="toggleGroup('base')"
+          >
+            <span class="inline-block w-4 text-lg transition-transform" :class="isOpen('base') ? 'rotate-90' : ''" aria-hidden="true">▸</span>
+            Trilha CodeQuest
+          </button>
+        </h2>
         <p class="mt-1 text-muted">Uma missão para cada habilidade, liberada para todos os estudantes. Resolva na ordem que quiser.</p>
-        <ul class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <ul v-show="isOpen('base')" id="group-base" class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <li v-for="mission in missions.base" :key="mission.id">
             <MissionCard :mission="mission" :skills="play.missionSkills[mission.id]" />
           </li>
@@ -117,8 +138,25 @@ onMounted(() => {
         :aria-labelledby="`h-classroom-${classroom.id}`"
         :data-testid="`home-classroom-${classroom.id}`"
       >
-        <h2 :id="`h-classroom-${classroom.id}`" class="font-display text-2xl font-bold">{{ classroom.name }}</h2>
+        <h2 :id="`h-classroom-${classroom.id}`" class="font-display text-2xl font-bold">
+          <button
+            type="button"
+            class="flex min-h-11 items-center gap-2 text-left"
+            :aria-expanded="isOpen(`c${classroom.id}`)"
+            :aria-controls="`group-classroom-${classroom.id}`"
+            :data-testid="`group-toggle-${classroom.id}`"
+            @click="toggleGroup(`c${classroom.id}`)"
+          >
+            <span class="inline-block w-4 text-lg transition-transform" :class="isOpen(`c${classroom.id}`) ? 'rotate-90' : ''" aria-hidden="true">▸</span>
+            {{ classroom.name }}
+          </button>
+        </h2>
+        <div v-if="classrooms.isClosed(classroom.id)" class="mt-1" :data-testid="`home-closed-${classroom.id}`">
+          <ClosedBadge />
+          <p class="mt-2 text-sm text-muted" data-testid="home-closed-note">O professor encerrou esta turma: ninguém novo entra, e suas missões continuam.</p>
+        </div>
         <ClassGoalBar
+          v-if="!classrooms.isClosed(classroom.id)"
           class="mt-3 max-w-xl"
           :goal="classrooms.goalOf(classroom.id)"
           :name="classroom.name"
@@ -126,10 +164,17 @@ onMounted(() => {
         />
         <p
           v-if="classroom.missions.length === 0"
+          v-show="isOpen(`c${classroom.id}`)"
+          :id="`group-classroom-${classroom.id}`"
           class="mt-4 text-muted"
           :data-testid="`home-classroom-empty-${classroom.id}`"
         >Seu professor ainda não publicou missões</p>
-        <ul v-else class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <ul
+          v-else
+          v-show="isOpen(`c${classroom.id}`)"
+          :id="`group-classroom-${classroom.id}`"
+          class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+        >
           <li v-for="mission in classroom.missions" :key="mission.id">
             <MissionCard :mission="mission" :skills="play.missionSkills[mission.id]" />
           </li>

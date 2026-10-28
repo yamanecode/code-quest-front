@@ -50,7 +50,7 @@ beforeEach(() => {
   vi.mocked(studentService.getRanking).mockReset()
   vi.mocked(studentService.getPlayer).mockReset()
   vi.mocked(classroomService.listMyClassrooms).mockReset().mockResolvedValue([
-    { id: 4, name: 'Turma Demo', goal: null },
+    { id: 4, name: 'Turma Demo', closed: false, goal: null },
   ])
 })
 

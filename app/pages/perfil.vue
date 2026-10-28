@@ -183,11 +183,7 @@ onMounted(() => profileStore.load())
             <div class="max-w-md">
               <p class="font-semibold">Nenhuma insígnia ainda.</p>
               <p class="mt-1 text-muted">Resolva seu primeiro desafio para conquistar a insígnia Primeiro desafio.</p>
-              <NuxtLink
-                to="/inicio"
-                class="mt-4 inline-block bg-go px-5 py-2.5 font-display text-lg font-bold text-on-go transition-colors hover:bg-go-hover cq-go-shadow"
-                data-testid="profile-start"
-              >Resolver um desafio</NuxtLink>
+              <AppButton to="/inicio" variant="primary" class="mt-4" data-testid="profile-start">Resolver um desafio</AppButton>
             </div>
           </div>
 

@@ -34,6 +34,23 @@ export function updateClassroom(id: number, input: ClassroomInput): Promise<Prof
   return apiFetch<ProfClassroom>(`${BASE}/classrooms/${id}`, { method: 'PUT', body: input })
 }
 
+export function closeClassroom(id: number): Promise<ProfClassroom> {
+  return apiFetch<ProfClassroom>(`${BASE}/classrooms/${id}/close`, { method: 'POST' })
+}
+
+export function reopenClassroom(id: number): Promise<ProfClassroom> {
+  return apiFetch<ProfClassroom>(`${BASE}/classrooms/${id}/reopen`, { method: 'POST' })
+}
+
+export function renewJoinCode(id: number): Promise<ProfClassroom> {
+  return apiFetch<ProfClassroom>(`${BASE}/classrooms/${id}/new-code`, { method: 'POST' })
+}
+
+// The username is the key of a member; it is encoded because it travels in the path.
+export async function removeMember(classroomId: number, username: string): Promise<void> {
+  await apiFetch<unknown>(`${BASE}/classrooms/${classroomId}/members/${encodeURIComponent(username)}`, { method: 'DELETE' })
+}
+
 export function getClassroomProgress(id: number): Promise<Progress> {
   return apiFetch<Progress>(`${BASE}/classrooms/${id}/progress`)
 }
@@ -50,6 +67,14 @@ export function listMissions(classroomId: number): Promise<ProfMission[]> {
 
 export function createMission(classroomId: number, input: MissionCreateInput): Promise<ProfMission> {
   return apiFetch<ProfMission>(`${BASE}/classrooms/${classroomId}/missions`, { method: 'POST', body: input })
+}
+
+// Every mission of the turma exactly once, in the new order; all or nothing.
+export function setMissionOrder(classroomId: number, missionIds: number[]): Promise<ProfMission[]> {
+  return apiFetch<ProfMission[]>(`${BASE}/classrooms/${classroomId}/missions/order`, {
+    method: 'PUT',
+    body: { mission_ids: missionIds },
+  })
 }
 
 export function getMission(id: number): Promise<ProfMission> {

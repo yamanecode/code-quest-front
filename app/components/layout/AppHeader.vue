@@ -28,12 +28,14 @@ const STUDENT_LINKS: NavLink[] = [
   { to: '/ranking', label: 'Ranking', testid: 'nav-ranking' },
   { to: '/perfil', label: 'Perfil', testid: 'nav-perfil' },
   { to: '/ajuda', label: 'Ajuda', testid: 'nav-ajuda' },
+  { to: '/', label: 'Sobre o projeto', testid: 'nav-projeto', exact: true },
 ]
 
 const PROFESSOR_LINKS: NavLink[] = [
   { to: '/professor', label: 'Turmas', testid: 'nav-prof-turmas', exact: true },
   { to: '/professor/desafios', label: 'Desafios', testid: 'nav-prof-desafios' },
   { to: '/ajuda', label: 'Ajuda', testid: 'nav-ajuda' },
+  { to: '/', label: 'Sobre o projeto', testid: 'nav-projeto', exact: true },
 ]
 
 // A short glow on the XP bar after a correct answer that earned XP (spec §9.2).

@@ -81,12 +81,7 @@ async function confirmLeave() {
         :maxlength="6"
         autocomplete="off"
       />
-      <button
-        type="submit"
-        :disabled="joining"
-        class="bg-go px-5 py-2.5 font-display text-lg font-bold text-on-go transition-colors hover:bg-go-hover disabled:cursor-wait disabled:opacity-60 sm:mb-[1.875rem] cq-go-shadow"
-        data-testid="join-submit"
-      >{{ joining ? 'Entrando…' : 'Entrar na turma' }}</button>
+      <AppButton type="submit" variant="primary" class="sm:mb-[1.875rem]" :disabled="joining" data-testid="join-submit">{{ joining ? 'Entrando…' : 'Entrar na turma' }}</AppButton>
       <p
         v-if="joinError"
         role="alert"
@@ -132,7 +127,11 @@ async function confirmLeave() {
               @click="askLeave(classroom)"
             >Sair da turma</button>
           </div>
-          <ClassGoalBar class="mt-4" :goal="classroom.goal" :name="classroom.name" :testid="`goal-${classroom.id}`" />
+          <template v-if="classroom.closed">
+            <ClosedBadge class="mt-2" />
+            <p class="mt-2 text-sm text-muted" data-testid="classroom-closed-note">O professor encerrou esta turma: ninguém novo entra, e suas missões continuam.</p>
+          </template>
+          <ClassGoalBar v-if="!classroom.closed" class="mt-4" :goal="classroom.goal" :name="classroom.name" :testid="`goal-${classroom.id}`" />
         </li>
       </ul>
     </section>

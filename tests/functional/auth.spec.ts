@@ -57,6 +57,9 @@ test('FT-UI-02 a student cannot open professor screens', { tag: ['@UI-02'] }, as
 test('FT-UI-02 a professor lands on the professor home', { tag: ['@UI-02'] }, async ({ page }) => {
   await loginProfessorUi(page)
   await expect(page).toHaveURL('/professor')
-  await page.goto('/')
+  await page.goto('/entrar')
   await expect(page).toHaveURL(/\/professor/)
+  await page.goto('/')
+  await expect(page).toHaveURL('/')
+  await expect(page.getByTestId('landing-go-home')).toBeVisible()
 })

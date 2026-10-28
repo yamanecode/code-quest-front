@@ -49,6 +49,7 @@ export interface Goal {
 export interface MyClassroom {
   id: number
   name: string
+  closed: boolean
   goal: Goal | null
 }
 
@@ -209,6 +210,7 @@ export interface ProfClassroom {
   name: string
   join_code: string
   weekly_goal: number | null
+  closed: boolean
   goal: Goal | null
 }
 

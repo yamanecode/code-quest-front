@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useClassroomsStore } from '~/stores/classrooms'
 import { useRankingStore } from '~/stores/ranking'
 import type { RankingEntry, RankingPeriod } from '~/types/api'
@@ -58,25 +58,6 @@ const scopeValue = computed({
   set: (value: string) => ranking.setScope(value === 'global' ? 'global' : Number(value)),
 })
 
-const tabs = ref<HTMLButtonElement[]>([])
-
-// Arrow keys, Home and End move between the tabs (WAI-ARIA tabs pattern). Focus moves
-// at once; the new ranking loads behind it.
-async function onTabKey(event: KeyboardEvent, index: number) {
-  const last = PERIODS.length - 1
-  const target = {
-    ArrowRight: index === last ? 0 : index + 1,
-    ArrowLeft: index === 0 ? last : index - 1,
-    Home: 0,
-    End: last,
-  }[event.key]
-  if (target === undefined) return
-  event.preventDefault()
-  ranking.setPeriod(PERIODS[target]!.value)
-  await nextTick()
-  tabs.value[target]?.focus()
-}
-
 onMounted(async () => {
   if (ranking.scope === 'global') {
     ranking.load()
@@ -111,24 +92,7 @@ onMounted(async () => {
         </select>
       </label>
 
-      <div role="tablist" aria-label="Período do ranking" class="flex border-2 border-line-strong">
-        <button
-          v-for="(period, index) in PERIODS"
-          :id="`ranking-tab-${period.value}`"
-          :key="period.value"
-          ref="tabs"
-          type="button"
-          role="tab"
-          :aria-selected="ranking.period === period.value ? 'true' : 'false'"
-          aria-controls="ranking-panel"
-          :tabindex="ranking.period === period.value ? 0 : -1"
-          class="h-11 px-5 font-semibold transition-colors"
-          :class="ranking.period === period.value ? 'bg-ink text-bg' : 'text-muted hover:text-ink'"
-          :data-testid="`ranking-tab-${period.value}`"
-          @click="ranking.setPeriod(period.value)"
-          @keydown="onTabKey($event, index)"
-        >{{ period.label }}</button>
-      </div>
+      <PeriodTabs :model-value="ranking.period" panel-id="ranking-panel" @update:model-value="ranking.setPeriod" />
     </div>
 
     <p class="sr-only" role="status" data-testid="ranking-announcement">{{ announcement }}</p>
@@ -242,11 +206,7 @@ onMounted(async () => {
         </table>
 
         <div class="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
-          <NuxtLink
-            to="/inicio"
-            class="bg-go px-5 py-2.5 font-display text-lg font-bold text-on-go transition-colors hover:bg-go-hover cq-go-shadow"
-            data-testid="ranking-play"
-          >Resolver um desafio</NuxtLink>
+          <AppButton to="/inicio" variant="primary" data-testid="ranking-play">Resolver um desafio</AppButton>
           <p class="text-sm text-muted" data-testid="ranking-resets">{{ periodText.resets }}</p>
         </div>
       </div>

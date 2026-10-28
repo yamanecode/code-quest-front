@@ -71,14 +71,16 @@ describe('auth.global middleware', () => {
     expect(visit('/limitacoes')).toBeUndefined()
   })
 
-  it('T-FE-ROUTE-02 a logged-in user who opens the landing page goes to their home', () => {
+  it('T-FE-ROUTE-02 a logged-in user may still open the landing page, but not the login forms', () => {
     saveSession('student')
-    expect(visit('/')).toBe('/inicio')
+    expect(visit('/')).toBeUndefined()
+    expect(visit('/entrar')).toBe('/inicio')
 
     localStorage.clear()
     setActivePinia(createPinia())
     saveSession('professor')
-    expect(visit('/')).toBe('/professor')
+    expect(visit('/')).toBeUndefined()
+    expect(visit('/entrar')).toBe('/professor')
   })
 
   it('T-FE-ROUTE-03 the limitations page stays open for both roles', () => {

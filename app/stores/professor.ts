@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import * as professorService from '~/services/professor'
+import { ApiError } from '~/services/http'
 import type {
   ChallengeInput,
   ClassroomInput,
@@ -16,6 +17,7 @@ import type {
   Review,
 } from '~/types/api'
 import type { ChallengeType } from '~/types/challenge'
+import { sortChallenges, type ChallengeSortKey } from '~/utils/challengeSort'
 import { errorMessage } from '~/utils/format'
 
 // Everything the professor pages show: turmas, missions, challenges. The load functions keep
@@ -35,14 +37,24 @@ export const useProfessorStore = defineStore('professor', () => {
   const loading = ref(false)
   const error = ref<string | null>(null)
 
-  // The API has no query filters (spec §8.4): filter here.
-  const filteredChallenges = computed(() =>
-    challenges.value.filter(
+  const sortKey = ref<ChallengeSortKey>('recent')
+  const sortDir = ref<'asc' | 'desc'>('asc')
+
+  // Clicking the active column flips the direction; a new column starts ascending.
+  function sortBy(key: ChallengeSortKey) {
+    sortDir.value = sortKey.value === key && sortDir.value === 'asc' ? 'desc' : 'asc'
+    sortKey.value = key
+  }
+
+  // The API has no query filters or ordering (spec §8.4): filter and sort here.
+  const filteredChallenges = computed(() => {
+    const shown = challenges.value.filter(
       (c) =>
         (typeFilter.value === 'all' || c.type === typeFilter.value) &&
         (statusFilter.value === 'all' || c.status === statusFilter.value),
-    ),
-  )
+    )
+    return sortChallenges(shown, sortKey.value, sortDir.value)
+  })
 
   async function guarded(task: () => Promise<void>) {
     loading.value = true
@@ -89,6 +101,42 @@ export const useProfessorStore = defineStore('professor', () => {
     return classroom.value
   }
 
+  // Both calls answer with the turma, which replaces the one held in state.
+  function rememberClassroom(updated: ProfClassroom) {
+    if (classroom.value?.id === updated.id) classroom.value = updated
+    classrooms.value = classrooms.value.map((c) => (c.id === updated.id ? updated : c))
+    return updated
+  }
+
+  const closeClassroom = async (id: number) => rememberClassroom(await professorService.closeClassroom(id))
+  const reopenClassroom = async (id: number) => rememberClassroom(await professorService.reopenClassroom(id))
+
+  const renewJoinCode = async (id: number) => rememberClassroom(await professorService.renewJoinCode(id))
+
+  // A removal changes the table, the ranking, the member count and so the goal, so all of them are
+  // read again. The student may also have left by themselves a moment ago; then it is read the same.
+  async function reloadMembers(id: number) {
+    const [report, found, ranked] = await Promise.all([
+      professorService.getClassroomProgress(id),
+      professorService.getClassroom(id),
+      professorService.getClassroomRanking(id, rankingPeriod.value),
+    ])
+    progress.value = report
+    ranking.value = ranked
+    rememberClassroom(found)
+  }
+
+  async function removeMember(id: number, username: string) {
+    try {
+      await professorService.removeMember(id, username)
+    }
+    catch (e) {
+      if (e instanceof ApiError && e.detail === 'member_not_found') await reloadMembers(id)
+      throw e
+    }
+    await reloadMembers(id)
+  }
+
   async function loadRanking(id: number, period: RankingPeriod) {
     rankingPeriod.value = period
     await guarded(async () => {
@@ -104,6 +152,19 @@ export const useProfessorStore = defineStore('professor', () => {
     return created
   }
 
+  // Swaps a mission with its neighbour and sends the whole new order in one call, so the server
+  // either takes it all or nothing. On failure the list on screen stays as it was.
+  async function moveMission(id: number, by: -1 | 1) {
+    const ids = missions.value.map((m) => m.id)
+    const from = ids.indexOf(id)
+    const to = from + by
+    if (from < 0 || to < 0 || to >= ids.length) return
+    const [moved] = ids.splice(from, 1)
+    ids.splice(to, 0, moved!)
+    const classroomId = missions.value[0]!.classroom_id
+    missions.value = await professorService.setMissionOrder(classroomId, ids)
+  }
+
   const loadMission = (id: number) =>
     guarded(async () => {
       mission.value = await professorService.getMission(id)
@@ -117,6 +178,13 @@ export const useProfessorStore = defineStore('professor', () => {
   async function setMissionChallenges(id: number, challengeIds: number[]) {
     mission.value = await professorService.setMissionChallenges(id, challengeIds)
     return mission.value
+  }
+
+  // Puts a challenge created elsewhere at the end of a mission, keeping the order it has.
+  async function attachToMission(id: number, challengeId: number) {
+    const current = await professorService.getMission(id)
+    const ids = current.challenges.map((c) => c.id)
+    if (!ids.includes(challengeId)) await professorService.setMissionChallenges(id, [...ids, challengeId])
   }
 
   async function publishMission(id: number) {
@@ -143,7 +211,7 @@ export const useProfessorStore = defineStore('professor', () => {
       challengesLoaded.value = true
     })
 
-  function remember(challenge: ProfChallenge) {
+  function rememberChallenge(challenge: ProfChallenge) {
     const exists = challenges.value.some((c) => c.id === challenge.id)
     challenges.value = exists
       ? challenges.value.map((c) => (c.id === challenge.id ? challenge : c))
@@ -152,12 +220,12 @@ export const useProfessorStore = defineStore('professor', () => {
   }
 
   const getChallenge = (id: number) => professorService.getChallenge(id)
-  const createChallenge = async (input: ChallengeInput) => remember(await professorService.createChallenge(input))
+  const createChallenge = async (input: ChallengeInput) => rememberChallenge(await professorService.createChallenge(input))
   const updateChallenge = async (id: number, input: ChallengeInput) =>
-    remember(await professorService.updateChallenge(id, input))
-  const duplicateChallenge = async (id: number) => remember(await professorService.duplicateChallenge(id))
-  const publishChallenge = async (id: number) => remember(await professorService.publishChallenge(id))
-  const unpublishChallenge = async (id: number) => remember(await professorService.unpublishChallenge(id))
+    rememberChallenge(await professorService.updateChallenge(id, input))
+  const duplicateChallenge = async (id: number) => rememberChallenge(await professorService.duplicateChallenge(id))
+  const publishChallenge = async (id: number) => rememberChallenge(await professorService.publishChallenge(id))
+  const unpublishChallenge = async (id: number) => rememberChallenge(await professorService.unpublishChallenge(id))
 
   async function deleteChallenge(id: number) {
     await professorService.deleteChallenge(id)
@@ -168,14 +236,14 @@ export const useProfessorStore = defineStore('professor', () => {
 
   // The draft is saved by the backend with status "draft"; with a mission it is also added there.
   async function generateDraft(request: DraftRequest) {
-    return remember(await professorService.generateDraft(request))
+    return rememberChallenge(await professorService.generateDraft(request))
   }
 
   return {
     classrooms, classroom, missions, progress, ranking, rankingPeriod, mission, challenges, challengesLoaded,
-    typeFilter, statusFilter, filteredChallenges, loading, error,
-    loadClassrooms, createClassroom, loadClassroom, updateClassroom, loadRanking,
-    createMission, loadMission, updateMission, setMissionChallenges, publishMission, unpublishMission, deleteMission,
+    typeFilter, statusFilter, sortKey, sortDir, sortBy, filteredChallenges, loading, error,
+    loadClassrooms, createClassroom, loadClassroom, updateClassroom, closeClassroom, reopenClassroom, renewJoinCode, removeMember, loadRanking,
+    createMission, moveMission, loadMission, updateMission, setMissionChallenges, attachToMission, publishMission, unpublishMission, deleteMission,
     loadChallenges, getChallenge, createChallenge, updateChallenge, duplicateChallenge, publishChallenge,
     unpublishChallenge, deleteChallenge, reviewChallenge, generateDraft,
   }

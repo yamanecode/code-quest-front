@@ -16,6 +16,7 @@ vi.mock('~/services/classrooms', () => ({
 const demo: MyClassroom = {
   id: 4,
   name: 'Turma Demo',
+  closed: false,
   goal: { target: 10, progress: 6, week_start: '2026-10-19', completed: false },
 }
 
@@ -51,6 +52,20 @@ describe('turmas page', () => {
     expect(wrapper.get('[data-testid="classrooms-status"]').text()).toContain('Turma Demo')
     expect(wrapper.get('[data-testid="classroom-4"] [data-testid="classroom-name"]').text()).toBe('Turma Demo')
     expect(wrapper.get('[data-testid="classroom-4"] [data-testid="goal-percent"]').text()).toBe('60%')
+  })
+
+  it('T-FE-CLASS-CLOSED-01 only a closed turma shows the badge and the explanation', async () => {
+    vi.mocked(classroomService.listMyClassrooms).mockResolvedValue([demo, { ...demo, id: 5, name: 'Turma B', closed: true, goal: null }])
+    const wrapper = await mountSuspended(TurmasPage)
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="classroom-4"] [data-testid="classroom-closed-badge"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="classroom-4"] [data-testid="classroom-closed-note"]').exists()).toBe(false)
+    expect(wrapper.get('[data-testid="classroom-5"] [data-testid="classroom-closed-badge"]').text()).toBe('Encerrada')
+    expect(wrapper.find('[data-testid="goal-5"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="goal-4"]').exists()).toBe(true)
+    expect(wrapper.get('[data-testid="classroom-5"] [data-testid="classroom-closed-note"]').text())
+      .toBe('O professor encerrou esta turma: ninguém novo entra, e suas missões continuam.')
   })
 
   it('T-FE-CLASS-01 an invalid code shows the API message', async () => {

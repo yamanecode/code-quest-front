@@ -47,13 +47,7 @@ async function start() {
       </li>
     </ol>
     <div class="mt-5 flex flex-wrap items-center gap-3">
-      <button
-        type="button"
-        :disabled="starting"
-        class="bg-go px-5 py-2.5 font-display text-lg font-bold text-on-go transition-colors hover:bg-go-hover disabled:cursor-wait disabled:opacity-60 cq-go-shadow"
-        data-testid="welcome-start"
-        @click="start"
-      >Começar</button>
+      <AppButton variant="primary" :disabled="starting" data-testid="welcome-start" @click="start">Começar</AppButton>
       <button
         type="button"
         class="px-3 py-2.5 font-semibold text-muted transition-colors hover:text-ink"

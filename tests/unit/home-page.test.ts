@@ -65,8 +65,8 @@ beforeEach(() => {
   })
   vi.mocked(studentService.getMission).mockReset().mockResolvedValue(firstTrilha)
   vi.mocked(classroomService.listMyClassrooms).mockReset().mockResolvedValue([
-    { id: 4, name: 'Turma Demo', goal: { target: 10, progress: 4, week_start: '2026-10-19', completed: false } },
-    { id: 5, name: 'Turma Nova', goal: null },
+    { id: 4, name: 'Turma Demo', closed: false, goal: { target: 10, progress: 4, week_start: '2026-10-19', completed: false } },
+    { id: 5, name: 'Turma Nova', closed: false, goal: null },
   ])
   navigateToMock.mockReset()
 })
@@ -82,6 +82,36 @@ describe('student home', () => {
     expect(wrapper.get('[data-testid="mission-11"] [data-testid="mission-progress"]').text()).toBe('1 de 3 resolvidos')
     expect(wrapper.get('[data-testid="home-goal-4"] [data-testid="goal-percent"]').text()).toBe('40%')
     expect(wrapper.find('[data-testid="home-goal-5"] [data-testid="goal-none"]').exists()).toBe(true)
+  })
+
+  it('T-FE-HOME-06 each group of missions can be folded and opened again', async () => {
+    signIn('ana')
+    const wrapper = await openHome()
+    const toggle = wrapper.get('[data-testid="group-toggle-4"]')
+    const list = () => wrapper.get('#group-classroom-4')
+
+    expect(toggle.attributes('aria-expanded')).toBe('true')
+    await toggle.trigger('click')
+    expect(toggle.attributes('aria-expanded')).toBe('false')
+    expect(list().attributes('style')).toContain('display: none')
+    expect(wrapper.get('#group-base').attributes('style') ?? '').not.toContain('display: none')
+
+    await toggle.trigger('click')
+    expect(list().attributes('style') ?? '').not.toContain('display: none')
+  })
+
+  it('T-FE-CLASS-CLOSED-01 a closed turma is marked on the home, an open one is not', async () => {
+    signIn('ana')
+    vi.mocked(classroomService.listMyClassrooms).mockResolvedValue([
+      { id: 4, name: 'Turma Demo', closed: true, goal: null },
+      { id: 5, name: 'Turma Nova', closed: false, goal: null },
+    ])
+    const wrapper = await openHome()
+    expect(wrapper.get('[data-testid="home-closed-4"]').text()).toContain('Encerrada')
+    expect(wrapper.get('[data-testid="home-closed-note"]').text()).toContain('O professor encerrou esta turma')
+    expect(wrapper.find('[data-testid="home-closed-5"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="home-goal-4"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="home-goal-5"]').exists()).toBe(true)
   })
 
   it('shows the all-solved message when there is no daily challenge left', async () => {

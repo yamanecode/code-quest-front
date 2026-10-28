@@ -42,5 +42,9 @@ export const useClassroomsStore = defineStore('classrooms', () => {
     return list.value.find((classroom) => classroom.id === id)?.goal ?? null
   }
 
-  return { list, loaded, loading, error, load, join, leave, goalOf }
+  function isClosed(id: number) {
+    return list.value.find((classroom) => classroom.id === id)?.closed ?? false
+  }
+
+  return { list, loaded, loading, error, load, join, leave, goalOf, isClosed }
 })

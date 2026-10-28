@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { useProfessorStore } from '~/stores/professor'
 import type { ProfChallenge, Review } from '~/types/api'
 import { CHALLENGE_TYPES, type ChallengeType } from '~/types/challenge'
@@ -8,15 +8,21 @@ import { errorLines, errorMessage } from '~/utils/format'
 import { SKILLS } from '~/utils/skills'
 
 // Create or edit one challenge: save, review with AI, generate a draft, publish, duplicate, delete.
-const props = defineProps<{ challengeId: number | null }>()
+// `missionId` is set when the professor came from a mission: new challenges then join it.
+const props = defineProps<{ challengeId: number | null, missionId?: number | null }>()
 
 const professor = useProfessorStore()
+
+// Keeps the mission context in the address, so the way back to the mission stays one click away.
+const withMission = (path: string) => (props.missionId ? `${path}?missao=${props.missionId}` : path)
 
 const form = ref<FormState>(emptyForm('ordering'))
 const challenge = ref<ProfChallenge | null>(null)
 const locked = ref(false)
 const loadError = ref<string | null>(null)
 const errors = ref<string[]>([])
+// Errors of the "Gerar rascunho" box are shown inside it, not under the long form below.
+const draftErrors = ref<string[]>([])
 const status = ref('')
 const busy = ref(false)
 const reviewHeading = ref<HTMLElement | null>(null)
@@ -24,6 +30,7 @@ const review = ref<Review | null>(null)
 const draftType = ref<ChallengeType>('ordering')
 const draftTopic = ref('')
 const askDelete = ref(false)
+const isPublished = computed(() => challenge.value?.status === 'published')
 
 async function load(id: number | null) {
   loadError.value = null
@@ -56,15 +63,16 @@ function changeType(type: ChallengeType) {
 }
 
 // Runs one action and shows what went wrong under the form (rule errors are listed one by one).
-async function run(action: () => Promise<void>) {
+async function run(action: () => Promise<void>, sink = errors) {
   busy.value = true
   errors.value = []
+  draftErrors.value = []
   status.value = ''
   try {
     await action()
   }
   catch (e) {
-    errors.value = errorLines(e)
+    sink.value = errorLines(e)
     if ((e as { detail?: string }).detail === 'challenge_locked') locked.value = true
   }
   finally {
@@ -86,13 +94,14 @@ async function persist(): Promise<ProfChallenge> {
     return saved
   }
   const created = await professor.createChallenge(input)
-  await navigateTo(`/professor/desafios/${created.id}`)
+  if (props.missionId) await professor.attachToMission(props.missionId, created.id)
+  await navigateTo(withMission(`/professor/desafios/${created.id}`))
   return created
 }
 
 const save = () => run(async () => {
   await persist()
-  status.value = 'Rascunho salvo.'
+  status.value = isPublished.value ? 'Alterações salvas.' : 'Rascunho salvo.'
 })
 
 const publish = () => run(async () => {
@@ -104,13 +113,13 @@ const publish = () => run(async () => {
 const unpublish = () => run(async () => {
   if (!challenge.value) return
   adopt(await professor.unpublishChallenge(challenge.value.id))
-  status.value = 'Desafio voltou para rascunho.'
+  status.value = 'Desafio despublicado: os alunos não o veem mais.'
 })
 
 const duplicate = () => run(async () => {
   if (!challenge.value) return
   const copy = await professor.duplicateChallenge(challenge.value.id)
-  await navigateTo(`/professor/desafios/${copy.id}`)
+  await navigateTo(withMission(`/professor/desafios/${copy.id}`))
 })
 
 const runReview = () => run(async () => {
@@ -124,22 +133,19 @@ const runReview = () => run(async () => {
 const generate = () => run(async () => {
   const topic = draftTopic.value.trim()
   if (!topic) {
-    errors.value = ['Escreva o tema do rascunho.']
+    draftErrors.value = ['Escreva o tema do rascunho.']
     return
   }
-  const draft = await professor.generateDraft({ type: draftType.value, topic })
-  await navigateTo(`/professor/desafios/${draft.id}`)
-})
+  const draft = await professor.generateDraft({ type: draftType.value, topic, mission_id: props.missionId ?? undefined })
+  await navigateTo(withMission(`/professor/desafios/${draft.id}`))
+}, draftErrors)
 
 const remove = () => run(async () => {
   askDelete.value = false
   if (!challenge.value) return
   await professor.deleteChallenge(challenge.value.id)
-  await navigateTo('/professor/desafios')
+  await navigateTo(props.missionId ? `/professor/missoes/${props.missionId}` : '/professor/desafios')
 })
-
-const primary = 'min-h-11 bg-go px-5 py-2.5 font-display text-lg font-bold text-on-go transition-colors hover:bg-go-hover disabled:cursor-wait disabled:opacity-60 cq-go-shadow'
-const secondary = 'min-h-11 border-2 border-line-strong px-4 py-2.5 font-semibold transition-colors hover:border-ink disabled:cursor-not-allowed disabled:opacity-50'
 </script>
 
 <template>
@@ -149,11 +155,7 @@ const secondary = 'min-h-11 border-2 border-line-strong px-4 py-2.5 font-semibol
     <template v-else>
       <div class="flex flex-wrap items-center gap-3">
         <h1 class="font-display text-4xl font-extrabold">{{ challenge ? 'Editar desafio' : 'Novo desafio' }}</h1>
-        <span
-          v-if="challenge"
-          class="border-2 border-line-strong px-2 py-0.5 text-sm font-semibold"
-          data-testid="challenge-status"
-        >{{ challenge.status === 'published' ? 'Publicado' : 'Rascunho' }}</span>
+        <StatusBadge v-if="challenge" :status="challenge.status" data-testid="challenge-status" />
       </div>
 
       <form v-if="!challenge" class="cq-sheet mt-6 grid gap-4 bg-panel p-5" novalidate @submit.prevent="generate">
@@ -167,8 +169,11 @@ const secondary = 'min-h-11 border-2 border-line-strong px-4 py-2.5 font-semibol
           </label>
           <TextField v-model="draftTopic" label="Tema" testid="draft-topic" hint="Por exemplo: ciclo da água." :maxlength="120" autocomplete="off" />
         </div>
+        <ul v-if="draftErrors.length" role="alert" class="list-disc cq-alert py-3 pl-8 pr-4 text-error-ink" data-testid="draft-errors">
+          <li v-for="message in draftErrors" :key="message">{{ message }}</li>
+        </ul>
         <div>
-          <button type="submit" :disabled="busy" :class="secondary" data-testid="draft-submit">Gerar rascunho com IA</button>
+          <AppButton type="submit" :disabled="busy" data-testid="draft-submit">Gerar rascunho com IA</AppButton>
         </div>
         <p class="text-sm text-muted">O rascunho é salvo sem publicar: você revisa e decide.</p>
       </form>
@@ -196,14 +201,14 @@ const secondary = 'min-h-11 border-2 border-line-strong px-4 py-2.5 font-semibol
       <p class="mt-4 min-h-6 font-semibold" role="status" data-testid="form-status">{{ status }}</p>
 
       <div class="mt-2 flex flex-wrap items-center gap-3">
-        <button type="button" :disabled="busy" :class="secondary" data-testid="save" @click="save">Salvar rascunho</button>
-        <button type="button" :disabled="busy" :class="primary" data-testid="publish" @click="publish">Publicar</button>
-        <button v-if="challenge?.status === 'published'" type="button" :disabled="busy" :class="secondary" data-testid="unpublish" @click="unpublish">Voltar para rascunho</button>
-        <button type="button" :disabled="busy || !challenge" :class="secondary" data-testid="review" @click="runReview">Revisar com IA</button>
-        <button type="button" :disabled="busy || !challenge" :class="secondary" data-testid="duplicate" @click="duplicate">Duplicar</button>
-        <button v-if="challenge" type="button" :disabled="busy" class="ml-auto min-h-11 px-4 py-2.5 font-semibold text-error-ink underline underline-offset-4 disabled:cursor-not-allowed disabled:opacity-50" data-testid="delete" @click="askDelete = true">Excluir</button>
+        <AppButton :variant="isPublished ? 'primary' : 'secondary'" :disabled="busy" data-testid="save" @click="save">{{ isPublished ? 'Salvar alterações' : 'Salvar rascunho' }}</AppButton>
+        <AppButton :disabled="busy || !challenge" data-testid="review" @click="runReview">Revisar com IA</AppButton>
+        <AppButton :disabled="busy || !challenge" data-testid="duplicate" @click="duplicate">Duplicar</AppButton>
+        <AppButton v-if="isPublished" :disabled="busy" data-testid="unpublish" @click="unpublish">Despublicar</AppButton>
+        <AppButton v-else variant="primary" :disabled="busy" data-testid="publish" @click="publish">Publicar</AppButton>
+        <AppButton v-if="challenge" variant="danger" class="ml-auto" :disabled="busy" data-testid="delete" @click="askDelete = true">Excluir</AppButton>
       </div>
-      <p v-if="!challenge" class="mt-2 text-sm text-muted">Salve o rascunho para revisar com IA ou duplicar.</p>
+      <p v-if="!challenge" class="mt-2 text-sm text-muted">Salve o rascunho para revisar com IA ou duplicar.<template v-if="props.missionId"> Ao salvar, o desafio entra na missão.</template></p>
 
       <section v-if="review" class="cq-sheet mt-8 grid gap-3 bg-panel p-5" aria-labelledby="h-review" data-testid="review-panel">
         <h2 id="h-review" ref="reviewHeading" tabindex="-1" class="font-display text-xl font-bold">Revisão da IA</h2>

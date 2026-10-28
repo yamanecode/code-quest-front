@@ -2,7 +2,7 @@
 import { CHALLENGE_TYPES, type ChallengeType } from '~/types/challenge'
 import { SKILLS } from '~/utils/skills'
 
-// Public landing page (spec §9.1). Logged-in users never see it: the route guard sends them home.
+// Public landing page (spec §9.1). Logged-in users can open it too; the header then offers a link home.
 definePageMeta({ layout: 'landing' })
 useHead({ title: 'CodeQuest · Pensamento computacional' })
 
@@ -58,7 +58,7 @@ const sectionWidth = 'mx-auto max-w-6xl px-4 sm:px-6'
 <template>
   <div>
     <!-- Hero: the quote that states the idea, and a challenge to try right away -->
-    <section :class="[sectionWidth, 'grid items-center gap-10 py-10 sm:py-14 lg:grid-cols-2 lg:gap-16']" aria-labelledby="hero-title">
+    <section :class="[sectionWidth, 'grid items-start gap-10 py-10 sm:py-14 lg:grid-cols-2 lg:gap-16']" aria-labelledby="hero-title">
       <div>
         <h1 id="hero-title" class="font-display text-3xl font-extrabold leading-[1.12] sm:text-4xl lg:text-5xl" data-testid="hero-quote">
           “Pensamento computacional é uma habilidade fundamental <span class="cq-mark cq-mark-in">para todos</span>, não apenas para cientistas da computação.”
@@ -182,7 +182,7 @@ const sectionWidth = 'mx-auto max-w-6xl px-4 sm:px-6'
     </section>
 
     <!-- AI tutor -->
-    <section id="dicas" :class="[sectionWidth, 'grid items-center gap-10 py-12 sm:py-16 lg:grid-cols-2 lg:gap-14']" aria-labelledby="dicas-title">
+    <section id="dicas" :class="[sectionWidth, 'grid items-start gap-10 py-12 sm:py-16 lg:grid-cols-2 lg:gap-14']" aria-labelledby="dicas-title">
       <div>
         <h2 id="dicas-title" :class="sectionTitle">Um tutor que pergunta em vez de responder</h2>
         <p class="mt-4 max-w-prose text-muted">O estudante não escreve para a IA: ele só aperta o botão Dica. Antes de aparecer, cada dica passa por uma verificação. Se ela revelar a solução, é descartada e substituída por uma dica de reserva.</p>
