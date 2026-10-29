@@ -46,7 +46,7 @@ describe('auth store', () => {
   })
 
   it('T-FE-AUTH-01 register creates the account and then logs in', async () => {
-    vi.mocked(authService.register).mockResolvedValue({ id: 7, username: 'bia', role: 'student' })
+    vi.mocked(authService.register).mockResolvedValue({ id: 7, username: 'bia', role: 'student', recovery_code: 'K7QM-X2PD-9WFA-3HTR' })
     vi.mocked(authService.login).mockResolvedValue({
       access_token: 'tok-2',
       token_type: 'bearer',

@@ -9,7 +9,12 @@ const SKILL_ORDER: ChallengeType[] = ['ordering', 'grouping', 'filtering', 'patt
 
 <template>
   <div class="cq-paper min-h-screen">
-    <div class="mx-auto flex max-w-6xl justify-end px-4 pt-4 sm:px-6">
+    <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 pt-4 sm:px-6">
+      <NuxtLink
+        to="/"
+        class="inline-flex min-h-11 items-center font-semibold text-muted underline-offset-4 hover:text-ink hover:underline"
+        data-testid="auth-back-home"
+      >← Voltar para a página inicial</NuxtLink>
       <ThemeToggle />
     </div>
     <div class="mx-auto grid min-h-[calc(100vh-4rem)] max-w-6xl content-center gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_28rem] lg:gap-x-16 lg:gap-y-8">
@@ -17,9 +22,6 @@ const SKILL_ORDER: ChallengeType[] = ['ordering', 'grouping', 'filtering', 'patt
         <h1 id="brand-title" class="font-display text-5xl font-extrabold sm:text-6xl">
           <span>Code</span><span class="cq-mark">Quest</span>
         </h1>
-        <p class="mt-4 text-lg leading-relaxed text-muted">
-          Pense como quem resolve problemas: treine as 4 habilidades do pensamento computacional com desafios de lógica, sem precisar programar.
-        </p>
       </section>
 
       <main class="cq-sheet p-6 sm:p-8 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-center">

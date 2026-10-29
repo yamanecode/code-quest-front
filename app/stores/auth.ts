@@ -2,9 +2,11 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import * as authService from '~/services/auth'
 import { configureHttp } from '~/services/http'
-import type { Credentials, Role } from '~/types/api'
+import type { Credentials, ResetPasswordRequest, Role } from '~/types/api'
 
 const SESSION_KEY = 'cq-session'
+// "Depois" on the pending-code reminder lasts for the session, so the next login clears it.
+export const RECOVERY_LATER_KEY = 'cq-recovery-later'
 const ROLES: readonly Role[] = ['student', 'professor']
 
 interface Session {
@@ -59,15 +61,29 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.setItem(SESSION_KEY, JSON.stringify(session))
   }
 
-  // Sign-up returns no token, so the student is logged in right after it.
-  async function register(credentials: Credentials) {
-    await authService.register(credentials)
+  // Sign-up returns no token, so the student is logged in right after it. It also returns the
+  // recovery code, which the caller shows once and must not keep.
+  async function register(credentials: Credentials): Promise<string> {
+    const created = await authService.register(credentials)
     await login(credentials)
+    return created.recovery_code
+  }
+
+  // Public call (nobody is logged in): returns the replacement recovery code.
+  async function resetPassword(request: ResetPasswordRequest): Promise<string> {
+    const replacement = await authService.resetPassword(request)
+    return replacement.recovery_code
   }
 
   function logout() {
     setSession(null)
     localStorage.removeItem(SESSION_KEY)
+    try {
+      sessionStorage.removeItem(RECOVERY_LATER_KEY)
+    }
+    catch {
+      // Storage can be blocked; the reminder then simply comes back.
+    }
   }
 
   configureHttp({
@@ -79,5 +95,5 @@ export const useAuthStore = defineStore('auth', () => {
     },
   })
 
-  return { token, role, username, isLoggedIn, home, restore, login, register, logout }
+  return { token, role, username, isLoggedIn, home, restore, login, register, resetPassword, logout }
 })

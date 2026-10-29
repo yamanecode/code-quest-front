@@ -40,6 +40,21 @@ const LIMITATIONS = [
     title: 'Sem ferramentas de supervisão dos responsáveis',
     text: 'A plataforma limita os dados coletados e não envia notificações, mas não oferece recursos para pais ou responsáveis acompanharem o uso.',
   },
+  {
+    id: 'recuperacao',
+    title: 'Recuperação de conta só pelo código',
+    text: 'Como não há e-mail, o estudante que esquece a senha depende do código de recuperação. Sem a senha e sem o código, só quem administra a plataforma consegue ajudar. Professores não têm código.',
+  },
+  {
+    id: 'nomes',
+    title: 'Nomes de usuário em uso podem ser descobertos',
+    text: 'Ao criar a conta, a plataforma avisa quando um nome já está em uso. Isso revela que o nome existe, mas nada além dele.',
+  },
+  {
+    id: 'seguranca',
+    title: 'Segurança de uma implantação pública não foi avaliada',
+    text: 'A sessão fica guardada no navegador e as senhas trafegam no corpo das requisições, o que exige HTTPS fora de um computador local. Não houve auditoria de segurança nem teste de invasão.',
+  },
 ]
 </script>
 

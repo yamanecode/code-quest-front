@@ -1,4 +1,4 @@
-import type { Credentials, LoginResponse, RegisterResponse } from '~/types/api'
+import type { Credentials, LoginResponse, RecoveryCodeReplacement, RegisterResponse, ResetPasswordRequest } from '~/types/api'
 import { apiFetch } from './http'
 
 export function register(credentials: Credentials): Promise<RegisterResponse> {
@@ -7,4 +7,8 @@ export function register(credentials: Credentials): Promise<RegisterResponse> {
 
 export function login(credentials: Credentials): Promise<LoginResponse> {
   return apiFetch<LoginResponse>('/api/auth/login', { method: 'POST', body: credentials })
+}
+
+export function resetPassword(request: ResetPasswordRequest): Promise<RecoveryCodeReplacement> {
+  return apiFetch<RecoveryCodeReplacement>('/api/auth/reset-password', { method: 'POST', body: request })
 }

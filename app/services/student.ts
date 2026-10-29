@@ -6,6 +6,7 @@ import type {
   Missions,
   Profile,
   PublicProfile,
+  RecoveryCodeIssued,
   Ranking,
   RankingQuery,
   Settings,
@@ -16,6 +17,14 @@ import { apiFetch } from './http'
 
 export function getMe(): Promise<Profile> {
   return apiFetch<Profile>('/api/me')
+}
+
+export function regenerateRecoveryCode(password: string): Promise<RecoveryCodeIssued> {
+  return apiFetch<RecoveryCodeIssued>('/api/me/recovery-code', { method: 'POST', body: { password } })
+}
+
+export async function confirmRecoveryCode(): Promise<void> {
+  await apiFetch<unknown>('/api/me/recovery-code/confirm', { method: 'POST' })
 }
 
 export function updateSettings(settings: Settings): Promise<Settings> {

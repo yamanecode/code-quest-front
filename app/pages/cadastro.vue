@@ -1,29 +1,51 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useAuthStore } from '~/stores/auth'
+import { useProfileStore } from '~/stores/profile'
 import { errorMessage } from '~/utils/format'
 
 useHead({ title: 'Criar conta · CodeQuest' })
 
 const auth = useAuthStore()
+const profile = useProfileStore()
 const username = ref('')
 const password = ref('')
 const error = ref<string | null>(null)
 const sending = ref(false)
+// The recovery code is kept here only while its modal is open (spec §3).
+const recoveryCode = ref('')
+const confirming = ref(false)
+const confirmError = ref<string | undefined>(undefined)
 
 // Only students sign up here; professor accounts are created by the backend CLI.
 async function submit() {
   error.value = null
   sending.value = true
   try {
-    await auth.register({ username: username.value, password: password.value })
-    await navigateTo('/inicio')
+    recoveryCode.value = await auth.register({ username: username.value, password: password.value })
   }
   catch (e) {
     error.value = errorMessage(e)
   }
   finally {
     sending.value = false
+  }
+}
+
+// The student is already logged in; the home opens only after the code is confirmed.
+async function confirmSaved() {
+  confirming.value = true
+  confirmError.value = undefined
+  try {
+    await profile.confirmRecoveryCode()
+    recoveryCode.value = ''
+    await navigateTo('/inicio')
+  }
+  catch (e) {
+    confirmError.value = errorMessage(e)
+  }
+  finally {
+    confirming.value = false
   }
 }
 </script>
@@ -68,6 +90,8 @@ async function submit() {
         data-testid="signup-submit"
       >{{ sending ? 'Criando conta…' : 'Criar conta' }}</button>
     </form>
+
+    <RecoveryCodeModal v-if="recoveryCode" :code="recoveryCode" :busy="confirming" :error="confirmError" @confirmed="confirmSaved" />
 
     <p class="mt-6 text-muted">
       Já tem conta?

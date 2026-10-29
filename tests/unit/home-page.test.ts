@@ -187,6 +187,9 @@ describe('student home', () => {
       username: 'ana', role: 'student', xp: 30, level: 1, title: 'Aprendiz', xp_to_next_level: 20, streak: 2,
       missions_completed: 0, solved_by_skill: { ordering: 2, grouping: 0, filtering: 0, pattern: 0 }, first_try_solves: 1,
       profile_public: false,
+      recovery_code_active: true,
+      recovery_code_created_at: '2026-10-01T12:00:00-03:00',
+      recovery_code_confirmed: true,
       badges: [
         badge('first_solve', 'Primeiro desafio', '2026-10-18T10:00:00-03:00'),
         badge('streak_3', 'Três dias seguidos', null),

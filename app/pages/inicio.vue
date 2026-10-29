@@ -38,6 +38,10 @@ function toggleGroup(key: string) {
   folded.value = next
 }
 
+function openProfile() {
+  navigateTo('/perfil')
+}
+
 onMounted(() => {
   play.loadHome()
   classrooms.load()
@@ -52,6 +56,11 @@ onMounted(() => {
     </p>
 
     <WelcomeCard />
+    <PendingRecoveryModal
+      v-if="profileStore.showRecoveryReminder"
+      @profile="openProfile"
+      @later="profileStore.postponeReminder()"
+    />
 
     <p v-if="play.homeLoading && !missions" class="text-muted" aria-live="polite">Carregando suas missões…</p>
 

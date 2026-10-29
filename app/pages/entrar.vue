@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { useCountdown } from '~/composables/useCountdown'
 import { useAuthStore } from '~/stores/auth'
-import { errorMessage } from '~/utils/format'
+import { errorMessage, errorRetryAfter, errorStatus } from '~/utils/format'
 
 useHead({ title: 'Entrar · CodeQuest' })
 
@@ -10,8 +11,11 @@ const username = ref('')
 const password = ref('')
 const error = ref<string | null>(null)
 const sending = ref(false)
+const { seconds: waitLeft, start: startWait } = useCountdown()
+const waiting = computed(() => waitLeft.value > 0)
 
 async function submit() {
+  if (sending.value || waiting.value) return
   error.value = null
   sending.value = true
   try {
@@ -20,6 +24,8 @@ async function submit() {
   }
   catch (e) {
     error.value = errorMessage(e)
+    // Too many failed logins: the API says how long to wait (429 retry_after).
+    if (errorStatus(e) === 429) startWait(errorRetryAfter(e))
   }
   finally {
     sending.value = false
@@ -35,6 +41,9 @@ async function submit() {
     <form class="mt-6 grid gap-5" novalidate @submit.prevent="submit">
       <TextField v-model="username" label="Nome de usuário" testid="login-username" autocomplete="username" />
       <TextField v-model="password" label="Senha" type="password" testid="login-password" autocomplete="current-password" />
+      <p class="-mt-2">
+        <NuxtLink to="/recuperar-senha" class="font-semibold text-ink underline underline-offset-4 hover:decoration-2" data-testid="login-forgot-link">Esqueci minha senha</NuxtLink>
+      </p>
 
       <p
         v-if="error"
@@ -42,10 +51,11 @@ async function submit() {
         class="cq-alert px-3 py-2 text-error-ink"
         data-testid="login-error"
       >{{ error }}</p>
+      <p v-if="waiting" role="status" class="text-sm text-muted" data-testid="login-wait">Tente de novo em {{ waitLeft }} s.</p>
 
       <button
         type="submit"
-        :disabled="sending"
+        :disabled="sending || waiting"
         class="bg-go px-5 py-3 font-display text-lg font-bold text-on-go transition-colors hover:bg-go-hover disabled:cursor-wait disabled:opacity-60 cq-go-shadow"
         data-testid="login-submit"
       >{{ sending ? 'Entrando…' : 'Entrar' }}</button>

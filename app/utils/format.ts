@@ -20,3 +20,20 @@ export function errorLines(error: unknown): string[] {
   if (Array.isArray(errors) && errors.length > 0) return errors.map(String)
   return [errorMessage(error)]
 }
+
+// Fields the HTTP layer adds to the Errors it throws (services/http.ts), read without importing it.
+export function errorDetail(error: unknown): string | null {
+  const detail = (error as { detail?: unknown } | null)?.detail
+  return typeof detail === 'string' ? detail : null
+}
+
+export function errorStatus(error: unknown): number | null {
+  const status = (error as { status?: unknown } | null)?.status
+  return typeof status === 'number' ? status : null
+}
+
+// Seconds to wait before trying again, when the API sent them (429 `retry_after`).
+export function errorRetryAfter(error: unknown): number {
+  const seconds = (error as { retryAfter?: unknown } | null)?.retryAfter
+  return typeof seconds === 'number' ? seconds : 0
+}

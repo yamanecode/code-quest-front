@@ -38,6 +38,9 @@ const profile: Profile = {
   solved_by_skill: { ordering: 4, grouping: 0, filtering: 2, pattern: 16 },
   first_try_solves: 5,
   profile_public: false,
+  recovery_code_active: true,
+  recovery_code_created_at: '2026-10-01T12:00:00-03:00',
+  recovery_code_confirmed: true,
   badges: [
     badge({ earned: true, earned_at: '2026-10-18T10:00:00-03:00' }),
     badge({ code: 'streak_3', name: 'Três dias seguidos', description: 'Sequência de 3 dias', emoji: '🔥', earned: true, earned_at: '2026-10-20T10:00:00-03:00' }),

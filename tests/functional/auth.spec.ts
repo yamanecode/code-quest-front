@@ -11,6 +11,9 @@ test('FT-UI-01 a visitor signs up with username and password and lands on the st
   await page.getByTestId('signup-password').fill(STUDENT_PASSWORD)
   await page.getByTestId('signup-submit').click()
 
+  // The recovery code comes first (FT-UI-40); the home opens only after it is saved.
+  await page.getByTestId('recovery-confirm-check').check()
+  await page.getByTestId('recovery-continue').click()
   await expect(page).toHaveURL('/inicio')
   await expect(page.getByTestId('header-level')).toBeVisible()
 })

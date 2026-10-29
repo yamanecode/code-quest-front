@@ -4,6 +4,7 @@ import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime'
 import EntrarPage from '~/pages/entrar.vue'
 import CadastroPage from '~/pages/cadastro.vue'
 import * as authService from '~/services/auth'
+import * as studentService from '~/services/student'
 import { ApiError } from '~/services/http'
 import { useAuthStore } from '~/stores/auth'
 
@@ -14,11 +15,13 @@ vi.mock('~/services/auth', () => ({
   login: vi.fn(),
   register: vi.fn(),
 }))
+vi.mock('~/services/student', () => ({ confirmRecoveryCode: vi.fn() }))
 
 beforeEach(() => {
   useAuthStore().logout()
   vi.mocked(authService.login).mockReset()
   vi.mocked(authService.register).mockReset()
+  vi.mocked(studentService.confirmRecoveryCode).mockReset()
   navigateToMock.mockReset()
 })
 
@@ -64,6 +67,28 @@ describe('login page', () => {
   })
 })
 
+describe('login rate limit', () => {
+  it('T-FE-AUTH-PAGE-03 a 429 with retry_after disables Entrar and counts down', async () => {
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] })
+    vi.mocked(authService.login).mockRejectedValue(
+      new ApiError(429, 'too_many_attempts', 'Muitas tentativas. Aguarde alguns minutos e tente de novo.', 2),
+    )
+    const wrapper = await mountSuspended(EntrarPage)
+
+    await fill(wrapper, 'login', 'ana', 'senha-errada')
+
+    expect(wrapper.get('[data-testid="login-error"]').text()).toContain('Muitas tentativas')
+    expect(wrapper.get('[data-testid="login-wait"]').text()).toBe('Tente de novo em 2 s.')
+    expect(wrapper.get('[data-testid="login-submit"]').attributes('disabled')).toBeDefined()
+
+    vi.advanceTimersByTime(2000)
+    await flushPromises()
+    expect(wrapper.find('[data-testid="login-wait"]').exists()).toBe(false)
+    expect(wrapper.get('[data-testid="login-submit"]').attributes('disabled')).toBeUndefined()
+    vi.useRealTimers()
+  })
+})
+
 describe('sign-up page', () => {
   it('T-FE-AUTH-PAGE-01 warns not to use the real name and asks for no join code', async () => {
     const wrapper = await mountSuspended(CadastroPage)
@@ -88,14 +113,44 @@ describe('sign-up page', () => {
     expect(navigateToMock).not.toHaveBeenCalled()
   })
 
-  it('T-FE-AUTH-PAGE-02 a new student is logged in and goes to the student home', async () => {
-    vi.mocked(authService.register).mockResolvedValue({ id: 3, username: 'bia', role: 'student' })
+  it('T-FE-AUTH-PAGE-02 a new student is logged in and sees the recovery code before the home', async () => {
+    vi.mocked(authService.register).mockResolvedValue({ id: 3, username: 'bia', role: 'student', recovery_code: 'K7QM-X2PD-9WFA-3HTR' })
     vi.mocked(authService.login).mockResolvedValue({ access_token: 't', token_type: 'bearer', role: 'student' })
+    vi.mocked(studentService.confirmRecoveryCode).mockResolvedValue(undefined)
     const wrapper = await mountSuspended(CadastroPage)
 
     await fill(wrapper, 'signup', 'bia', 'segredo123')
 
     expect(authService.register).toHaveBeenCalledWith({ username: 'bia', password: 'segredo123' })
+    expect(wrapper.find('[data-testid="recovery-modal"]').exists()).toBe(true)
+    expect(navigateToMock).not.toHaveBeenCalled()
+
+    await wrapper.get('[data-testid="recovery-confirm-check"]').setValue(true)
+    await wrapper.get('[data-testid="recovery-continue"]').trigger('click')
+    await flushPromises()
+
+    expect(studentService.confirmRecoveryCode).toHaveBeenCalledTimes(1)
+    expect(navigateToMock).toHaveBeenCalledWith('/inicio')
+    expect(wrapper.find('[data-testid="recovery-modal"]').exists()).toBe(false)
+  })
+
+  it('T-FE-REC-08 a failed confirmation shows the error, keeps the modal and lets the student retry', async () => {
+    vi.mocked(authService.register).mockResolvedValue({ id: 3, username: 'bia', role: 'student', recovery_code: 'K7QM-X2PD-9WFA-3HTR' })
+    vi.mocked(authService.login).mockResolvedValue({ access_token: 't', token_type: 'bearer', role: 'student' })
+    vi.mocked(studentService.confirmRecoveryCode)
+      .mockRejectedValueOnce(new ApiError(0, 'network_error', 'Sem conexão.'))
+      .mockResolvedValueOnce(undefined)
+    const wrapper = await mountSuspended(CadastroPage)
+    await fill(wrapper, 'signup', 'bia', 'segredo123')
+    await wrapper.get('[data-testid="recovery-confirm-check"]').setValue(true)
+
+    await wrapper.get('[data-testid="recovery-continue"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.get('[data-testid="recovery-error"]').text()).toBe('Sem conexão.')
+    expect(navigateToMock).not.toHaveBeenCalled()
+
+    await wrapper.get('[data-testid="recovery-continue"]').trigger('click')
+    await flushPromises()
     expect(navigateToMock).toHaveBeenCalledWith('/inicio')
   })
 })

@@ -39,6 +39,12 @@ describe('auth.global middleware', () => {
     expect(visit('/cadastro')).toBeUndefined()
   })
 
+  it('T-FE-REC-07 /recuperar-senha is public like /entrar: a visitor may open it, a logged-in user is sent home', () => {
+    expect(visit('/recuperar-senha')).toBeUndefined()
+    saveSession('student')
+    expect(visit('/recuperar-senha')).toBe('/inicio')
+  })
+
   it('T-FE-MW-02 a student cannot open professor pages', () => {
     saveSession('student')
 

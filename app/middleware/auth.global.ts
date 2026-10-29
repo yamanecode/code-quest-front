@@ -2,7 +2,7 @@ import { useAuthStore } from '~/stores/auth'
 import type { Role } from '~/types/api'
 
 // Pages for visitors only: a logged-in user who opens one goes to their home.
-const PUBLIC_PATHS = ['/entrar', '/cadastro']
+const PUBLIC_PATHS = ['/entrar', '/cadastro', '/recuperar-senha']
 // Open to everyone, logged in or not (the landing page stays reachable to read it again).
 const OPEN_PATHS = ['/', '/limitacoes']
 // Open to any logged-in user, whatever the role.

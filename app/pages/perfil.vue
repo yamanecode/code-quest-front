@@ -263,6 +263,8 @@ onMounted(() => profileStore.load())
         </ul>
       </section>
 
+      <RecoveryCard />
+
       <section aria-labelledby="h-settings" class="border-t border-line pt-8">
         <h2 id="h-settings" class="font-display text-2xl font-bold">Preferências</h2>
         <div class="mt-4 grid max-w-2xl gap-5">

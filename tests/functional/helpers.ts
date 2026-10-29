@@ -56,12 +56,22 @@ export interface Student {
   username: string
   password: string
   token: string
+  recoveryCode: string
 }
 
-export async function createStudent(prefix = 'aluno'): Promise<Student> {
+// By default the student has already saved the recovery code, so the reminder dialog does not
+// cover the home page; pass `confirmCode: false` for a student who has not.
+export async function createStudent(prefix = 'aluno', options: { confirmCode?: boolean } = {}): Promise<Student> {
   const username = unique(prefix)
-  await ok(api('/api/auth/register', { body: { username, password: STUDENT_PASSWORD } }), 'register')
-  return { username, password: STUDENT_PASSWORD, token: await login(username, STUDENT_PASSWORD) }
+  const created = await ok(
+    api<{ recovery_code: string }>('/api/auth/register', { body: { username, password: STUDENT_PASSWORD } }),
+    'register',
+  )
+  const token = await login(username, STUDENT_PASSWORD)
+  if (options.confirmCode !== false) {
+    await ok(api('/api/me/recovery-code/confirm', { method: 'POST', token }), 'confirm recovery code')
+  }
+  return { username, password: STUDENT_PASSWORD, token, recoveryCode: created.recovery_code }
 }
 
 // ---------- challenge fixtures (texts are known, ids are not) ----------

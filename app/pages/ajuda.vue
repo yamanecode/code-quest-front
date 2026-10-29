@@ -190,6 +190,16 @@ function levelRange(from: number, to: number | null) {
       </p>
     </section>
 
+    <section class="mt-12" aria-labelledby="h-forgot" data-testid="help-forgot">
+      <h2 id="h-forgot" class="font-display text-2xl font-bold">Esqueci minha senha</h2>
+      <p class="mt-2 leading-relaxed">
+        Quando você cria a conta, recebe um código de recuperação. Ele aparece uma vez só e é a única forma de voltar para a
+        conta se você esquecer a senha, já que não pedimos e-mail. Se isso acontecer, abra <strong>Esqueci minha senha</strong>
+        na tela de entrada e digite seu nome de usuário, o código e uma senha nova. Você ganha um código novo, e o antigo
+        deixa de funcionar. Para gerar outro código quando quiser, use o seu perfil: é preciso digitar a senha.
+      </p>
+    </section>
+
     </div>
 
     <section
@@ -210,6 +220,7 @@ function levelRange(from: number, to: number | null) {
         <li>Depois que um desafio recebe respostas, só os textos podem mudar. Use <strong>Duplicar</strong> para alterar a estrutura.</li>
         <li>Para tirar alguém da turma, use <strong>Remover</strong> na tabela de progresso. Quem entrou por engano pode voltar com o mesmo código: primeiro remova, depois use <strong>Gerar novo código</strong>.</li>
         <li>Defina a meta semanal da turma ou deixe que ela seja calculada automaticamente.</li>
+        <li>Contas de professor não têm código de recuperação: se esquecer a senha, peça a quem administra a plataforma para redefini-la.</li>
       </ul>
     </section>
   </article>

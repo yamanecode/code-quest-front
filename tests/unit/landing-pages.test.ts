@@ -90,7 +90,7 @@ describe('limitations page', () => {
   it('T-FE-LAND-08 lists the limitations, including the AI provider that has to be paid for', async () => {
     const wrapper = await mountSuspended(LimitationsPage, { route: '/limitacoes' })
 
-    for (const id of ['comercial', 'provedor-ia', 'avaliacao', 'dicas', 'qualidade-ia', 'responsaveis']) {
+    for (const id of ['comercial', 'provedor-ia', 'avaliacao', 'dicas', 'qualidade-ia', 'responsaveis', 'recuperacao', 'nomes', 'seguranca']) {
       expect(wrapper.find(`[data-testid="limitation-${id}"]`).exists(), id).toBe(true)
     }
     const provider = wrapper.get('[data-testid="limitation-provedor-ia"]').text()

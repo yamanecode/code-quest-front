@@ -39,7 +39,7 @@ const HINT_LEVELS = [
 
 const FOR_PROFESSORS = [
   { title: 'Turma com código', text: 'Cada turma recebe um código de 6 caracteres. O estudante entra com ele, sai quando quiser e pode participar de várias turmas ao mesmo tempo.' },
-  { title: 'Um editor para cada tipo', text: 'O formulário de cada tipo de desafio avisa na hora quando alguma regra não foi cumprida.' },
+  { title: 'Um editor para cada tipo', text: 'O formulário de cada tipo de desafio avisa na hora quando alguma regra não foi cumprida, e o servidor confere as regras de novo ao salvar e ao publicar.' },
   { title: 'Revisão e rascunho com IA', text: 'A revisão sugere melhorias de clareza e nunca altera o desafio. O rascunho gerado fica guardado como rascunho até o professor revisar e publicar.' },
 ]
 
@@ -77,12 +77,13 @@ const sectionWidth = 'mx-auto max-w-6xl px-4 sm:px-6'
           >Criar conta de estudante</NuxtLink>
           <NuxtLink to="/entrar" class="cq-btn-outline inline-flex items-center" data-testid="hero-login">Já tenho conta</NuxtLink>
         </div>
-        <p class="mt-5 text-sm text-muted">Projeto de pesquisa do Trabalho de Conclusão de Curso em Engenharia da Computação, Facens.</p>
+        <p class="mt-5 text-sm text-muted">Projeto de pesquisa do Trabalho de Conclusão de Curso em Engenharia da Computação, UniFacens.</p>
         <p class="mt-1 text-sm text-muted">Para criar a conta, basta um nome de usuário e uma senha. Não use seu nome real.</p>
       </div>
 
-      <div class="relative min-w-0">
-        <p class="cq-postit absolute -top-4 right-4 z-10 px-3 py-2 font-display text-sm font-bold">Experimente: um desafio de cada habilidade</p>
+      <div class="min-w-0">
+        <!-- In the flow on purpose: .cq-postit sets position: relative, which would beat an `absolute` utility. -->
+        <p class="cq-postit z-10 -mb-5 ml-auto mr-6 w-44 px-4 pb-3 pt-4 text-center font-display text-sm font-bold leading-snug">Experimente: um desafio de cada habilidade</p>
         <DemoChallenge />
       </div>
     </section>
@@ -109,7 +110,7 @@ const sectionWidth = 'mx-auto max-w-6xl px-4 sm:px-6'
     <!-- The four skills, one ruled row each -->
     <section id="habilidades" :class="[sectionWidth, 'py-12 sm:py-16']" aria-labelledby="habilidades-title">
       <h2 id="habilidades-title" :class="[sectionTitle, 'max-w-3xl']">Quatro habilidades, um tipo de desafio para cada uma</h2>
-      <p class="mt-3 max-w-prose text-lg text-muted">A habilidade está na estrutura do problema, não no assunto. Um desafio de ordenar passos pode falar de cozinha, de futebol ou da escola.</p>
+      <p class="mt-3 max-w-prose text-lg text-muted">A habilidade está na forma do problema, não no assunto: qualquer tema serve para os quatro tipos.</p>
       <ul class="mt-8 border-t-2 border-line-strong" aria-label="As 4 habilidades">
         <li
           v-for="type in CHALLENGE_TYPES"
@@ -138,7 +139,7 @@ const sectionWidth = 'mx-auto max-w-6xl px-4 sm:px-6'
             <span class="cq-num grid h-12 w-12 place-items-center border-2 border-line-strong bg-panel text-2xl font-extrabold text-ink" aria-hidden="true">1</span>
             <div>
               <h3 class="font-display text-xl font-bold">Escolha uma missão</h3>
-              <p class="mt-1 max-w-prose">Uma missão é um conjunto de desafios sobre um mesmo tema. A Trilha CodeQuest reúne as missões que já vêm na plataforma, abertas a todos os estudantes. Se o seu professor criou uma turma, entre com o código de 6 caracteres para ver as missões dela. Dentro de uma missão, os desafios podem ser feitos em qualquer ordem.</p>
+              <p class="mt-1 max-w-prose">Uma missão é um conjunto de desafios, que pode misturar as quatro habilidades. A Trilha CodeQuest reúne as missões que já vêm na plataforma, abertas a todos os estudantes. Se o seu professor criou uma turma, entre com o código de 6 caracteres para ver as missões dela. Dentro de uma missão, os desafios podem ser feitos em qualquer ordem.</p>
             </div>
           </li>
           <li class="grid grid-cols-[3rem_minmax(0,1fr)] gap-4">
@@ -185,7 +186,7 @@ const sectionWidth = 'mx-auto max-w-6xl px-4 sm:px-6'
     <section id="dicas" :class="[sectionWidth, 'grid items-start gap-10 py-12 sm:py-16 lg:grid-cols-2 lg:gap-14']" aria-labelledby="dicas-title">
       <div>
         <h2 id="dicas-title" :class="sectionTitle">Um tutor que pergunta em vez de responder</h2>
-        <p class="mt-4 max-w-prose text-muted">O estudante não escreve para a IA: ele só aperta o botão Dica. Antes de aparecer, cada dica passa por uma verificação. Se ela revelar a solução, é descartada e substituída por uma dica de reserva.</p>
+        <p class="mt-4 max-w-prose text-muted">O estudante não escreve para a IA: ele só aperta o botão Dica. A IA recebe o desafio, nunca dados pessoais, e cada dica é verificada antes de aparecer: se revelar a resposta, é trocada por uma dica de reserva.</p>
         <ul class="mt-5 grid gap-3" aria-label="Níveis das dicas">
           <li v-for="level in HINT_LEVELS" :key="level.when" class="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-3">
             <b class="font-display text-ink">{{ level.when }}</b>

@@ -23,6 +23,9 @@ const profile: Profile = {
   solved_by_skill: { ordering: 5, grouping: 2, filtering: 0, pattern: 1 },
   first_try_solves: 3,
   profile_public: false,
+  recovery_code_active: true,
+  recovery_code_created_at: '2026-10-01T12:00:00-03:00',
+  recovery_code_confirmed: true,
   badges: [],
 }
 

@@ -29,6 +29,21 @@ export interface RegisterResponse {
   id: number
   username: string
   role: Role
+  recovery_code: string // shown once; never stored by the front
+}
+
+export interface ResetPasswordRequest {
+  username: string
+  recovery_code: string
+  new_password: string
+}
+
+export interface RecoveryCodeReplacement {
+  recovery_code: string
+}
+
+export interface RecoveryCodeIssued extends RecoveryCodeReplacement {
+  created_at: string
 }
 
 export interface LoginResponse {
@@ -162,6 +177,9 @@ export interface Profile {
   first_try_solves: number
   profile_public: boolean
   badges: ProfileBadge[]
+  recovery_code_active: boolean
+  recovery_code_created_at: string | null
+  recovery_code_confirmed: boolean
 }
 
 export interface Settings {
