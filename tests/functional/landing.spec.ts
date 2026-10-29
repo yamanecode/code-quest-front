@@ -85,17 +85,23 @@ test('FT-UI-20 on a phone the sections sit behind a menu button that closes on c
   await expect(page.getByTestId('landing-header')).toBeInViewport()
 })
 
-test('FT-UI-20 a logged-in student who opens the root goes to the home, and a professor to theirs', { tag: ['@UI-20'] }, async ({ page }) => {
+test('FT-UI-20 a logged-in user who opens the root still sees the landing page, with a link to their home', { tag: ['@UI-20'] }, async ({ page }) => {
   const student = await createStudent()
   await loginUi(page, student.username, student.password)
   await expect(page).toHaveURL('/inicio')
 
   await page.goto('/')
+  await expect(page).toHaveURL('/')
+  await expect(page.getByTestId('landing-login')).toHaveCount(0)
+  await page.getByTestId('landing-go-home').click()
   await expect(page).toHaveURL('/inicio')
 
   await page.getByTestId('nav-sair').click()
   await loginProfessorUi(page)
+  await expect(page).toHaveURL(/\/professor/)
   await page.goto('/')
+  await expect(page).toHaveURL('/')
+  await page.getByTestId('landing-go-home').click()
   await expect(page).toHaveURL(/\/professor/)
 })
 
@@ -117,6 +123,7 @@ test('FT-UI-21 the limitations page opens from the top bar and states that the A
 test('FT-UI-21 a logged-in student can open the limitations page and go back to the home', { tag: ['@UI-21'] }, async ({ page }) => {
   const student = await createStudent()
   await loginUi(page, student.username, student.password)
+  await expect(page).toHaveURL('/inicio') // wait for the login to finish before leaving the page
 
   await page.goto('/limitacoes')
   await expect(page).toHaveURL('/limitacoes')

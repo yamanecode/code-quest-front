@@ -136,6 +136,10 @@ const generate = () => run(async () => {
     draftErrors.value = ['Escreva o tema do rascunho.']
     return
   }
+  if (topic.length < 3) {
+    draftErrors.value = ['O tema precisa ter de 3 a 200 caracteres.']
+    return
+  }
   const draft = await professor.generateDraft({ type: draftType.value, topic, mission_id: props.missionId ?? undefined })
   await navigateTo(withMission(`/professor/desafios/${draft.id}`))
 }, draftErrors)
@@ -167,7 +171,7 @@ const remove = () => run(async () => {
               <option v-for="type in CHALLENGE_TYPES" :key="type" :value="type">{{ SKILLS[type].label }}</option>
             </select>
           </label>
-          <TextField v-model="draftTopic" label="Tema" testid="draft-topic" hint="Por exemplo: ciclo da água." :maxlength="120" autocomplete="off" />
+          <TextField v-model="draftTopic" label="Tema" testid="draft-topic" hint="Por exemplo: ciclo da água." :maxlength="200" autocomplete="off" />
         </div>
         <ul v-if="draftErrors.length" role="alert" class="list-disc cq-alert py-3 pl-8 pr-4 text-error-ink" data-testid="draft-errors">
           <li v-for="message in draftErrors" :key="message">{{ message }}</li>

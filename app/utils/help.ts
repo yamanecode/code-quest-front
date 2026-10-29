@@ -4,6 +4,9 @@ export const HELP = {
   title:
     'Seu título muda com o nível: Aprendiz, Explorador(a), Estrategista, Arquiteto(a) de soluções e Mestre do pensamento.',
   xp: 'Você ganha XP só na primeira vez que acerta cada desafio: 10 XP de primeira, 5 XP depois de 1 ou 2 erros e 2 XP depois de 3 erros ou mais.',
+  hints:
+    'Você pode pedir quantas dicas quiser, com uma pequena espera entre elas. Elas guiam o raciocínio sem dar a resposta e não dão nem tiram XP.',
+  solved: 'Um desafio resolvido fica encerrado: você vê a explicação, mas não responde de novo nem pede dicas.',
   streak: 'Conta os dias seguidos em que você resolveu pelo menos um desafio; ela não dá XP.',
   firstTry: 'Desafios que você acertou na primeira tentativa, cada um valendo 10 XP.',
   missions: 'Missões em que você resolveu todos os desafios.',

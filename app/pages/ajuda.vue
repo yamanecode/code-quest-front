@@ -184,9 +184,9 @@ function levelRange(from: number, to: number | null) {
     <section class="mt-12" aria-labelledby="h-hints">
       <h2 id="h-hints" class="font-display text-2xl font-bold">Dicas</h2>
       <p class="mt-2 leading-relaxed">
-        Travou? Use o botão Dica. São até 5 dicas por desafio, com uma pequena espera entre uma e outra, e cada nova dica ajuda
+        Travou? Use o botão Dica. Não há limite de dicas, só uma pequena espera entre uma e outra, e cada nova dica ajuda
         um pouco mais. A dica guia o seu raciocínio, mas nunca entrega a resposta. Depois do primeiro erro em um desafio você
-        também recebe uma dica automática, que não conta no limite.
+        também recebe uma dica automática, que não entra na espera. Um desafio resolvido fica encerrado: você vê a explicação, mas não responde de novo.
       </p>
     </section>
 

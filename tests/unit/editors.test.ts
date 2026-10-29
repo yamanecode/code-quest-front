@@ -161,3 +161,45 @@ describe('challenge editors', () => {
     }
   })
 })
+
+describe('template rules mirror (backend alignment)', () => {
+  const base = (type: ChallengeType): FormState => ({ ...emptyForm(type), title: 'Um título', statement: STATEMENT })
+
+  it('T-FE-RULES-01 repeated texts are compared trimmed and ignoring case', () => {
+    const form = base('ordering')
+    form.items = [
+      { id: 'a', text: 'Lavar' },
+      { id: 'b', text: ' lavar ' },
+      { id: 'c', text: 'Secar' },
+    ]
+    expect(validateForm(form).join(' ')).toContain('não podem se repetir')
+  })
+
+  it('T-FE-RULES-01 grouping checks etapas and tarefas as one set', () => {
+    const form = base('grouping')
+    form.groups = [{ id: 'g1', text: 'Cozinhar' }, { id: 'g2', text: 'Servir' }]
+    form.items = [
+      { id: 'a', text: 'cozinhar' },
+      { id: 'b', text: 'Lavar' },
+      { id: 'c', text: 'Cortar' },
+      { id: 'd', text: 'Arrumar' },
+    ]
+    form.assignment = { a: 'g1', b: 'g1', c: 'g2', d: 'g2' }
+    expect(validateForm(form).join(' ')).toContain('Etapas e tarefas: os textos não podem se repetir')
+  })
+
+  it('T-FE-RULES-02 pattern options accept up to 120 characters, sequence terms only 40', () => {
+    const form = base('pattern')
+    form.sequence = ['1', '2', '3']
+    form.options = ['a', 'b', 'c', 'd'].map((id, i) => ({ id, text: i === 0 ? 'x'.repeat(120) : `op ${i}` }))
+    form.correct = 'a'
+    expect(validateForm(form)).toEqual([])
+
+    form.options[0]!.text = 'x'.repeat(121)
+    expect(validateForm(form).join(' ')).toContain('Opções: cada texto')
+
+    form.options[0]!.text = 'ok'
+    form.sequence = ['1', '2', 'y'.repeat(41)]
+    expect(validateForm(form).join(' ')).toContain('Sequência: cada termo')
+  })
+})

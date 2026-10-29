@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { useChallenge } from '~/composables/useChallenge'
 import { usePlayStore } from '~/stores/play'
+import { HELP } from '~/utils/help'
 
 definePageMeta({ layout: 'app', compactStats: true })
 
@@ -23,7 +24,6 @@ const {
   outcome,
   submitError,
   hints,
-  hintsLeft,
   hintLoading,
   hintError,
   cooldown,
@@ -48,7 +48,7 @@ const backLink = computed(() =>
 const hintLabel = computed(() => {
   if (hintLoading.value) return 'Pedindo dica…'
   if (cooldown.value > 0) return `Dica em ${cooldown.value} s`
-  return `Dica (${hintsLeft.value} ${hintsLeft.value === 1 ? 'restante' : 'restantes'})`
+  return 'Dica'
 })
 
 // Why Enviar is disabled, in the words of the challenge type (shown under the buttons).
@@ -59,7 +59,7 @@ const SUBMIT_HELP: Record<string, string> = {
   pattern: 'Escolha uma opção para enviar.',
 }
 const submitHelp = computed(() => {
-  if (!challenge.value || outcome.value || sending.value || canSubmit.value) return ''
+  if (!challenge.value || solved.value || outcome.value || sending.value || canSubmit.value) return ''
   return SUBMIT_HELP[challenge.value.type] ?? ''
 })
 
@@ -100,43 +100,48 @@ async function goNext() {
       <SkillTag :type="challenge.type" />
       <h1 class="mt-3 font-display text-4xl font-extrabold leading-tight" data-testid="challenge-title">{{ challenge.title }}</h1>
       <p class="mt-3 whitespace-pre-line text-lg leading-relaxed" data-testid="challenge-statement">{{ challenge.statement }}</p>
-      <p v-if="challenge.solved && !outcome" class="mt-3 text-sm text-muted" data-testid="challenge-already-solved">
-        ✓ Você já resolveu este desafio. Pode responder de novo para treinar, mas não ganha XP outra vez.
-      </p>
+      <div v-if="solved && !outcome" class="cq-sheet mt-4 px-5 py-4" data-testid="challenge-already-solved">
+        <p class="text-sm font-semibold text-success">✓ Você já resolveu este desafio</p>
+        <p class="mt-1 text-sm text-muted">Ele está encerrado: não dá para responder de novo nem pedir dicas.</p>
+        <div v-if="challenge.explanation" class="mt-3 border-t border-line pt-3" data-testid="challenge-explanation">
+          <p class="text-sm font-semibold text-muted">Por que essa é a resposta</p>
+          <p class="mt-1 leading-relaxed">{{ challenge.explanation }}</p>
+        </div>
+      </div>
 
       <section class="cq-sheet mt-6 bg-panel p-4 sm:p-6" aria-label="Sua resposta">
         <OrderingChallenge
           v-if="challenge.type === 'ordering'"
           :key="`o-${challenge.id}`"
           :content="challenge.content"
-          :disabled="outcome !== null"
+          :disabled="outcome !== null || solved"
           @change="setAnswer"
         />
         <GroupingChallenge
           v-else-if="challenge.type === 'grouping'"
           :key="`g-${challenge.id}`"
           :content="challenge.content"
-          :disabled="outcome !== null"
+          :disabled="outcome !== null || solved"
           @change="setAnswer"
         />
         <FilteringChallenge
           v-else-if="challenge.type === 'filtering'"
           :key="`f-${challenge.id}`"
           :content="challenge.content"
-          :disabled="outcome !== null"
+          :disabled="outcome !== null || solved"
           @change="setAnswer"
         />
         <PatternChallenge
           v-else
           :key="`p-${challenge.id}`"
           :content="challenge.content"
-          :disabled="outcome !== null"
+          :disabled="outcome !== null || solved"
           @change="setAnswer"
         />
 
         <div class="mt-6 flex flex-wrap items-center gap-3">
           <button
-            v-if="!outcome"
+            v-if="!outcome && !solved"
             type="button"
             :disabled="!canSubmit"
             class="bg-go px-6 py-3 font-display text-lg font-bold text-on-go transition-colors hover:bg-go-hover disabled:cursor-not-allowed disabled:opacity-50 cq-go-shadow"
@@ -145,7 +150,7 @@ async function goNext() {
             @click="submit"
           >{{ sending ? 'Enviando…' : 'Enviar' }}</button>
 
-          <span class="inline-flex items-center gap-2">
+          <span v-if="!solved" class="inline-flex items-center gap-2">
             <button
               type="button"
               :disabled="!canHint"
@@ -156,7 +161,7 @@ async function goNext() {
             <HelpTip
               topic="hints"
               label="Dicas"
-              text="Você pode pedir até 5 dicas por desafio, com uma pequena espera entre elas. Elas guiam o raciocínio sem dar a resposta e não dão nem tiram XP."
+              :text="HELP.hints"
             />
           </span>
         </div>

@@ -160,27 +160,35 @@ test('FT-UI-06 reaching 50 XP shows the level-up', { tag: ['@UI-06'] }, async ({
   await expect(page.getByTestId('header-level')).toContainText('Nível 2')
 })
 
-test('FT-UI-07 the hint button counts down, shows the hint, waits and is disabled at zero', { tag: ['@UI-07'] }, async ({ page }) => {
+test('FT-UI-07 the hint button counts down, shows each hint and has no limit', { tag: ['@UI-07'] }, async ({ page }) => {
   const { student, challenges } = await setup(['ordering'])
   await loginStudentUi(page, student)
   await page.goto(`/desafios/${challenges[0]!.id}`)
   const button = page.getByTestId('challenge-hint')
 
-  await expect(button).toHaveText(/Dica \(5 restantes\)/)
+  await expect(button).toHaveText('Dica')
   await button.click()
   await expect(page.getByTestId('hint-1')).toContainText('Dica nível 1')
   await expect(button).toBeDisabled()
   await expect(button).toHaveText(/\d+ s/) // cooldown countdown
 
-  for (let used = 2; used <= 5; used++) {
+  for (let used = 2; used <= 6; used++) {
     await expect(button).toBeEnabled({ timeout: 10_000 })
     await button.click()
     await expect(page.getByTestId(`hint-${used}`)).toBeVisible()
   }
-  await expect(button).toBeDisabled()
-  await page.waitForTimeout(2500) // longer than the cooldown: still disabled because none are left
-  await expect(button).toBeDisabled()
-  await expect(button).toHaveText(/0 restantes|sem dicas|esgot/i)
+  await expect(button).toBeEnabled({ timeout: 10_000 }) // a sixth hint was shown: still no cap
+})
+
+test('FT-UI-07 a solved challenge is closed: no Enviar, no Dica, the explanation is shown', { tag: ['@UI-07'] }, async ({ page }) => {
+  const { student, challenges } = await setup(['ordering'])
+  await solveViaApi(student, challenges[0]!)
+  await loginStudentUi(page, student)
+  await page.goto(`/desafios/${challenges[0]!.id}`)
+
+  await expect(page.getByTestId('challenge-already-solved')).toBeVisible()
+  await expect(page.getByTestId('challenge-submit')).toHaveCount(0)
+  await expect(page.getByTestId('challenge-hint')).toHaveCount(0)
 })
 
 for (const type of TYPES) {

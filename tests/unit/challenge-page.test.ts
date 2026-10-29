@@ -63,7 +63,7 @@ const challenge: ChallengeForStudent = {
     ],
   },
   solved: false,
-  hints_left: 5,
+  explanation: null,
   cooldown_seconds_left: 0,
 }
 
@@ -136,11 +136,35 @@ describe('challenge page', () => {
     expect(wrapper.get('[data-testid="challenge-submit"]').attributes('disabled')).toBeDefined()
   })
 
-  it('T-FE-PLAY-01 the hint button shows the hints left and is disabled at 0', async () => {
-    const wrapper = await open('/desafios/7', { hints_left: 0 })
+  it('T-FE-PLAY-01 the hint button reads just Dica and has no remaining count', async () => {
+    const wrapper = await open()
 
-    expect(hintButton(wrapper).text()).toBe('Dica (0 restantes)')
-    expect(hintButton(wrapper).attributes('disabled')).toBeDefined()
+    expect(hintButton(wrapper).text()).toBe('Dica')
+    expect(hintButton(wrapper).attributes('disabled')).toBeUndefined()
+  })
+
+  it('T-FE-PLAY-04 a solved challenge hides Enviar and Dica and shows the explanation', async () => {
+    const wrapper = await open('/desafios/7', { solved: true, explanation: 'Cada termo é o dobro do anterior.' })
+
+    expect(wrapper.find('[data-testid="challenge-submit"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="challenge-hint"]').exists()).toBe(false)
+    expect(wrapper.get('[data-testid="challenge-explanation"]').text()).toContain('dobro do anterior')
+  })
+
+  it('T-FE-PLAY-04 a 409 already_solved on submit reloads the challenge as solved', async () => {
+    const wrapper = await open()
+    vi.mocked(studentService.submitAnswer).mockRejectedValue(
+      new ApiError(409, 'already_solved', 'Você já resolveu este desafio.'),
+    )
+    vi.mocked(studentService.getChallenge).mockResolvedValue({
+      ...challenge, solved: true, explanation: 'Cada termo é o dobro do anterior.',
+    } as ChallengeForStudent)
+    await wrapper.get('[data-testid="pattern-option-b"]').setValue(true)
+    await wrapper.get('[data-testid="challenge-submit"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="challenge-submit"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="challenge-explanation"]').exists()).toBe(true)
   })
 
   it('T-FE-PLAY-01 a hint is shown and the button counts down the cooldown', async () => {
@@ -148,11 +172,10 @@ describe('challenge page', () => {
     vi.mocked(studentService.requestHint).mockResolvedValue({
       hint: 'Dica nível 1: pense no que acontece de um número para o outro. Qual seria?',
       level: 1,
-      hints_left: 4,
       cooldown_seconds: 3,
     })
     const wrapper = await open()
-    expect(hintButton(wrapper).text()).toBe('Dica (5 restantes)')
+    expect(hintButton(wrapper).text()).toBe('Dica')
 
     await hintButton(wrapper).trigger('click')
     await flushPromises()
@@ -167,7 +190,7 @@ describe('challenge page', () => {
 
     vi.advanceTimersByTime(2000)
     await flushPromises()
-    expect(hintButton(wrapper).text()).toBe('Dica (4 restantes)')
+    expect(hintButton(wrapper).text()).toBe('Dica')
     expect(hintButton(wrapper).attributes('disabled')).toBeUndefined()
   })
 
@@ -202,7 +225,7 @@ describe('challenge page', () => {
     expect(wrapper.get('[data-testid="feedback-explanation"]').text()).toContain('Cada termo é o dobro do anterior.')
     expect(wrapper.get('[data-testid="feedback-region"]').attributes('aria-live')).toBe('polite')
     expect(wrapper.find('[data-testid="challenge-next"]').exists()).toBe(true)
-    expect(hintButton(wrapper).attributes('disabled')).toBeDefined()
+    expect(wrapper.find('[data-testid="challenge-hint"]').exists()).toBe(false)
   })
 
   it('T-FE-PLAY-02 a wrong answer shows the hint and "Tentar novamente", never an explanation', async () => {

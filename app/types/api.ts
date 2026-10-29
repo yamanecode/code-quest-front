@@ -102,7 +102,7 @@ interface ChallengeForStudentBase {
   statement: string
   skill: string
   solved: boolean
-  hints_left: number
+  explanation: string | null // only when solved
   cooldown_seconds_left: number
 }
 
@@ -135,7 +135,6 @@ export interface SubmissionResult {
 export interface HintResult {
   hint: string
   level: number
-  hints_left: number
   cooldown_seconds: number
 }
 

@@ -48,7 +48,7 @@ const field = TEXT_FIELD
       <ul class="grid gap-2">
         <li v-for="(option, index) in form.options" :key="option.id" class="flex flex-wrap items-center gap-2">
           <input v-model="form.correct" type="radio" name="correct-option" :value="option.id" :disabled="locked" class="size-5" :aria-label="`Opção ${index + 1} é a correta`" :data-testid="`editor-correct-${index}`">
-          <input v-model="option.text" type="text" maxlength="40" :aria-label="`Opção ${index + 1}`" :class="field" :data-testid="`editor-item-${index}`">
+          <input v-model="option.text" type="text" maxlength="120" :aria-label="`Opção ${index + 1}`" :class="field" :data-testid="`editor-item-${index}`">
           <button type="button" :class="button" :disabled="locked || form.options.length <= 4" :aria-label="`Remover a opção ${index + 1}`" :data-testid="`editor-remove-${index}`" @click="removeOption(index)">Remover</button>
         </li>
       </ul>

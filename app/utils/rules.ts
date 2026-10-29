@@ -7,14 +7,22 @@ function count(label: string, total: number, min: number, max: number): string |
   return total < min || total > max ? `${label}: use de ${min} a ${max} (agora há ${total}).` : null
 }
 
-function textProblems(label: string, raw: string[], max: number): string[] {
+// Same comparison as the backend: trimmed, ignoring case.
+function repeats(texts: string[]): boolean {
+  const filled = texts.map((text) => text.trim().toLowerCase()).filter((text) => text.length > 0)
+  return new Set(filled).size !== filled.length
+}
+
+function lengthProblem(label: string, raw: string[], max: number): string[] {
   const texts = raw.map((text) => text.trim())
-  const problems: string[] = []
-  if (texts.some((text) => text.length < 1 || text.length > max)) {
-    problems.push(`${label}: cada texto precisa ter de 1 a ${max} caracteres.`)
-  }
-  const filled = texts.filter((text) => text.length > 0)
-  if (new Set(filled).size !== filled.length) problems.push(`${label}: os textos não podem se repetir.`)
+  return texts.some((text) => text.length < 1 || text.length > max)
+    ? [`${label}: cada texto precisa ter de 1 a ${max} caracteres.`]
+    : []
+}
+
+function textProblems(label: string, raw: string[], max: number): string[] {
+  const problems = lengthProblem(label, raw, max)
+  if (repeats(raw)) problems.push(`${label}: os textos não podem se repetir.`)
   return problems
 }
 
@@ -38,9 +46,13 @@ export function validateForm(form: FormState): string[] {
       add(
         count('Etapas', form.groups.length, 2, 4),
         count('Tarefas', form.items.length, 4, 10),
-        ...textProblems('Etapas', form.groups.map((g) => g.text), 120),
-        ...textProblems('Tarefas', form.items.map((i) => i.text), 120),
+        ...lengthProblem('Etapas', form.groups.map((g) => g.text), 120),
+        ...lengthProblem('Tarefas', form.items.map((i) => i.text), 120),
       )
+      // Etapas and tarefas share one set of texts (the backend checks them together).
+      if (repeats([...form.groups.map((g) => g.text), ...form.items.map((i) => i.text)])) {
+        add('Etapas e tarefas: os textos não podem se repetir.')
+      }
       const groupIds = form.groups.map((group) => group.id)
       const assigned = form.items.map((item) => form.assignment[item.id] ?? '')
       if (assigned.some((group) => !groupIds.includes(group))) add('Escolha a etapa de todas as tarefas.')
@@ -61,7 +73,7 @@ export function validateForm(form: FormState): string[] {
       if (form.sequence.some((term) => term.trim().length < 1 || term.trim().length > 40)) {
         add('Sequência: cada termo precisa ter de 1 a 40 caracteres.')
       }
-      add(...textProblems('Opções', form.options.map((o) => o.text), 40))
+      add(...textProblems('Opções', form.options.map((o) => o.text), 120))
       if (!form.options.some((option) => option.id === form.correct)) add('Marque a opção correta.')
       break
     }

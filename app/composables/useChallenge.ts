@@ -14,7 +14,7 @@ export interface AnswerOutcome extends SubmissionResult {
 }
 
 // Use case of the challenge screen: load it, keep the answer being built,
-// submit it, ask for hints (cap and cooldown) and keep the last result.
+// submit it, ask for hints (cooldown only) and keep the last result.
 export function useChallenge(id: Ref<number>) {
   const profile = useProfileStore()
   const settings = useSettingsStore()
@@ -29,7 +29,6 @@ export function useChallenge(id: Ref<number>) {
   const submitError = ref<string | null>(null)
 
   const hints = ref<string[]>([])
-  const hintsLeft = ref(0)
   const hintLoading = ref(false)
   const hintError = ref<string | null>(null)
   const cooldown = ref(0)
@@ -37,7 +36,7 @@ export function useChallenge(id: Ref<number>) {
 
   const solved = computed(() => challenge.value?.solved ?? false)
   const canHint = computed(
-    () => !!challenge.value && !solved.value && hintsLeft.value > 0 && cooldown.value === 0 && !hintLoading.value,
+    () => !!challenge.value && !solved.value && cooldown.value === 0 && !hintLoading.value,
   )
   const canSubmit = computed(() => answer.value !== null && !sending.value && outcome.value === null)
 
@@ -70,7 +69,6 @@ export function useChallenge(id: Ref<number>) {
     try {
       const loaded = await studentService.getChallenge(id.value)
       challenge.value = loaded
-      hintsLeft.value = loaded.hints_left
       startCooldown(loaded.cooldown_seconds_left)
     }
     catch (e) {
@@ -110,6 +108,7 @@ export function useChallenge(id: Ref<number>) {
     }
     catch (e) {
       submitError.value = errorMessage(e)
+      if (e instanceof ApiError && e.detail === 'already_solved') await load()
     }
     finally {
       sending.value = false
@@ -129,14 +128,12 @@ export function useChallenge(id: Ref<number>) {
     try {
       const result = await studentService.requestHint(challenge.value.id)
       hints.value = [...hints.value, result.hint]
-      hintsLeft.value = result.hints_left
       startCooldown(result.cooldown_seconds)
     }
     catch (e) {
       hintError.value = errorMessage(e)
       if (e instanceof ApiError) {
         if (e.detail === 'hint_cooldown') startCooldown(e.retryAfter ?? 0)
-        if (e.detail === 'hint_cap_reached') hintsLeft.value = 0
         if (e.detail === 'already_solved') challenge.value = { ...challenge.value, solved: true }
       }
     }
@@ -157,7 +154,6 @@ export function useChallenge(id: Ref<number>) {
     outcome,
     submitError,
     hints,
-    hintsLeft,
     hintLoading,
     hintError,
     cooldown,
