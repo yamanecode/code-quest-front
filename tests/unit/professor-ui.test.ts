@@ -31,7 +31,7 @@ vi.mock('~/services/professor', () => ({
 }))
 
 const classroom: ProfClassroom = { id: 4, name: 'Turma A', join_code: 'ABC123', weekly_goal: null, closed: false, goal: null }
-const ROW = { username: 'ana', xp_in_class: 0, level: 1, solved_in_class: 0, missions_completed_in_class: 0, hints_used: 0, streak: 0 }
+const ROW = { username: 'ana', xp_in_class: 0, level: 1, solved_in_class: 0, missions_completed_in_class: 0, hints_used: 0 }
 const mission = (id: number, position: number): ProfMission => ({
   id, classroom_id: 4, title: `Missão ${id}`, description: null, position, status: 'draft', challenges: [],
 })
@@ -259,6 +259,13 @@ describe('turma page', () => {
     await page.get('[data-testid="close-dialog-confirm"]').trigger('click')
     await flushPromises()
     expect(page.get('[data-testid="help-join-code-panel"]').text()).toContain('não funciona mais para novos alunos')
+  })
+
+  it('T-FE-PROG-01 the progress table has the columns of the turma, and no day count', async () => {
+    const page = await open([], undefined, [{ ...ROW, xp_in_class: 25, level: 1, solved_in_class: 3, missions_completed_in_class: 1, hints_used: 2 }])
+    const headers = page.get('[data-testid="progress-table"]').findAll('thead th').map((th) => th.text())
+    expect(headers.join(' ')).not.toContain('Sequência')
+    expect(page.get('[data-testid="progress-ana"]').findAll('td')).toHaveLength(headers.length - 1)
   })
 
   it('T-FE-PROF-MEMBER-04 the remove button is in the first column, next to the username, and the confirm is red', async () => {

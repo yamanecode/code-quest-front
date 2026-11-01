@@ -28,7 +28,7 @@ async function rankedClass() {
   return { classroom, students }
 }
 
-test('FT-UI-08 the profile shows level, title, XP, streak, skills, first-try solves and the badge collection', { tag: ['@UI-08'] }, async ({ page }) => {
+test('FT-UI-08 the profile shows level with title, the title ladder, XP, skills, first-try solves and the badge collection', { tag: ['@UI-08'] }, async ({ page }) => {
   const prof = await professorToken()
   const classroom = await createClassroom(prof)
   const first = await createChallenge(prof, 'ordering')
@@ -42,11 +42,14 @@ test('FT-UI-08 the profile shows level, title, XP, streak, skills, first-try sol
   await loginStudentUi(page, student)
   await page.getByTestId('nav-perfil').click()
   await expect(page.getByTestId('profile-username')).toContainText(student.username)
-  await expect(page.getByTestId('profile-level')).toContainText('Nível 1')
-  await expect(page.getByTestId('profile-title')).toContainText('Aprendiz')
+  await expect(page.getByTestId('profile-title')).toHaveText('Nível 1 · Iniciante')
   await expect(page.getByTestId('profile-xp')).toContainText('15 XP')
-  await expect(page.getByTestId('profile-xp')).toContainText('faltam 35')
-  await expect(page.getByTestId('profile-streak')).toContainText('1')
+  await expect(page.getByTestId('profile-xp')).toContainText('faltam 15')
+  // the five titles as a ladder, the current one marked
+  const ladder = page.getByTestId('title-ladder')
+  await expect(ladder.getByRole('listitem')).toHaveText([/Iniciante/, /Aprendiz/, /Praticante/, /Especialista/, /Mestre/])
+  await expect(page.getByTestId('title-step-1')).toHaveAttribute('aria-current', 'step')
+  await expect(page.getByTestId('title-ladder-next')).toContainText('Faltam 15 XP para o nível 2')
   await expect(page.getByTestId('profile-first-try')).toContainText('1')
 
   await expect(page.getByTestId('skill-progress-ordering')).toContainText('1 resolvido')
@@ -54,18 +57,23 @@ test('FT-UI-08 the profile shows level, title, XP, streak, skills, first-try sol
   await expect(page.getByTestId('skill-progress-grouping')).toContainText('0 resolvidos')
 
   // badges: earned one, locked ones with their condition, secret ones without it
-  // first solve, first mission, class goal and the hidden "no hint" badge (the mission was finished)
-  await expect(page.getByTestId('profile-badge-count')).toContainText('4 de 30')
+  // first solve, first mission and the class goal (2 of 2 challenges solved this week)
+  await expect(page.getByTestId('profile-badge-count')).toContainText('3 de 26')
   await expect(page.getByTestId('badge-mission_1')).not.toContainText('ainda não conquistada')
   await expect(page.getByTestId('badge-first_solve')).toContainText(/Conquistada em/)
   await expect(page.getByTestId('badge-first_solve')).not.toContainText('ainda não conquistada')
   await page.getByTestId('badges-others-toggle').click()
   await expect(page.getByTestId('badge-skill_ordering_3')).toContainText('ainda não conquistada')
   await expect(page.getByTestId('badge-skill_ordering_3').getByTestId('badge-condition')).toContainText('Resolva 3 desafios')
-  await expect(page.getByTestId('badge-all_types_day')).toContainText('Insígnia secreta')
-  await expect(page.getByTestId('badge-all_types_day').getByTestId('badge-condition')).toHaveCount(0)
-  // a hidden badge that was earned shows its name
-  await expect(page.getByTestId('badge-no_hint_mission')).toContainText('Por conta própria')
+  // gold badges that need turma challenges say so while locked; bronze and silver do not
+  await expect(page.getByTestId('badge-skill_ordering_15').getByTestId('badge-requires-class')).toHaveText('Requer desafios de turma')
+  await expect(page.getByTestId('badge-skill_ordering_3').getByTestId('badge-requires-class')).toHaveCount(0)
+  // secret badges show no condition and no clue
+  for (const code of ['all_types_day', 'persistent', 'explorer_base']) {
+    await expect(page.getByTestId(`badge-${code}`)).toContainText('Insígnia secreta')
+    await expect(page.getByTestId(`badge-${code}`).getByTestId('badge-condition')).toHaveCount(0)
+    await expect(page.getByTestId(`badge-${code}`).getByTestId('badge-requires-class')).toHaveCount(0)
+  }
   // badges always appear next to level, title and XP
   await expect(page.getByTestId('profile-level')).toBeVisible()
   await expect(page.getByTestId('profile-title')).toBeVisible()
@@ -155,8 +163,7 @@ test('FT-UI-18 with the public profile on, the name in the ranking opens the pub
   await entry.getByRole('link', { name: owner.username }).click()
   await expect(viewerPage).toHaveURL(new RegExp(`/jogadores/${owner.username}`))
   await expect(viewerPage.getByRole('heading', { level: 1 })).toContainText(owner.username)
-  await expect(viewerPage.getByText('Nível 1').first()).toBeVisible()
-  await expect(viewerPage.getByText('Aprendiz').first()).toBeVisible()
+  await expect(viewerPage.getByTestId('player-title')).toHaveText('Nível 1 · Iniciante')
   await expect(viewerPage.getByText('Primeiro desafio').first()).toBeVisible()
 
   // the viewer's own entry (profile off) is not a link

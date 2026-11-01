@@ -187,8 +187,7 @@ function onCreated(mission: ProfMission) {
                 <th scope="col" class="pb-2 pr-3 text-right font-semibold">Nível</th>
                 <th scope="col" class="pb-2 pr-3 text-right font-semibold">Resolvidos</th>
                 <th scope="col" class="pb-2 pr-3 text-right font-semibold">Missões</th>
-                <th scope="col" class="pb-2 pr-3 text-right font-semibold">Dicas</th>
-                <th scope="col" class="pb-2 text-right font-semibold">Sequência</th>
+                <th scope="col" class="pb-2 text-right font-semibold">Dicas</th>
               </tr>
             </thead>
             <tbody>
@@ -207,8 +206,7 @@ function onCreated(mission: ProfMission) {
                 <td class="cq-num py-2 pr-3 text-right">{{ student.level }}</td>
                 <td class="cq-num py-2 pr-3 text-right">{{ student.solved_in_class }}</td>
                 <td class="cq-num py-2 pr-3 text-right">{{ student.missions_completed_in_class }}</td>
-                <td class="cq-num py-2 pr-3 text-right">{{ student.hints_used }}</td>
-                <td class="cq-num py-2 text-right">{{ student.streak }}</td>
+                <td class="cq-num py-2 text-right">{{ student.hints_used }}</td>
               </tr>
             </tbody>
           </table>

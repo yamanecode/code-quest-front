@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { DEMO_CHALLENGES, DEMO_HINTS, demoXp, isDemoCorrect } from '~/utils/landingDemo'
-import { CORES, HAT_LABEL, VIEW_SIZE, ringPoints, wedgePoints } from '~/utils/octalysis'
+import { CENTRE, CORES, HAT_LABEL, TERM_NOTE, VIEW_SIZE, badgePoint, coresOfTerm, ringPoints, wedgePoints } from '~/utils/octalysis'
 
 const byType = (type: string) => DEMO_CHALLENGES.find((c) => c.type === type)!
 
@@ -66,24 +66,48 @@ describe('landing demo rules', () => {
 })
 
 describe('octalysis data', () => {
-  it('T-FE-LAND-06 has the 8 cores, numbered 1 to 8, with intensity from 1 to 5', () => {
+  it('T-FE-LAND-06 has the 8 cores, numbered 1 to 8, with intensity from 0 to 5', () => {
     expect(CORES.map((c) => c.number)).toEqual([1, 2, 3, 4, 5, 6, 7, 8])
     for (const core of CORES) {
-      expect(core.intensity).toBeGreaterThanOrEqual(1)
+      expect(core.intensity).toBeGreaterThanOrEqual(0)
       expect(core.intensity).toBeLessThanOrEqual(5)
       expect(core.uses.length).toBeGreaterThan(0)
       expect(HAT_LABEL[core.hat]).toBeTruthy()
     }
   })
 
+  it('T-FE-LAND-07 every used core names the Chou technique of each element; cores 1 and 8 are not used', () => {
+    const notUsed = CORES.filter((c) => c.intensity === 0).map((c) => c.number)
+    expect(notUsed).toEqual([1, 8])
+    for (const core of CORES) {
+      for (const use of core.uses) {
+        if (core.intensity === 0) {
+          expect(use.technique).toBeNull()
+          expect(use.text).toMatch(/^Não usado/)
+        }
+        else {
+          expect(use.technique).toBeTruthy()
+        }
+      }
+    }
+    const techniques = CORES.flatMap((c) => c.uses.map((u) => u.technique))
+    expect(techniques).toEqual(expect.arrayContaining(['Status Points', 'Achievement Symbols', 'Leaderboard', 'Collection Sets', 'Group Quests', 'Trophy Shelves', 'Dangling', 'Easter Eggs']))
+    // The leaderboard is an accomplishment technique (core 2), as in spec §5.
+    expect(CORES.find((c) => c.number === 2)!.uses.map((u) => u.technique)).toContain('Leaderboard')
+    // Nothing that is not a game element of the platform is claimed.
+    const text = CORES.flatMap((c) => c.uses.map((u) => u.text)).join(' ').toLowerCase()
+    for (const word of ['dica', 'diário', 'mensagens']) expect(text).not.toContain(word)
+    expect(TERM_NOTE.black).toContain('não usa o 8')
+  })
+
   it('T-FE-LAND-06 only cores 2 to 7 carry an intrinsic or extrinsic motivation', () => {
     expect(CORES.filter((c) => c.motivation !== null).map((c) => c.number)).toEqual([2, 3, 4, 5, 6, 7])
   })
 
-  it('T-FE-LAND-06 each wedge is a triangle that stays inside the drawing', () => {
+  it('T-FE-LAND-06 each wedge is a quadrilateral that stays inside the drawing', () => {
     for (const core of CORES) {
       const points = wedgePoints(core.number, 1)
-      expect(points).toHaveLength(3)
+      expect(points).toHaveLength(4)
       for (const [x, y] of points) {
         expect(x).toBeGreaterThanOrEqual(0)
         expect(x).toBeLessThanOrEqual(VIEW_SIZE)
@@ -94,12 +118,40 @@ describe('octalysis data', () => {
   })
 
   it('T-FE-LAND-06 a smaller scale moves the outer corners toward the centre', () => {
-    const [centre, a1, b1] = wedgePoints(2, 1)
-    const [, a2, b2] = wedgePoints(2, 0.5)
+    const [centre, a1, v1, b1] = wedgePoints(2, 1)
+    const [, a2, v2, b2] = wedgePoints(2, 0.5)
     const dist = (p: [number, number]) => Math.hypot(p[0] - centre![0], p[1] - centre![1])
 
     expect(dist(a2!)).toBeCloseTo(dist(a1!) / 2, 5)
+    expect(dist(v2!)).toBeCloseTo(dist(v1!) / 2, 5)
     expect(dist(b2!)).toBeCloseTo(dist(b1!) / 2, 5)
+  })
+
+  it('T-FE-LAND-06 the cores sit where the official diagram puts them', () => {
+    const [cx, cy] = CENTRE
+    const at = (n: number) => badgePoint(n)
+    expect(at(1)[1]).toBeLessThan(cy) // top
+    expect(at(1)[0]).toBeCloseTo(cx, 5)
+    expect(at(8)[1]).toBeGreaterThan(cy) // bottom
+    expect(at(8)[0]).toBeCloseTo(cx, 5)
+    expect(at(4)[0]).toBeLessThan(cx) // left
+    expect(at(4)[1]).toBeCloseTo(cy, 5)
+    expect(at(5)[0]).toBeGreaterThan(cx) // right
+    expect(at(5)[1]).toBeCloseTo(cy, 5)
+    expect([at(2), at(3)].map((p) => p[1] < cy)).toEqual([true, true]) // upper row
+    expect(at(2)[0]).toBeLessThan(cx)
+    expect(at(3)[0]).toBeGreaterThan(cx)
+    expect([at(6), at(7)].map((p) => p[1] > cy)).toEqual([true, true]) // lower row
+    expect(at(6)[0]).toBeLessThan(cx)
+    expect(at(7)[0]).toBeGreaterThan(cx)
+  })
+
+  it('T-FE-LAND-06 hats and brain sides group the cores as the official diagram does', () => {
+    expect(coresOfTerm('white')).toEqual([1, 2, 3])
+    expect(coresOfTerm('neutral')).toEqual([4, 5])
+    expect(coresOfTerm('black')).toEqual([6, 7, 8])
+    expect(coresOfTerm('left')).toEqual([2, 4, 6])
+    expect(coresOfTerm('right')).toEqual([3, 5, 7])
   })
 
   it('T-FE-LAND-06 the octagon has 8 corners', () => {

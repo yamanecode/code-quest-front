@@ -3,7 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useAuthStore } from '~/stores/auth'
 import { useProfileStore } from '~/stores/profile'
 
-// Logged-in header: navigation for the role and, for students, level, title, XP and streak.
+// Logged-in header: navigation for the role and, for students, level, title and XP.
 // A page that shows its own stat panel sets `hideStats` in its page meta.
 const auth = useAuthStore()
 const profileStore = useProfileStore()

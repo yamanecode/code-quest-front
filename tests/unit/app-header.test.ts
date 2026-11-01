@@ -5,6 +5,7 @@ import AppHeader from '~/components/layout/AppHeader.vue'
 import * as studentService from '~/services/student'
 import { useAuthStore } from '~/stores/auth'
 import type { Profile } from '~/types/api'
+import { TITLE_STEPS } from './fixtures'
 
 const { navigateToMock } = vi.hoisted(() => ({ navigateToMock: vi.fn() }))
 mockNuxtImport('navigateTo', () => navigateToMock)
@@ -15,10 +16,10 @@ const profile: Profile = {
   username: 'ana',
   role: 'student',
   xp: 131,
-  level: 3,
-  title: 'Explorador(a)',
+  level: 5,
+  title: 'Praticante',
   xp_to_next_level: 19,
-  streak: 4,
+  title_steps: TITLE_STEPS,
   missions_completed: 1,
   solved_by_skill: { ordering: 5, grouping: 2, filtering: 0, pattern: 1 },
   first_try_solves: 3,
@@ -51,11 +52,10 @@ describe('AppHeader', () => {
     const wrapper = await mountSuspended(AppHeader)
     await flushPromises()
 
-    expect(wrapper.get('[data-testid="header-level"]').text()).toContain('3')
-    expect(wrapper.get('[data-testid="header-title"]').text()).toContain('Explorador(a)')
+    expect(wrapper.get('[data-testid="header-title"]').text()).toBe('Nível 5 · Praticante')
     const bar = wrapper.get('[data-testid="header-xp"] [role="progressbar"]')
-    expect(bar.attributes('aria-valuenow')).toBe('31')
-    expect(bar.attributes('aria-valuemax')).toBe('50')
+    expect(bar.attributes('aria-valuenow')).toBe('11')
+    expect(bar.attributes('aria-valuemax')).toBe('30')
     for (const link of ['inicio', 'turmas', 'ranking', 'perfil', 'ajuda']) {
       expect(wrapper.find(`[data-testid="nav-${link}"]`).exists()).toBe(true)
     }

@@ -63,6 +63,7 @@ const challenge: ChallengeForStudent = {
     ],
   },
   solved: false,
+  is_new: false,
   explanation: null,
   cooldown_seconds_left: 0,
 }
@@ -71,7 +72,7 @@ const correct: SubmissionResult = {
   is_correct: true,
   xp_earned: 10,
   xp: 60,
-  level: 2,
+  level: 3,
   title: 'Aprendiz',
   level_up: false,
   new_badges: [],
@@ -134,6 +135,14 @@ describe('challenge page', () => {
     expect(wrapper.find('textarea').exists()).toBe(false)
     expect(wrapper.find('input:not([type="checkbox"]):not([type="radio"])').exists()).toBe(false)
     expect(wrapper.get('[data-testid="challenge-submit"]').attributes('disabled')).toBeDefined()
+  })
+
+  it('T-FE-NEW-03 the header shows "Novo" only for a new challenge', async () => {
+    const plain = await open()
+    expect(plain.find('[data-testid="challenge-new"]').exists()).toBe(false)
+
+    const fresh = await open('/desafios/7', { is_new: true })
+    expect(fresh.get('[data-testid="challenge-new"]').text()).toBe('Novo')
   })
 
   it('T-FE-PLAY-01 the hint button reads just Dica and has no remaining count', async () => {
@@ -255,7 +264,7 @@ describe('challenge page', () => {
       new_badges: [{ code: 'first_solve', name: 'Primeiro desafio', description: '1 desafio resolvido', tier: 'bronze', emoji: '⭐' }],
     })
 
-    expect(wrapper.get('[data-testid="feedback-level-up"]').text()).toContain('nível 2')
+    expect(wrapper.get('[data-testid="feedback-level-up"]').text()).toContain('Nível 3 · Aprendiz')
     expect(wrapper.get('[data-testid="feedback-badge-first_solve"]').text()).toContain('Primeiro desafio')
     expect(wrapper.get('[data-testid="feedback-status"]').text()).toContain('Aprendiz')
     expect(playTone).toHaveBeenCalledTimes(1)
@@ -293,10 +302,10 @@ describe('next challenge', () => {
     title: 'Trilha dos padrões',
     description: null,
     challenges: [
-      { id: 5, title: 'Um', type: 'pattern', skill: 'Reconhecimento de padrões', solved: false },
-      { id: 7, title: 'Dois', type: 'pattern', skill: 'Reconhecimento de padrões', solved: true },
-      { id: 8, title: 'Três', type: 'pattern', skill: 'Reconhecimento de padrões', solved: true },
-      { id: 9, title: 'Quatro', type: 'pattern', skill: 'Reconhecimento de padrões', solved: false },
+      { id: 5, title: 'Um', type: 'pattern', skill: 'Reconhecimento de padrões', solved: false, is_new: false },
+      { id: 7, title: 'Dois', type: 'pattern', skill: 'Reconhecimento de padrões', solved: true, is_new: false },
+      { id: 8, title: 'Três', type: 'pattern', skill: 'Reconhecimento de padrões', solved: true, is_new: false },
+      { id: 9, title: 'Quatro', type: 'pattern', skill: 'Reconhecimento de padrões', solved: false, is_new: false },
     ],
   }
 
@@ -334,7 +343,7 @@ describe('next challenge', () => {
     expect(navigateToMock).toHaveBeenLastCalledWith('/inicio')
   })
 
-  it('T-FE-HOME-03 without ?missao (daily challenge) it goes back home', async () => {
+  it('T-FE-HOME-03 without ?missao it goes back home', async () => {
     const wrapper = await open('/desafios/7')
     await answer(wrapper, correct)
 

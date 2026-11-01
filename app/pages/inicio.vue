@@ -4,9 +4,10 @@ import { useClassroomsStore } from '~/stores/classrooms'
 import { challengePath, usePlayStore } from '~/stores/play'
 import { useProfileStore } from '~/stores/profile'
 import { badgeProgress, nextBadges } from '~/utils/badges'
+import { HELP } from '~/utils/help'
 
-// Student home (spec §9.1). Level, title, XP and streak are in the layout header; the latest
-// badges sit next to the daily challenge (author decision, 2026-10-21).
+// Student home (spec §9.1). Level, title and XP are in the layout header; the Continuar card
+// opens the next unsolved challenge, and the latest badges sit next to it.
 const RECENT_BADGES = 3
 const NEXT_BADGES = 2
 definePageMeta({ layout: 'app' })
@@ -17,7 +18,7 @@ const classrooms = useClassroomsStore()
 const profileStore = useProfileStore()
 
 const missions = computed(() => play.missions)
-const daily = computed(() => play.daily)
+const next = computed(() => play.continueCard)
 
 const recentBadges = computed(() =>
   (profileStore.profile?.badges ?? [])
@@ -76,27 +77,24 @@ onMounted(() => {
 
     <template v-else-if="missions">
       <div class="grid items-start gap-10 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)]">
-        <section aria-labelledby="h-daily" class="cq-postit max-w-md px-5 pb-5 pt-6" data-testid="daily-card">
-          <h2 id="h-daily" class="flex items-center gap-2 font-display text-2xl font-extrabold">
-            Desafio diário
-            <HelpTip
-              topic="daily"
-              label="Desafio diário"
-              text="Todo dia você recebe um desafio que ainda não resolveu. Ele não muda durante o dia e não dá XP extra."
-            />
+        <section v-if="next" aria-labelledby="h-continue" class="cq-postit max-w-md px-5 pb-5 pt-6" data-testid="continue-card">
+          <h2 id="h-continue" class="flex items-center gap-2 font-display text-2xl font-extrabold">
+            Continuar
+            <HelpTip topic="continue" label="Cartão Continuar" :text="HELP.continueCard" />
           </h2>
+          <p class="mt-3 leading-snug" data-testid="continue-text">
+            <span class="sr-only">Continuar: </span>
+            <span class="block text-sm font-semibold">{{ next.mission_title }}</span>
+            <span class="sr-only"> · </span>
+            <span class="block font-display text-xl font-bold">{{ next.challenge_title }}</span>
+          </p>
+          <NewTag v-if="next.is_new" class="mt-2" testid="continue-new" />
           <NuxtLink
-            v-if="daily?.challenge"
-            :to="challengePath(daily.challenge.id)"
-            class="mt-3 block"
-            data-testid="daily-link"
-          >
-            <SkillTag :type="daily.challenge.type" :help="false" />
-            <span class="mt-2 block font-display text-xl font-bold">{{ daily.challenge.title }}</span>
-            <span v-if="daily.challenge.solved" class="mt-3 inline-block font-semibold">✓ Resolvido hoje</span>
-            <span v-else class="mt-3 inline-block border-b-2 border-current font-bold">Resolver →</span>
-          </NuxtLink>
-          <p v-else class="mt-3" data-testid="daily-all-solved">Você resolveu todos os desafios disponíveis!</p>
+            :to="challengePath(next.challenge_id, next.mission_id)"
+            class="mt-3 inline-block border-b-2 border-current font-bold"
+            :aria-label="`Continuar: ${next.mission_title} · ${next.challenge_title}`"
+            data-testid="continue-link"
+          >Abrir desafio →</NuxtLink>
         </section>
 
         <section v-if="profileStore.profile" aria-labelledby="h-home-badges" data-testid="home-badges">

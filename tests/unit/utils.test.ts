@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { CHALLENGE_TYPES } from '~/types/challenge'
-import { levelTitle } from '~/utils/levels'
+import { XP_PER_LEVEL, bandRange, levelLabel, levelTitle } from '~/utils/levels'
 import { SKILLS, skillDescription, skillLabel } from '~/utils/skills'
 import { CORRECT_MESSAGES, WRONG_MESSAGES, pickMessage } from '~/utils/feedback'
 
@@ -11,16 +11,23 @@ afterEach(() => {
 
 describe('levels', () => {
   it('T-FE-UTIL-01 gives the title of each level band', () => {
-    expect(levelTitle(1)).toBe('Aprendiz')
-    expect(levelTitle(2)).toBe('Aprendiz')
-    expect(levelTitle(3)).toBe('Explorador(a)')
-    expect(levelTitle(4)).toBe('Explorador(a)')
-    expect(levelTitle(5)).toBe('Estrategista')
-    expect(levelTitle(7)).toBe('Estrategista')
-    expect(levelTitle(8)).toBe('Arquiteto(a) de soluções')
-    expect(levelTitle(10)).toBe('Arquiteto(a) de soluções')
-    expect(levelTitle(11)).toBe('Mestre do pensamento')
-    expect(levelTitle(40)).toBe('Mestre do pensamento')
+    expect(levelTitle(1)).toBe('Iniciante')
+    expect(levelTitle(2)).toBe('Iniciante')
+    expect(levelTitle(3)).toBe('Aprendiz')
+    expect(levelTitle(4)).toBe('Aprendiz')
+    expect(levelTitle(5)).toBe('Praticante')
+    expect(levelTitle(7)).toBe('Praticante')
+    expect(levelTitle(8)).toBe('Especialista')
+    expect(levelTitle(10)).toBe('Especialista')
+    expect(levelTitle(11)).toBe('Mestre')
+    expect(levelTitle(40)).toBe('Mestre')
+  })
+
+  it('T-FE-LEVEL-01 a title is always shown with its level number', () => {
+    expect(levelLabel(4, 'Aprendiz')).toBe('Nível 4 · Aprendiz')
+    expect(bandRange(1, 2)).toBe('1 a 2')
+    expect(bandRange(11, null)).toBe('11 em diante')
+    expect(XP_PER_LEVEL).toBe(30)
   })
 })
 

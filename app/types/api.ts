@@ -83,6 +83,8 @@ export interface MissionSummary {
   description: string | null
   total: number
   solved: number
+  is_new: boolean // turma mission published in the last 7 days, not answered yet
+  has_new_challenges: boolean // started mission that holds a new challenge
 }
 
 export interface ClassroomMissions {
@@ -102,6 +104,7 @@ export interface ChallengeSummary {
   type: ChallengeType
   skill: string
   solved: boolean
+  is_new: boolean
 }
 
 export interface MissionDetail {
@@ -117,6 +120,7 @@ interface ChallengeForStudentBase {
   statement: string
   skill: string
   solved: boolean
+  is_new: boolean
   explanation: string | null // only when solved
   cooldown_seconds_left: number
 }
@@ -153,13 +157,24 @@ export interface HintResult {
   cooldown_seconds: number
 }
 
-export interface Daily {
-  challenge: ChallengeSummary | null
-  all_solved: boolean
+// GET /api/me/continue: the next unsolved challenge; the API answers 204 when nothing is left.
+export interface ContinueOut {
+  mission_id: number
+  mission_title: string
+  challenge_id: number
+  challenge_title: string
+  is_new: boolean
+}
+
+export interface TitleStep {
+  title: string
+  min_level: number
+  max_level: number | null // null for the last band
 }
 
 export interface ProfileBadge extends NewBadge {
   hidden: boolean
+  requires_class: boolean // needs turma challenges (gold of the graded families, class goals)
   earned: boolean
   earned_at: string | null
 }
@@ -171,7 +186,7 @@ export interface Profile {
   level: number
   title: string
   xp_to_next_level: number
-  streak: number
+  title_steps: TitleStep[]
   missions_completed: number
   solved_by_skill: Record<ChallengeType, number>
   first_try_solves: number
@@ -314,7 +329,6 @@ export interface StudentProgress {
   solved_in_class: number
   missions_completed_in_class: number
   hints_used: number
-  streak: number
 }
 
 export interface Progress {

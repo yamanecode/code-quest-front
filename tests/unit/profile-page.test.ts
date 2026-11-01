@@ -6,6 +6,7 @@ import * as studentService from '~/services/student'
 import { ApiError } from '~/services/http'
 import { useSettingsStore } from '~/stores/settings'
 import type { Profile, ProfileBadge } from '~/types/api'
+import { TITLE_STEPS } from './fixtures'
 
 vi.mock('~/services/student', () => ({
   getMe: vi.fn(),
@@ -20,6 +21,7 @@ function badge(overrides: Partial<ProfileBadge>): ProfileBadge {
     tier: 'bronze',
     emoji: '⭐',
     hidden: false,
+    requires_class: false,
     earned: false,
     earned_at: null,
     ...overrides,
@@ -30,10 +32,10 @@ const profile: Profile = {
   username: 'ana_22',
   role: 'student',
   xp: 65,
-  level: 2,
+  level: 3,
   title: 'Aprendiz',
-  xp_to_next_level: 35,
-  streak: 3,
+  xp_to_next_level: 25,
+  title_steps: TITLE_STEPS,
   missions_completed: 1,
   solved_by_skill: { ordering: 4, grouping: 0, filtering: 2, pattern: 16 },
   first_try_solves: 5,
@@ -43,11 +45,11 @@ const profile: Profile = {
   recovery_code_confirmed: true,
   badges: [
     badge({ earned: true, earned_at: '2026-10-18T10:00:00-03:00' }),
-    badge({ code: 'streak_3', name: 'Três dias seguidos', description: 'Sequência de 3 dias', emoji: '🔥', earned: true, earned_at: '2026-10-20T10:00:00-03:00' }),
+    badge({ code: 'level_3', name: 'Aprendiz', description: 'Chegar ao nível 3', emoji: '🧭', earned: true, earned_at: '2026-10-20T10:00:00-03:00' }),
     badge({ code: 'skill_ordering_7', name: 'Algoritmos II', description: '7 desafios de ordenação resolvidos', tier: 'silver', emoji: '🔢' }),
-    badge({ code: 'skill_grouping_15', name: 'Decomposição III', description: '15 desafios de decomposição resolvidos', tier: 'gold', emoji: '🧩' }),
-    badge({ code: 'daily_7', name: 'Compromisso diário', description: '7 desafios diários resolvidos no próprio dia', tier: 'silver', emoji: '📅' }),
-    badge({ code: 'all_types_day', name: 'Insígnia secreta', description: '', tier: 'silver', emoji: '🌈', hidden: true }),
+    badge({ code: 'skill_grouping_15', name: 'Decomposição III', description: '15 desafios de decomposição resolvidos', tier: 'gold', emoji: '🧩', requires_class: true }),
+    badge({ code: 'class_goal_1', name: 'Trabalho em equipe', description: 'Ajudar a turma a cumprir 1 meta semanal', emoji: '🤝', requires_class: true }),
+    badge({ code: 'all_types_day', name: 'Insígnia secreta', description: '', tier: 'gold', emoji: '🌈', hidden: true }),
   ],
 }
 
@@ -73,18 +75,18 @@ describe('profile page', () => {
     const wrapper = await open()
 
     expect(wrapper.get('[data-testid="profile-username"]').text()).toContain('ana_22')
-    expect(wrapper.get('[data-testid="profile-level"]').text()).toContain('2')
-    expect(wrapper.get('[data-testid="profile-title"]').text()).toContain('Aprendiz')
+    expect(wrapper.get('[data-testid="profile-level"]').text()).toContain('3')
+    expect(wrapper.get('[data-testid="profile-title"]').text()).toBe('Nível 3 · Aprendiz')
     expect(wrapper.get('[data-testid="profile-xp"]').text()).toContain('65 XP')
-    expect(wrapper.get('[data-testid="profile-xp"]').text()).toContain('faltam 35')
-    expect(wrapper.get('[data-testid="profile-streak"]').text()).toContain('3')
+    expect(wrapper.get('[data-testid="profile-xp"]').text()).toContain('faltam 25')
+    expect(wrapper.find('[data-testid="profile-streak"]').exists()).toBe(false)
     expect(wrapper.get('[data-testid="profile-first-try"]').text()).toContain('5')
     expect(wrapper.get('[data-testid="profile-missions"]').text()).toContain('1')
     expect(wrapper.get('[data-testid="profile-badge-count"]').text()).toContain('2 de 6')
 
     // Newest first, each with the day it was earned.
-    expect(codesIn(wrapper, 'earned')).toEqual(['badge-streak_3', 'badge-first_solve'])
-    expect(wrapper.get('[data-testid="badge-streak_3"] [data-testid="badge-earned-on"]').text()).toBe('Conquistada em 20/10')
+    expect(codesIn(wrapper, 'earned')).toEqual(['badge-level_3', 'badge-first_solve'])
+    expect(wrapper.get('[data-testid="badge-level_3"] [data-testid="badge-earned-on"]').text()).toBe('Conquistada em 20/10')
   })
 
   it('T-FE-PROFILE-01 skill bars share one scale with marks at the badge milestones', async () => {
@@ -122,12 +124,41 @@ describe('profile page', () => {
     await toggle.trigger('click')
     expect(toggle.attributes('aria-expanded')).toBe('true')
     expect(wrapper.get('#badges-others').attributes('style') ?? '').not.toContain('display: none')
-    expect(codesIn(wrapper, 'others')).toEqual(['badge-daily_7', 'badge-all_types_day'])
+    expect(codesIn(wrapper, 'others')).toEqual(['badge-class_goal_1', 'badge-all_types_day'])
 
     const secret = wrapper.get('[data-testid="badge-all_types_day"]')
     expect(secret.get('[data-testid="badge-name"]').text()).toBe('Insígnia secreta')
     expect(secret.find('[data-testid="badge-condition"]').exists()).toBe(false)
+    expect(secret.find('[data-testid="badge-requires-class"]').exists()).toBe(false)
     expect(secret.text()).not.toContain('🌈')
+  })
+
+  it('T-FE-BADGE-REQ-01 a locked badge that needs turma challenges says so; others do not', async () => {
+    const wrapper = await open()
+
+    expect(wrapper.get('[data-testid="badge-skill_grouping_15"] [data-testid="badge-requires-class"]').text()).toBe('Requer desafios de turma')
+    expect(wrapper.get('[data-testid="badge-class_goal_1"] [data-testid="badge-requires-class"]').text()).toBe('Requer desafios de turma')
+    expect(wrapper.find('[data-testid="badge-skill_ordering_7"] [data-testid="badge-requires-class"]').exists()).toBe(false)
+  })
+
+  it('T-FE-BADGE-REQ-02 an earned badge drops the note even when it needed a turma', async () => {
+    const wrapper = await open({
+      badges: profile.badges.map((b) => (b.code === 'skill_grouping_15' ? { ...b, earned: true, earned_at: '2026-10-21T10:00:00-03:00' } : b)),
+    })
+
+    expect(wrapper.find('[data-testid="badge-skill_grouping_15"] [data-testid="badge-requires-class"]').exists()).toBe(false)
+  })
+
+  it('T-FE-LEVEL-02 the title ladder lists the five bands and highlights the current one', async () => {
+    const wrapper = await open()
+
+    const ladder = wrapper.get('[data-testid="title-ladder"]')
+    const steps = ladder.findAll('li')
+    expect(steps.map((step) => step.find('span').text())).toEqual(['Iniciante', 'Aprendiz', 'Praticante', 'Especialista', 'Mestre'])
+    expect(wrapper.get('[data-testid="title-step-3"]').attributes('aria-current')).toBe('step')
+    expect(wrapper.get('[data-testid="title-step-1"]').attributes('aria-current')).toBeUndefined()
+    expect(wrapper.get('[data-testid="title-step-11"]').text()).toContain('11 em diante')
+    expect(ladder.get('[data-testid="title-ladder-next"]').text()).toBe('Faltam 25 XP para o nível 4.')
   })
 
   it('marks badges earned in the last week as new', async () => {
@@ -137,7 +168,7 @@ describe('profile page', () => {
       const wrapper = await open()
 
       // Earned on 20/10: 6 days ago. Earned on 18/10: 8 days ago.
-      expect(wrapper.find('[data-testid="badge-streak_3"] [data-testid="badge-new"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="badge-level_3"] [data-testid="badge-new"]').exists()).toBe(true)
       expect(wrapper.find('[data-testid="badge-first_solve"] [data-testid="badge-new"]').exists()).toBe(false)
     }
     finally {

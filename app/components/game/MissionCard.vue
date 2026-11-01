@@ -5,7 +5,8 @@ import type { ChallengeType } from '~/types/challenge'
 import { SKILLS } from '~/utils/skills'
 
 // One mission on the home: a band in the colour of its skill (one segment per skill when it
-// mixes several), progress, or a note when it has no challenge yet (spec §8.4).
+// mixes several), progress, or a note when it has no challenge yet (spec §8.4), and the
+// "Novo" / "Novo desafio" label for recent turma content (spec §5).
 const props = withDefaults(defineProps<{ mission: MissionSummary; skills?: ChallengeType[] }>(), { skills: () => [] })
 
 const BAND: Record<ChallengeType, string> = {
@@ -32,6 +33,10 @@ const single = computed(() => (props.skills.length === 1 ? props.skills[0]! : nu
     </span>
 
     <span class="flex flex-1 flex-col p-4">
+      <span v-if="props.mission.is_new || props.mission.has_new_challenges" class="mb-1.5">
+        <NewTag v-if="props.mission.is_new" :testid="`mission-new-${props.mission.id}`" />
+        <NewTag v-else text="Novo desafio" :testid="`mission-new-challenges-${props.mission.id}`" />
+      </span>
       <span class="font-display text-xl font-bold leading-tight text-ink">{{ props.mission.title }}</span>
       <span v-if="props.mission.description" class="mt-1 line-clamp-3 text-sm leading-snug text-muted">{{ props.mission.description }}</span>
       <span v-if="props.skills.length > 1" class="mt-2 flex flex-wrap gap-x-3 gap-y-1" data-testid="mission-skills">

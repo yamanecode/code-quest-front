@@ -3,15 +3,16 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import AnswerFeedback from '~/components/challenge/AnswerFeedback.vue'
 import StatPanel from '~/components/game/StatPanel.vue'
 import type { Profile } from '~/types/api'
+import { TITLE_STEPS } from './fixtures'
 
 const profile: Profile = {
   username: 'ana',
   role: 'student',
   xp: 131,
-  level: 3,
-  title: 'Explorador(a)',
+  level: 5,
+  title: 'Praticante',
   xp_to_next_level: 19,
-  streak: 4,
+  title_steps: TITLE_STEPS,
   missions_completed: 1,
   solved_by_skill: { ordering: 5, grouping: 2, filtering: 0, pattern: 1 },
   first_try_solves: 3,
@@ -23,14 +24,12 @@ const profile: Profile = {
 }
 
 describe('stat panel and feedback polish', () => {
-  it('T-FE-POLISH-01 the compact stat panel keeps level, title, XP bar and streak', async () => {
+  it('T-FE-POLISH-01 the compact stat panel keeps level, title and XP bar', async () => {
     const wrapper = await mountSuspended(StatPanel, { props: { profile, prefix: 'header', compact: true } })
 
-    expect(wrapper.get('[data-testid="header-level"]').text()).toContain('3')
-    expect(wrapper.get('[data-testid="header-title"]').text()).toContain('Explorador(a)')
+    expect(wrapper.get('[data-testid="header-title"]').text()).toBe('Nível 5 · Praticante')
     expect(wrapper.get('[data-testid="header-xp"]').text()).toContain('131 XP')
-    expect(wrapper.get('[data-testid="header-xp"] [role="progressbar"]').attributes('aria-valuenow')).toBe('31')
-    expect(wrapper.get('[data-testid="header-streak"]').text()).toContain('4')
+    expect(wrapper.get('[data-testid="header-xp"] [role="progressbar"]').attributes('aria-valuenow')).toBe('11')
   })
 
   it('T-FE-POLISH-02 the wrong answer shows the message, the hint and a retry button', async () => {

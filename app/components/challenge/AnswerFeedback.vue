@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { AnswerOutcome } from '~/composables/useChallenge'
 import { badgeFamily, TIER_LABEL } from '~/utils/badges'
+import { levelLabel } from '~/utils/levels'
 
 // Result of one answer (spec §9.2). Badges always appear together with XP, level and title.
 const props = defineProps<{ outcome: AnswerOutcome }>()
@@ -23,11 +24,11 @@ const emit = defineEmits<{ retry: [] }>()
       <template v-else>Você já tinha resolvido este desafio, então não há XP novo.</template>
     </p>
     <p class="mt-1 text-sm text-muted" data-testid="feedback-status">
-      Nível {{ props.outcome.level }} · {{ props.outcome.title }} · {{ props.outcome.xp }} XP no total
+      {{ levelLabel(props.outcome.level, props.outcome.title) }} · {{ props.outcome.xp }} XP no total
     </p>
 
     <p v-if="props.outcome.level_up" class="mt-3 font-semibold" data-testid="feedback-level-up">
-      Você subiu para o nível {{ props.outcome.level }}: {{ props.outcome.title }}!
+      Você subiu para o {{ levelLabel(props.outcome.level, props.outcome.title) }}!
     </p>
 
     <div v-if="props.outcome.new_badges.length > 0" class="mt-3" data-testid="feedback-badges">

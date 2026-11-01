@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import * as studentService from '~/services/student'
-import type { ChallengeSummary, Daily, MissionDetail, Missions } from '~/types/api'
+import type { ChallengeSummary, ContinueOut, MissionDetail, Missions } from '~/types/api'
 import { CHALLENGE_TYPES, type ChallengeType } from '~/types/challenge'
 import { errorMessage } from '~/utils/format'
 
@@ -16,10 +16,10 @@ function nextUnsolved(challenges: ChallengeSummary[], currentId: number): Challe
   return ordered.find((challenge) => !challenge.solved && challenge.id !== currentId) ?? null
 }
 
-// What the student can play: missions on the home, the daily challenge and one mission's challenges.
+// What the student can play: missions on the home, the Continuar card and one mission's challenges.
 export const usePlayStore = defineStore('play', () => {
   const missions = ref<Missions | null>(null)
-  const daily = ref<Daily | null>(null)
+  const continueCard = ref<ContinueOut | null>(null)
   const homeLoading = ref(false)
   const homeError = ref<string | null>(null)
   // The skills each mission's challenges use, in the fixed skill order, so trail cards can
@@ -34,12 +34,13 @@ export const usePlayStore = defineStore('play', () => {
     homeLoading.value = true
     homeError.value = null
     try {
-      const [missionList, dailyChallenge] = await Promise.all([
+      // The Continuar card is a shortcut: if it fails, the home still shows the missions.
+      const [missionList, next] = await Promise.all([
         studentService.getMissions(),
-        studentService.getDailyChallenge(),
+        studentService.getContinue().catch(() => null),
       ])
       missions.value = missionList
-      daily.value = dailyChallenge
+      continueCard.value = next
       void loadMissionSkills(missionList)
     }
     catch (e) {
@@ -91,8 +92,8 @@ export const usePlayStore = defineStore('play', () => {
     return target ? challengePath(target.id, first.id) : `/missoes/${first.id}`
   }
 
-  // Where "Próximo desafio" leads (spec §9.1). Without a mission (daily challenge)
-  // or with nothing left to solve, the student goes back home.
+  // Where "Próximo desafio" leads (spec §9.1). Without a mission or with nothing left
+  // to solve, the student goes back home.
   async function nextChallengePath(missionId: number | null, currentId: number): Promise<string> {
     if (missionId === null) return '/inicio'
     try {
@@ -107,7 +108,7 @@ export const usePlayStore = defineStore('play', () => {
 
   return {
     missions,
-    daily,
+    continueCard,
     homeLoading,
     homeError,
     missionSkills,

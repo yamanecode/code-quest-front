@@ -1,6 +1,6 @@
 import type {
   ChallengeForStudent,
-  Daily,
+  ContinueOut,
   HintResult,
   MissionDetail,
   Missions,
@@ -54,8 +54,10 @@ export function requestHint(challengeId: number): Promise<HintResult> {
   return apiFetch<HintResult>(`/api/challenges/${challengeId}/hints`, { method: 'POST' })
 }
 
-export function getDailyChallenge(): Promise<Daily> {
-  return apiFetch<Daily>('/api/daily-challenge')
+// The next unsolved challenge for the Continuar card, or null when the API answers 204.
+export async function getContinue(): Promise<ContinueOut | null> {
+  const next = await apiFetch<ContinueOut | undefined>('/api/me/continue')
+  return next && typeof next === 'object' ? next : null
 }
 
 export function getRanking(query: RankingQuery): Promise<Ranking> {

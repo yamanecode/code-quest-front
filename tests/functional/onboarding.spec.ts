@@ -55,12 +55,12 @@ test('FT-UI-17 the help page explains the skills and the game rules', { tag: ['@
   for (const skill of ['Pensamento algorítmico', 'Decomposição', 'Abstração', 'Reconhecimento de padrões']) {
     await expect(page.getByTestId('help-skills')).toContainText(skill)
   }
-  for (const heading of ['XP', 'Níveis e títulos', 'Insígnias', 'Ranking', 'Meta da turma', 'Sequência de dias', 'Desafio diário', 'Dicas']) {
+  for (const heading of ['XP', 'Níveis e títulos', 'Insígnias', 'Ranking', 'Meta da turma', 'Cartão Continuar', 'Rótulo Novo', 'Dicas']) {
     await expect(page.getByRole('heading', { name: heading, exact: true })).toBeVisible()
   }
 })
 
-test('FT-UI-17 help buttons next to XP, streak, daily challenge, hints and ranking open a short explanation', { tag: ['@UI-17'] }, async ({ page }) => {
+test('FT-UI-17 help buttons next to XP, the title, the Continuar card, hints and ranking open a short explanation', { tag: ['@UI-17'] }, async ({ page }) => {
   const prof = await professorToken()
   const classroom = await createClassroom(prof)
   const challenge = await createChallenge(prof, 'ordering')
@@ -81,8 +81,8 @@ test('FT-UI-17 help buttons next to XP, streak, daily challenge, hints and ranki
   }
 
   await open('help-header-xp')
-  await open('help-header-streak')
-  await open('help-daily')
+  await open('help-header-title')
+  await open('help-continue')
   await open(`help-home-goal-${classroom.id}`)
 
   await page.goto(`/desafios/${challenge.id}`)

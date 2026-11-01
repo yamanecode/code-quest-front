@@ -26,15 +26,13 @@ async function setup(types: ChallengeType[] = TYPES) {
   return { prof, classroom, challenges, mission, student }
 }
 
-test('FT-UI-03 the home shows level, title and XP first, then streak, daily card, class goal and missions', { tag: ['@UI-03'] }, async ({ page }) => {
+test('FT-UI-03 the home shows level with title and XP first, then the Continuar card, class goal and missions', { tag: ['@UI-03'] }, async ({ page }) => {
   const { student, classroom } = await setup()
   await loginStudentUi(page, student)
 
-  await expect(page.getByTestId('header-level')).toContainText('Nível 1')
-  await expect(page.getByTestId('header-title')).toContainText('Aprendiz')
+  await expect(page.getByTestId('header-title')).toHaveText('Nível 1 · Iniciante')
   await expect(page.getByTestId('header-xp')).toContainText('0 XP')
-  await expect(page.getByTestId('header-streak')).toBeVisible()
-  await expect(page.getByTestId('daily-card')).toBeVisible()
+  await expect(page.getByTestId('continue-card')).toBeVisible()
 
   // class goal of the new turma, with its milestones
   await expect(page.getByTestId(`home-goal-${classroom.id}`)).toBeVisible()
@@ -50,19 +48,10 @@ test('FT-UI-03 the home shows level, title and XP first, then streak, daily card
   await expect(turma).toContainText('Missão de teste')
   await expect(turma.getByTestId('mission-progress')).toContainText('0 de 4 resolvidos')
 
-  // order on the page: header, then the daily card, then the missions
+  // order on the page: header, then the Continuar card, then the missions
   const y = async (id: string) => (await page.getByTestId(id).boundingBox())!.y
-  expect(await y('header-level')).toBeLessThan(await y('daily-card'))
-  expect(await y('daily-card')).toBeLessThan(await y('home-base'))
-})
-
-test('FT-UI-03 the daily challenge card opens a challenge and the streak counts the first solve', { tag: ['@UI-03'] }, async ({ page }) => {
-  const { student, challenges } = await setup(['ordering'])
-  await solveViaApi(student, challenges[0]!)
-  await loginStudentUi(page, student)
-  await expect(page.getByTestId('header-streak')).toContainText('1')
-  await page.getByTestId('daily-link').click()
-  await expect(page).toHaveURL(/\/desafios\/\d+/)
+  expect(await y('header-title')).toBeLessThan(await y('continue-card'))
+  expect(await y('continue-card')).toBeLessThan(await y('home-base'))
 })
 
 test('FT-UI-04 the mission screen lists the challenges in order with skills and solved marks, and any can be opened', { tag: ['@UI-04'] }, async ({ page }) => {
@@ -148,16 +137,16 @@ test('FT-UI-06 a wrong answer shows message, the hint and "Tentar novamente"', {
   await expect(page.getByTestId('feedback-wrong')).not.toContainText('Porque sim')
 })
 
-test('FT-UI-06 reaching 50 XP shows the level-up', { tag: ['@UI-06'] }, async ({ page }) => {
-  const { student, challenges } = await setup(['ordering', 'ordering', 'ordering', 'ordering', 'ordering'])
-  for (const challenge of challenges.slice(0, 4)) await solveViaApi(student, challenge)
+test('FT-UI-06 reaching 30 XP shows the level-up with the level and title', { tag: ['@UI-06'] }, async ({ page }) => {
+  const { student, challenges } = await setup(['ordering', 'ordering', 'ordering'])
+  for (const challenge of challenges.slice(0, 2)) await solveViaApi(student, challenge)
   await loginStudentUi(page, student)
-  await page.goto(`/desafios/${challenges[4]!.id}`)
-  await answerInBrowser(page, challenges[4]!.spec)
+  await page.goto(`/desafios/${challenges[2]!.id}`)
+  await answerInBrowser(page, challenges[2]!.spec)
   await page.getByTestId('challenge-submit').click()
 
-  await expect(page.getByTestId('feedback-correct')).toContainText(/n[ií]vel 2/i)
-  await expect(page.getByTestId('header-level')).toContainText('Nível 2')
+  await expect(page.getByTestId('feedback-level-up')).toContainText('Nível 2 · Iniciante')
+  await expect(page.getByTestId('header-title')).toHaveText('Nível 2 · Iniciante')
 })
 
 test('FT-UI-07 the hint button counts down, shows each hint and has no limit', { tag: ['@UI-07'] }, async ({ page }) => {

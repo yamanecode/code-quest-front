@@ -21,6 +21,20 @@ beforeEach(() => {
 })
 
 describe('help page', () => {
+  it('T-FE-HELP-01 the game help explains levels and titles, the Continuar card and the "Novo" label', async () => {
+    signIn('student')
+
+    const wrapper = await mountSuspended(AjudaPage)
+    const headings = wrapper.findAll('[data-testid="help-game"] h2').map((h) => h.text())
+
+    expect(headings).toEqual(expect.arrayContaining(['Níveis e títulos', 'Cartão Continuar', 'Rótulo Novo']))
+    expect(wrapper.get('[data-testid="help-game"]').text()).toContain('A cada 30 XP')
+    for (const title of ['Iniciante', 'Aprendiz', 'Praticante', 'Especialista', 'Mestre']) {
+      expect(wrapper.get('[data-testid="help-game"]').text()).toContain(title)
+    }
+    expect(wrapper.get('[data-testid="help-game"]').text()).toContain('publicados nos últimos 7 dias')
+  })
+
   it('T-FE-HELP-02 a student sees the student sections but not the professor section', async () => {
     signIn('student')
 

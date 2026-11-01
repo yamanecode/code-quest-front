@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ApiError, apiFetch, configureHttp } from '~/services/http'
+import { getContinue } from '~/services/student'
 
 // Builds an error shaped like the one $fetch throws for a non-2xx response.
 function httpError(status: number, data: unknown, headers: Record<string, string> = {}) {
@@ -116,5 +117,20 @@ describe('apiFetch', () => {
     })
 
     expect(onUnauthorized).not.toHaveBeenCalled()
+  })
+})
+
+describe('getContinue', () => {
+  it('T-FE-CONT-01 returns the next challenge, or null when the API answers 204', async () => {
+    const next = { mission_id: 4, mission_title: 'Missão', challenge_id: 41, challenge_title: 'Desafio', is_new: true }
+    fetchMock.mockResolvedValueOnce(next)
+    expect(await getContinue()).toEqual(next)
+    expect(fetchMock.mock.calls[0]![0]).toBe('/api/me/continue')
+
+    // $fetch resolves an empty 204 body as undefined (or an empty string).
+    fetchMock.mockResolvedValueOnce(undefined)
+    expect(await getContinue()).toBeNull()
+    fetchMock.mockResolvedValueOnce('')
+    expect(await getContinue()).toBeNull()
   })
 })

@@ -97,7 +97,10 @@ async function goNext() {
     </div>
 
     <article v-else-if="challenge" class="mt-6" data-testid="challenge">
-      <SkillTag :type="challenge.type" />
+      <p class="flex flex-wrap items-center gap-3">
+        <SkillTag :type="challenge.type" />
+        <NewTag v-if="challenge.is_new" testid="challenge-new" />
+      </p>
       <h1 class="mt-3 font-display text-4xl font-extrabold leading-tight" data-testid="challenge-title">{{ challenge.title }}</h1>
       <p class="mt-3 whitespace-pre-line text-lg leading-relaxed" data-testid="challenge-statement">{{ challenge.statement }}</p>
       <div v-if="solved && !outcome" class="cq-sheet mt-4 px-5 py-4" data-testid="challenge-already-solved">

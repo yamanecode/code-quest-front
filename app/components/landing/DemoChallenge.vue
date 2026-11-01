@@ -4,7 +4,7 @@ import type { AnswerOutcome } from '~/composables/useChallenge'
 import type { Answer, ChallengeType } from '~/types/challenge'
 import { CORRECT_MESSAGES, WRONG_MESSAGES, pickMessage } from '~/utils/feedback'
 import { DEMO_CHALLENGES, demoXp, isDemoCorrect } from '~/utils/landingDemo'
-import { levelTitle } from '~/utils/levels'
+import { XP_PER_LEVEL, levelTitle } from '~/utils/levels'
 import { SKILLS } from '~/utils/skills'
 
 // One playable challenge for each skill, answered with the same components as the real screen.
@@ -61,7 +61,7 @@ function onChange(value: Answer | null) {
 }
 
 function result(correct: boolean, earned: number, hint: string | null): AnswerOutcome {
-  const level = Math.floor(xp.value / 50) + 1
+  const level = Math.floor(xp.value / XP_PER_LEVEL) + 1
   return {
     is_correct: correct,
     xp_earned: earned,

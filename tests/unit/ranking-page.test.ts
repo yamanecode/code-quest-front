@@ -230,11 +230,11 @@ describe('public player page', () => {
     useAuthStore().logout()
   })
 
-  it('shows username, level, title and earned badges', async () => {
+  it('T-FE-LEVEL-03 shows username, "Nível N · título" and earned badges', async () => {
     vi.mocked(studentService.getPlayer).mockResolvedValue({
       username: 'bia',
       level: 4,
-      title: 'Explorador(a)',
+      title: 'Aprendiz',
       badges: [{ code: 'first_solve', name: 'Primeiro desafio', tier: 'bronze', emoji: '⭐' }],
     })
     const wrapper = await mountSuspended(PlayerPage, { route: '/jogadores/bia' })
@@ -243,7 +243,7 @@ describe('public player page', () => {
     expect(studentService.getPlayer).toHaveBeenCalledWith('bia')
     expect(wrapper.get('[data-testid="player-username"]').text()).toBe('bia')
     expect(wrapper.get('[data-testid="player-level"]').text()).toContain('4')
-    expect(wrapper.get('[data-testid="player-title"]').text()).toContain('Explorador(a)')
+    expect(wrapper.get('[data-testid="player-title"]').text()).toBe('Nível 4 · Aprendiz')
     expect(wrapper.get('[data-testid="badge-first_solve"]').attributes('data-earned')).toBe('true')
   })
 

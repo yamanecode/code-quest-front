@@ -73,18 +73,10 @@ const SKILL_SQUARES = [
         <path d="M6 21V3.5" />
         <path d="M6 4.5h11l-2.5 4 2.5 4H6" />
       </template>
-      <path
-        v-else-if="props.family === 'streak'"
-        d="M12 3c.8 3.4 5.5 5 5.5 10.3A5.5 5.5 0 0 1 6.5 13.3c0-2.6 1.4-3.8 2-6 1 1.3 1.8 2.3 2.6 3.4.3-2.6-.2-5 .9-7.7z"
-      />
       <template v-else-if="props.family === 'first_try'">
         <circle cx="12" cy="12" r="8.5" />
         <circle cx="12" cy="12" r="4.6" />
         <circle cx="12" cy="12" r="1.6" :style="{ fill: ink }" stroke="none" />
-      </template>
-      <template v-else-if="props.family === 'daily'">
-        <rect x="3.5" y="5" width="17" height="15.5" rx="1.5" />
-        <path d="M3.5 10h17M8 3v4M16 3v4M9 15l2 2 4-4" />
       </template>
       <template v-else-if="props.family === 'class_goal'">
         <circle cx="8" cy="8.5" r="2.8" />
@@ -103,9 +95,14 @@ const SKILL_SQUARES = [
           stroke-width="1.6"
         />
       </template>
-      <template v-else-if="props.family === 'no_hint_mission'">
-        <path d="M9 17.5h6M10 20.5h4M8.2 14.2A5.5 5.5 0 1 1 15.8 14.2c-.8.7-1.3 1.6-1.3 2.6h-5c0-1-.5-1.9-1.3-2.6z" />
-        <path d="M4 4l16 16" />
+      <template v-else-if="props.family === 'persistent'">
+        <path d="M19 12a7 7 0 1 1-2.1-5" />
+        <path d="M19.5 3.5v4h-4" />
+        <path d="M9 12l2 2 4-4" />
+      </template>
+      <template v-else-if="props.family === 'explorer_base'">
+        <path d="M3.5 6l5.5-2.5 6 2.5 5.5-2.5V18l-5.5 2.5-6-2.5-5.5 2.5z" />
+        <path d="M9 3.5V18M15 6v14.5" />
       </template>
     </g>
   </svg>

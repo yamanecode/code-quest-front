@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Tier } from '~/types/api'
-import { badgeFamily, SECRET_BADGE_NAME, TIER_LABEL, type BadgeProgress } from '~/utils/badges'
+import { badgeFamily, REQUIRES_CLASS_NOTE, SECRET_BADGE_NAME, TIER_LABEL, type BadgeProgress } from '~/utils/badges'
 import { formatDayMonth } from '~/utils/format'
 
 // One badge (spec §9.2): a sticker in the tier colour with the symbol of its family once
@@ -12,6 +12,7 @@ interface MedalBadge {
   name: string
   tier: Tier
   description?: string
+  requires_class?: boolean
 }
 
 const props = withDefaults(
@@ -37,6 +38,8 @@ const family = computed(() => (props.secret ? 'secret' : badgeFamily(props.badge
 const earnedOn = computed(() => (props.earned && props.earnedAt ? formatDayMonth(props.earnedAt) : ''))
 
 const condition = computed(() => (props.earned || props.secret || !props.showCondition ? '' : (props.badge.description ?? '')))
+// Gold of the graded families and the class-goal badges cannot be earned with the base game alone.
+const needsClass = computed(() => !props.earned && !props.secret && props.showCondition && props.badge.requires_class === true)
 </script>
 
 <template>
@@ -63,6 +66,7 @@ const condition = computed(() => (props.earned || props.secret || !props.showCon
         data-testid="badge-progress"
       ><span class="sr-only">Progresso: </span>{{ props.progress.current }} de {{ props.progress.target }}</span>
       <span v-if="condition" class="mt-1 block text-sm leading-snug text-muted" data-testid="badge-condition">Para conquistar: {{ condition }}</span>
+      <span v-if="needsClass" class="mt-1 block text-sm font-semibold leading-snug text-ink" data-testid="badge-requires-class">{{ REQUIRES_CLASS_NOTE }}</span>
     </figcaption>
   </figure>
 </template>

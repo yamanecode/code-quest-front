@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue'
 import { usePlayersStore } from '~/stores/players'
+import { levelLabel } from '~/utils/levels'
 
 // Public profile of another student (spec §5): username, level, title and earned badges only.
 definePageMeta({ layout: 'app', compactStats: true })
@@ -32,13 +33,13 @@ watch(username, (name) => players.load(name), { immediate: true })
 
     <article v-else-if="player" class="mt-6" aria-labelledby="player-username">
       <div class="cq-sheet flex flex-wrap items-end gap-x-8 gap-y-3 bg-panel p-5 sm:p-7">
-        <p class="cq-num text-6xl font-extrabold leading-[0.8]" data-testid="player-level">
-          <span class="sr-only">Nível </span>{{ player.level }}
+        <p class="cq-num text-6xl font-extrabold leading-[0.8]" aria-hidden="true" data-testid="player-level">
+          {{ player.level }}
         </p>
         <div>
           <h1 id="player-username" class="font-display text-4xl font-extrabold" data-testid="player-username">{{ player.username }}</h1>
           <p class="font-display text-xl font-bold text-muted" data-testid="player-title">
-            {{ player.title }} <span aria-hidden="true">·</span> <span class="sr-only">,</span> Nível {{ player.level }}
+            {{ levelLabel(player.level, player.title) }}
           </p>
         </div>
       </div>

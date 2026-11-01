@@ -109,6 +109,7 @@ watch(id, (missionId) => play.loadMission(missionId), { immediate: true })
               </span>
               <span class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
                 <SkillTag :type="challenge.type" :help="false" />
+                <NewTag v-if="challenge.is_new" :testid="`mission-challenge-new-${challenge.id}`" />
                 <span v-if="challenge.id === suggestedId" class="text-sm" data-testid="mission-suggestion">
                   <strong class="text-ink">Sugestão:</strong> continue por aqui
                 </span>

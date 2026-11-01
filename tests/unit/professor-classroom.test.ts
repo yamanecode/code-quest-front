@@ -87,7 +87,7 @@ describe('professor turma page', () => {
   it('T-FE-PROF-10 the goal card explains the purpose and how an empty goal is calculated', async () => {
     vi.mocked(professorService.getClassroomProgress).mockResolvedValue({
       completed_all_pct: 0,
-      students: Array.from({ length: 4 }, (_, i) => ({ username: `a${i}`, xp_in_class: 0, level: 1, solved_in_class: 0, missions_completed_in_class: 0, hints_used: 0, streak: 0 })),
+      students: Array.from({ length: 4 }, (_, i) => ({ username: `a${i}`, xp_in_class: 0, level: 1, solved_in_class: 0, missions_completed_in_class: 0, hints_used: 0 })),
     })
     const page = await open([])
     const how = page.get('[data-testid="goal-how"]').text()

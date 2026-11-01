@@ -145,6 +145,13 @@ onMounted(() => profileStore.load())
             ><span class="sr-only">Perfil de </span>{{ profile.username }}</h1>
           </template>
 
+          <TitleLadder
+            class="mt-4 border-t border-line pt-4"
+            :steps="profile.title_steps"
+            :level="profile.level"
+            :xp-to-next-level="profile.xp_to_next_level"
+          />
+
           <dl class="mt-4 grid grid-cols-3 gap-x-4 border-t border-line pt-4 sm:grid-cols-[repeat(3,minmax(0,12rem))] sm:gap-x-8">
             <div class="flex flex-col justify-between gap-1" data-testid="profile-first-try">
               <dt class="text-sm leading-snug text-label">

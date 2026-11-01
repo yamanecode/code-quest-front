@@ -13,9 +13,9 @@ const mission: MissionDetail = {
   title: 'Desafios mistos',
   description: 'Um desafio de cada habilidade.',
   challenges: [
-    { id: 101, title: 'Fazer café', type: 'ordering', skill: 'Pensamento algorítmico', solved: true },
-    { id: 102, title: 'Qual é o próximo?', type: 'pattern', skill: 'Reconhecimento de padrões', solved: false },
-    { id: 103, title: 'Escovar os dentes', type: 'ordering', skill: 'Pensamento algorítmico', solved: false },
+    { id: 101, title: 'Fazer café', type: 'ordering', skill: 'Pensamento algorítmico', solved: true, is_new: false },
+    { id: 102, title: 'Qual é o próximo?', type: 'pattern', skill: 'Reconhecimento de padrões', solved: false, is_new: false },
+    { id: 103, title: 'Escovar os dentes', type: 'ordering', skill: 'Pensamento algorítmico', solved: false, is_new: false },
   ],
 }
 
@@ -41,6 +41,18 @@ describe('mission page', () => {
     expect(head.text()).toContain('Um desafio de cada habilidade.')
     expect(head.findAll('[data-testid="mission-band"] > *').map((s: DOMWrapper<Element>) => s.attributes('data-skill'))).toEqual(['ordering', 'pattern'])
     expect(head.get('[data-testid="mission-progress"]').text()).toBe('1 de 3 resolvidos')
+  })
+
+  it('T-FE-NEW-02 a new challenge of the mission shows "Novo"', async () => {
+    vi.mocked(studentService.getMission).mockResolvedValue({
+      ...mission,
+      challenges: mission.challenges.map((c) => (c.id === 103 ? { ...c, is_new: true } : c)),
+    })
+    const wrapper = await mountSuspended(MissionPage, { route: '/missoes/11' })
+    await flushPromises()
+
+    expect(wrapper.get('[data-testid="mission-challenge-new-103"]').text()).toBe('Novo')
+    expect(wrapper.find('[data-testid="mission-challenge-new-102"]').exists()).toBe(false)
   })
 
   it('T-FE-MISSION-02 challenges are rooms in order, all open, with a suggestion on the first unsolved', async () => {

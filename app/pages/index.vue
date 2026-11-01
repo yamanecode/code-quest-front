@@ -168,7 +168,7 @@ const sectionWidth = 'mx-auto max-w-6xl px-4 sm:px-6'
               </tr>
             </tbody>
           </table>
-          <p class="text-sm text-muted">A cada 50 XP você sobe um nível e, de tempos em tempos, ganha um novo título. Dicas e dias seguidos de estudo não dão XP, e o desafio diário vale o mesmo que os outros.</p>
+          <p class="text-sm text-muted">A cada 30 XP você sobe um nível, e cada faixa de níveis tem um título, de Iniciante a Mestre. Dicas, insígnias e a meta da turma não dão XP.</p>
         </div>
       </div>
     </section>
@@ -177,7 +177,7 @@ const sectionWidth = 'mx-auto max-w-6xl px-4 sm:px-6'
     <section id="octalysis" class="border-y-2 border-line-strong bg-raised py-12 sm:py-16" aria-labelledby="octalysis-title">
       <div :class="sectionWidth">
         <h2 id="octalysis-title" :class="[sectionTitle, 'max-w-3xl']">Cada recurso do jogo responde a um dos <span class="cq-mark">8 impulsos</span> do Octalysis</h2>
-        <p class="mb-8 mt-3 max-w-prose text-lg text-muted">O Octalysis, modelo criado por Yu-kai Chou, organiza em oito impulsos o que leva as pessoas a continuarem uma atividade. No CodeQuest ele serve de critério: cada elemento do jogo precisa responder a um impulso, e o que pressiona demais, como vidas ou punição por erro, fica de fora. Escolha um impulso para ver como ele aparece na plataforma.</p>
+        <p class="mb-8 mt-3 max-w-prose text-lg text-muted">O Octalysis, modelo criado por Yu-kai Chou, organiza em oito impulsos o que leva as pessoas a continuarem uma atividade. No CodeQuest ele serve de critério: cada elemento do jogo precisa responder a um impulso, e o que pressiona demais, como vidas, perda de progresso ou contagem de dias seguidos, fica de fora. Por isso dois impulsos não são usados. Escolha um impulso para ver como ele aparece na plataforma e qual técnica de Chou cada elemento aplica.</p>
         <OctalysisMap />
       </div>
     </section>

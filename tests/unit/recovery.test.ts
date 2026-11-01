@@ -11,6 +11,7 @@ import * as studentService from '~/services/student'
 import { RECOVERY_LATER_KEY, useAuthStore } from '~/stores/auth'
 import { useProfileStore } from '~/stores/profile'
 import type { Profile } from '~/types/api'
+import { TITLE_STEPS } from './fixtures'
 
 const { navigateToMock } = vi.hoisted(() => ({ navigateToMock: vi.fn() }))
 mockNuxtImport('navigateTo', () => navigateToMock)
@@ -25,7 +26,7 @@ vi.mock('~/services/student', () => ({
 const CODE = 'K7QM-X2PD-9WFA-3HTR'
 
 const profileData: Profile = {
-  username: 'ana', role: 'student', xp: 0, level: 1, title: 'Aprendiz', xp_to_next_level: 50, streak: 0,
+  username: 'ana', role: 'student', xp: 0, level: 1, title: 'Iniciante', xp_to_next_level: 30, title_steps: TITLE_STEPS,
   missions_completed: 0, solved_by_skill: { ordering: 0, grouping: 0, filtering: 0, pattern: 0 },
   first_try_solves: 0, profile_public: false, badges: [],
   recovery_code_active: true, recovery_code_created_at: '2026-10-01T12:00:00-03:00', recovery_code_confirmed: false,

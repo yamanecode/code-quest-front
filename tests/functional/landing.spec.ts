@@ -57,6 +57,17 @@ test('FT-UI-20 choosing a core of the Octalysis shows what it means and how the 
   await expect(detail).toContainText('Influência social e pertencimento')
 })
 
+test('FT-UI-20 hovering a hat or brain tag of the Octalysis shows its card', { tag: ['@UI-20'] }, async ({ page }) => {
+  await page.goto('/')
+  await page.getByTestId('octalysis-term-black').scrollIntoViewIfNeeded()
+
+  await page.getByTestId('octalysis-term-black').hover()
+  await expect(page.getByTestId('octalysis-term-black-card')).toContainText('Impulsos 6, 7 e 8')
+
+  await page.getByTestId('octalysis-term-left').focus()
+  await expect(page.getByTestId('octalysis-term-left-card')).toContainText('Impulsos 2, 4 e 6')
+})
+
 test('FT-UI-20 the hint demo counts down after each hint', { tag: ['@UI-20'] }, async ({ page }) => {
   await page.goto('/')
   const button = page.getByTestId('hint-demo-button')

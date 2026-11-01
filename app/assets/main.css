@@ -58,7 +58,7 @@
   --cq-podium-2: #5c5f66;
   --cq-podium-3: #95511a;
 
-  /* The daily challenge's sticky note, its tape, and the white edge of earned sticker badges */
+  /* The Continuar card's sticky note, its tape, and the white edge of earned sticker badges */
   --cq-sticky: #fff0a0;
   --cq-sticky-ink: #1b2a52;
   --cq-tape: rgba(255, 255, 255, 0.7);
@@ -262,7 +262,7 @@ textarea {
   color: var(--cq-soft);
 }
 
-/* The daily challenge as a sticky note taped to the page: the one rotated, taped element. */
+/* The Continuar card as a sticky note taped to the page: the one rotated, taped element. */
 .cq-postit {
   position: relative;
   background-color: var(--cq-sticky);

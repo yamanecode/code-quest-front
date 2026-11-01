@@ -107,7 +107,7 @@ function levelRange(from: number, to: number | null) {
       <h2 id="h-xp" class="font-display text-2xl font-bold">XP</h2>
       <p class="mt-2 leading-relaxed">
         Você ganha XP só na primeira vez que acerta cada desafio. O valor depende de quantas vezes você errou antes.
-        Errar nunca tira XP. Dicas, sequência de dias, desafio diário e meta da turma não dão XP.
+        Errar nunca tira XP. Dicas, o cartão Continuar, a meta da turma e as insígnias não dão XP.
       </p>
       <table class="mt-4 w-full max-w-md text-left">
         <caption class="sr-only">XP por desafio resolvido</caption>
@@ -125,7 +125,11 @@ function levelRange(from: number, to: number | null) {
 
     <section class="mt-12" aria-labelledby="h-levels">
       <h2 id="h-levels" class="font-display text-2xl font-bold">Níveis e títulos</h2>
-      <p class="mt-2 leading-relaxed">A cada 50 XP você sobe um nível, e o nível dá o seu título.</p>
+      <p class="mt-2 leading-relaxed">
+        A cada 30 XP você sobe um nível. Cada faixa de níveis tem um título, do Iniciante ao Mestre, e ele aparece sempre com o
+        número do nível, como “Nível 4 · Aprendiz”. No seu perfil, a escada de títulos mostra em que faixa você está.
+        Só com a Trilha CodeQuest você chega ao nível 10; o título Mestre pede desafios de turma.
+      </p>
       <table class="mt-4 w-full max-w-md text-left">
         <caption class="sr-only">Título de cada faixa de nível</caption>
         <thead class="text-sm text-muted">
@@ -143,9 +147,10 @@ function levelRange(from: number, to: number | null) {
     <section class="mt-12" aria-labelledby="h-badges">
       <h2 id="h-badges" class="font-display text-2xl font-bold">Insígnias</h2>
       <p class="mt-2 leading-relaxed">
-        Insígnias marcam conquistas, como resolver desafios de uma habilidade, subir de nível ou manter a sequência de dias.
-        Elas têm três graus: bronze, prata e ouro. As que você ainda não ganhou aparecem apagadas, com a condição para ganhar;
-        algumas são secretas e só se revelam quando você as conquista. Insígnias não dão XP.
+        Insígnias marcam conquistas, como resolver desafios de uma habilidade, subir de nível ou concluir missões.
+        Elas têm até três graus: bronze, prata e ouro. Bronze e prata podem ser conquistadas na Trilha CodeQuest; as de ouro
+        pedem desafios de turma, e o perfil avisa “Requer desafios de turma”. As que você ainda não ganhou aparecem apagadas,
+        com a condição para ganhar; algumas são secretas e só se revelam quando você as conquista. Insígnias não dão XP.
       </p>
     </section>
 
@@ -166,18 +171,21 @@ function levelRange(from: number, to: number | null) {
       </p>
     </section>
 
-    <section class="mt-12" aria-labelledby="h-streak">
-      <h2 id="h-streak" class="font-display text-2xl font-bold">Sequência de dias</h2>
+    <section class="mt-12" aria-labelledby="h-continue">
+      <h2 id="h-continue" class="font-display text-2xl font-bold">Cartão Continuar</h2>
       <p class="mt-2 leading-relaxed">
-        Conta os dias seguidos em que você resolveu pelo menos um desafio. Se passar um dia inteiro sem resolver, ela volta a zero.
-        A sequência não dá XP.
+        No início, o cartão Continuar abre o próximo desafio que você ainda não resolveu: primeiro na missão em que você respondeu
+        por último; depois nas missões das suas turmas, da mais recente para a mais antiga; e por fim na Trilha CodeQuest.
+        Quando tudo estiver resolvido, ele some. O cartão só leva você ao desafio e não dá XP.
       </p>
     </section>
 
-    <section class="mt-12" aria-labelledby="h-daily">
-      <h2 id="h-daily" class="font-display text-2xl font-bold">Desafio diário</h2>
+    <section class="mt-12" aria-labelledby="h-new">
+      <h2 id="h-new" class="font-display text-2xl font-bold">Rótulo Novo</h2>
       <p class="mt-2 leading-relaxed">
-        Todo dia você recebe um desafio que ainda não resolveu. Ele é o mesmo durante o dia todo e não dá XP extra.
+        O rótulo “Novo” aparece em missões e desafios da turma publicados nos últimos 7 dias que você ainda não respondeu.
+        Numa missão que você já começou, “Novo desafio” indica que o professor acrescentou um desafio. É só um texto na página:
+        nada é enviado para fora do CodeQuest.
       </p>
     </section>
 

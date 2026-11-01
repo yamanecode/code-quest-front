@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { nextTick } from 'vue'
 import { flushPromises, type VueWrapper } from '@vue/test-utils'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import DemoChallenge from '~/components/landing/DemoChallenge.vue'
@@ -29,6 +30,11 @@ describe('octalysis map', () => {
     expect(testid(wrapper, 'octalysis-detail').text()).toContain('Escassez e impaciência')
     expect(testid(wrapper, 'octalysis-hat').text()).toBe('Chapéu preto')
     expect(testid(wrapper, 'octalysis-intensity').text()).toBe('2 de 5')
+    expect(testid(wrapper, 'octalysis-technique').text()).toContain('Dangling')
+
+    await testid(wrapper, 'octalysis-core-8').trigger('click')
+    expect(testid(wrapper, 'octalysis-intensity').text()).toBe('não usado')
+    expect(wrapper.find('[data-testid="octalysis-technique"]').exists()).toBe(false)
   })
 
   it('T-FE-LAND-01 clicking a wedge of the drawing selects its core', async () => {
@@ -51,6 +57,42 @@ describe('octalysis map', () => {
     expect(wrapper.find('[data-testid="octalysis-motivation"]').exists()).toBe(false)
     await testid(wrapper, 'octalysis-core-3').trigger('click')
     expect(testid(wrapper, 'octalysis-motivation').text()).toBe('Motivação intrínseca')
+  })
+
+  it('T-FE-LAND-06 a term tag opens a card on hover and closes it on leave', async () => {
+    const wrapper = await mountSuspended(OctalysisMap)
+    const tag = testid(wrapper, 'octalysis-term-black')
+
+    expect(wrapper.find('[data-testid="octalysis-term-black-card"]').exists()).toBe(false)
+    await tag.element.parentElement!.dispatchEvent(new MouseEvent('mouseenter'))
+    await nextTick()
+    expect(testid(wrapper, 'octalysis-term-black-card').text()).toContain('Impulsos 6, 7 e 8')
+    expect(tag.attributes('aria-expanded')).toBe('true')
+
+    await tag.element.parentElement!.dispatchEvent(new MouseEvent('mouseleave'))
+    await nextTick()
+    expect(wrapper.find('[data-testid="octalysis-term-black-card"]').exists()).toBe(false)
+  })
+
+  it('T-FE-LAND-06 a click pins the card of a brain side and Escape closes it', async () => {
+    const wrapper = await mountSuspended(OctalysisMap)
+    const tag = testid(wrapper, 'octalysis-term-left')
+
+    await tag.trigger('click')
+    expect(testid(wrapper, 'octalysis-term-left-card').text()).toContain('Impulsos 2, 4 e 6')
+    await tag.trigger('keydown', { key: 'Escape' })
+    expect(wrapper.find('[data-testid="octalysis-term-left-card"]').exists()).toBe(false)
+  })
+
+  it('T-FE-LAND-06 the detail of a core with a motivation also tags its side of the brain', async () => {
+    const wrapper = await mountSuspended(OctalysisMap)
+
+    await testid(wrapper, 'octalysis-core-3').trigger('click')
+    expect(testid(wrapper, 'octalysis-brain').text()).toBe('Cérebro direito')
+    await testid(wrapper, 'octalysis-core-6').trigger('click')
+    expect(testid(wrapper, 'octalysis-brain').text()).toBe('Cérebro esquerdo')
+    await testid(wrapper, 'octalysis-core-8').trigger('click')
+    expect(wrapper.find('[data-testid="octalysis-brain"]').exists()).toBe(false)
   })
 })
 

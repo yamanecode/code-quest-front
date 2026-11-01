@@ -1,6 +1,7 @@
 // Badge display helpers (spec §5.1, §9.2). Badges are CSS + inline SVG symbols, never image files.
 
 import type { Profile, ProfileBadge, Tier } from '~/types/api'
+import { XP_PER_LEVEL } from '~/utils/levels'
 
 export const TIER_LABEL: Record<Tier, string> = {
   bronze: 'Bronze',
@@ -9,11 +10,12 @@ export const TIER_LABEL: Record<Tier, string> = {
 }
 
 export const SECRET_BADGE_NAME = 'Insígnia secreta'
+export const REQUIRES_CLASS_NOTE = 'Requer desafios de turma'
 
 // The symbol a badge is drawn with (components/game/BadgeIcon.vue): one per family of spec §5.1.
 export type BadgeFamily =
   | 'first_solve' | 'ordering' | 'grouping' | 'filtering' | 'pattern' | 'level' | 'mission'
-  | 'streak' | 'first_try' | 'daily' | 'class_goal' | 'all_types_day' | 'no_hint_mission'
+  | 'first_try' | 'class_goal' | 'all_types_day' | 'persistent' | 'explorer_base'
 
 const FAMILY_PREFIXES: [string, BadgeFamily][] = [
   ['skill_ordering_', 'ordering'],
@@ -22,12 +24,10 @@ const FAMILY_PREFIXES: [string, BadgeFamily][] = [
   ['skill_pattern_', 'pattern'],
   ['level_', 'level'],
   ['mission_', 'mission'],
-  ['streak_', 'streak'],
   ['first_try_', 'first_try'],
-  ['daily_', 'daily'],
   ['class_goal_', 'class_goal'],
 ]
-const SINGLE_FAMILIES: BadgeFamily[] = ['first_solve', 'all_types_day', 'no_hint_mission']
+const SINGLE_FAMILIES: BadgeFamily[] = ['first_solve', 'all_types_day', 'persistent', 'explorer_base']
 
 export function badgeFamily(code: string): BadgeFamily {
   const single = SINGLE_FAMILIES.find((family) => family === code)
@@ -40,10 +40,10 @@ export interface BadgeProgress {
   target: number
 }
 
-type BadgeStats = Pick<Profile, 'xp' | 'level' | 'streak' | 'missions_completed' | 'first_try_solves' | 'solved_by_skill'>
+type BadgeStats = Pick<Profile, 'xp' | 'level' | 'missions_completed' | 'first_try_solves' | 'solved_by_skill'>
 
 // How far the student is from a badge, read from the profile numbers. Badge codes are
-// fixed by spec §5.1; daily, class-goal and secret badges cannot be counted here.
+// fixed by spec §5.1; class-goal and secret badges cannot be counted here.
 export function badgeProgress(code: string, stats: BadgeStats): BadgeProgress | null {
   if (code === 'first_solve') {
     const solved = Object.values(stats.solved_by_skill).reduce((sum, n) => sum + n, 0)
@@ -54,18 +54,16 @@ export function badgeProgress(code: string, stats: BadgeStats): BadgeProgress | 
     const type = skill[1] as keyof BadgeStats['solved_by_skill']
     return { current: stats.solved_by_skill[type], target: Number(skill[2]) }
   }
-  const counted = /^(level|mission|streak|first_try)_(\d+)$/.exec(code)
+  const counted = /^(level|mission|first_try)_(\d+)$/.exec(code)
   if (!counted) return null
   const current = {
     level: stats.level,
     mission: stats.missions_completed,
-    streak: stats.streak,
     first_try: stats.first_try_solves,
-  }[counted[1] as 'level' | 'mission' | 'streak' | 'first_try']
+  }[counted[1] as 'level' | 'mission' | 'first_try']
   return { current, target: Number(counted[2]) }
 }
 
-const XP_PER_LEVEL = 50
 const XP_PER_CHALLENGE = 10 // a first-try solve (spec §5)
 const CHALLENGES_PER_MISSION = 5 // rough size of a base trilha
 
@@ -75,7 +73,7 @@ function badgeSet(code: string): string {
 }
 
 // Rough number of things still to do for a badge, counted in challenges where possible
-// so that a level, a mission or a skill tier can be compared. A streak day counts as one.
+// so that a level, a mission or a skill tier can be compared.
 function stepsLeft(code: string, progress: BadgeProgress, stats: BadgeStats): number {
   const left = progress.target - progress.current
   if (code.startsWith('level_')) {
