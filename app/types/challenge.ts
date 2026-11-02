@@ -49,14 +49,6 @@ export interface PatternStoredContent extends PatternContent {
   solution: string
 }
 
-export type StudentContent = OrderingContent | GroupingContent | FilteringContent | PatternContent
-
-export type StoredContent =
-  | OrderingStoredContent
-  | GroupingStoredContent
-  | FilteringStoredContent
-  | PatternStoredContent
-
 // The content itself has no type tag, so the unions are discriminated by a
 // sibling `type` field, as in the API payloads.
 

@@ -6,7 +6,7 @@ import type { BadgeFamily } from '~/utils/badges'
 // A badge drawn as a sticker (spec §9.2): a disc in the tier colour with a white die-cut edge
 // and the symbol of the badge's family, all inline SVG (no image files). Locked badges are a
 // dashed outline with the symbol in grey; a secret one shows "?".
-const props = withDefaults(defineProps<{ family: BadgeFamily | 'secret'; tier: Tier; earned: boolean }>(), {})
+const props = defineProps<{ family: BadgeFamily | 'secret'; tier: Tier; earned: boolean }>()
 
 const ink = computed(() => (props.earned ? 'var(--cq-badge-glyph)' : 'var(--cq-control)'))
 const SKILL_SQUARES = [

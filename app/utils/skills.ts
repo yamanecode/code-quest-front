@@ -30,11 +30,3 @@ export const SKILLS: Record<ChallengeType, Skill> = {
     description: 'Encontrar a regra que se repete e usá-la para prever o próximo passo.',
   },
 }
-
-export function skillLabel(type: ChallengeType): string {
-  return SKILLS[type].label
-}
-
-export function skillDescription(type: ChallengeType): string {
-  return SKILLS[type].description
-}

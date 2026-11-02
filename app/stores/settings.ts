@@ -59,10 +59,6 @@ export const useSettingsStore = defineStore('settings', () => {
     write(MUTED_KEY, String(value))
   }
 
-  function toggleMuted() {
-    setMuted(!muted.value)
-  }
-
   function setTheme(value: Theme) {
     theme.value = value
     write(THEME_KEY, value)
@@ -82,5 +78,5 @@ export const useSettingsStore = defineStore('settings', () => {
     write(welcomeKey(username), 'dismissed')
   }
 
-  return { muted, setMuted, toggleMuted, theme, setTheme, toggleTheme, isWelcomeDismissed, dismissWelcome }
+  return { muted, setMuted, theme, setTheme, toggleTheme, isWelcomeDismissed, dismissWelcome }
 })

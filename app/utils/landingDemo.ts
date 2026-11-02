@@ -3,7 +3,6 @@
 
 import type {
   Answer,
-  ChallengeType,
   FilteringContent,
   GroupingContent,
   OrderingContent,
@@ -109,10 +108,6 @@ export const DEMO_CHALLENGES: readonly DemoChallenge[] = [
     explanation: 'A regra é treinar e folgar um dia. Depois do domingo vem a segunda, de folga, e então a terça.',
   },
 ]
-
-export function demoChallenge(type: ChallengeType): DemoChallenge {
-  return DEMO_CHALLENGES.find((c) => c.type === type)!
-}
 
 function sameList(a: readonly string[], b: readonly string[]): boolean {
   return a.length === b.length && a.every((value, index) => value === b[index])

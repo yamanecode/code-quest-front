@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { CHALLENGE_TYPES } from '~/types/challenge'
 import { XP_PER_LEVEL, bandRange, levelLabel, levelTitle } from '~/utils/levels'
-import { SKILLS, skillDescription, skillLabel } from '~/utils/skills'
+import { SKILLS } from '~/utils/skills'
 import { CORRECT_MESSAGES, WRONG_MESSAGES, pickMessage } from '~/utils/feedback'
 
 afterEach(() => {
@@ -34,15 +34,15 @@ describe('levels', () => {
 describe('skills', () => {
   it('T-FE-UTIL-02 every challenge type has a skill label and description', () => {
     for (const type of CHALLENGE_TYPES) {
-      expect(skillLabel(type).length).toBeGreaterThan(0)
-      expect(skillDescription(type).length).toBeGreaterThan(0)
+      expect(SKILLS[type].label.length).toBeGreaterThan(0)
+      expect(SKILLS[type].description.length).toBeGreaterThan(0)
     }
     expect(Object.keys(SKILLS).sort()).toEqual([...CHALLENGE_TYPES].sort())
-    expect(skillLabel('ordering')).toBe('Pensamento algorítmico')
-    expect(skillLabel('grouping')).toBe('Decomposição')
-    expect(skillLabel('filtering')).toBe('Abstração')
-    expect(skillLabel('pattern')).toBe('Reconhecimento de padrões')
-    expect(skillDescription('pattern')).toBe(
+    expect(SKILLS.ordering.label).toBe('Pensamento algorítmico')
+    expect(SKILLS.grouping.label).toBe('Decomposição')
+    expect(SKILLS.filtering.label).toBe('Abstração')
+    expect(SKILLS.pattern.label).toBe('Reconhecimento de padrões')
+    expect(SKILLS.pattern.description).toBe(
       'Encontrar a regra que se repete e usá-la para prever o próximo passo.',
     )
   })

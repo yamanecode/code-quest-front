@@ -1,6 +1,6 @@
 // DTOs of the backend API (spec §8.4). Nullable fields are always present.
 
-import type { Answer, ChallengeType, TypedStoredContent, TypedStudentContent } from './challenge'
+import type { ChallengeType, TypedStoredContent, TypedStudentContent } from './challenge'
 
 export type Role = 'student' | 'professor'
 export type Tier = 'bronze' | 'silver' | 'gold'
@@ -73,10 +73,6 @@ export interface ClassroomRef {
   name: string
 }
 
-export interface JoinClassroomRequest {
-  join_code: string
-}
-
 export interface MissionSummary {
   id: number
   title: string
@@ -126,10 +122,6 @@ interface ChallengeForStudentBase {
 }
 
 export type ChallengeForStudent = ChallengeForStudentBase & TypedStudentContent
-
-export interface SubmissionRequest {
-  answer: Answer
-}
 
 export interface NewBadge {
   code: string
@@ -280,10 +272,6 @@ export interface MissionInput {
   title: string
   description: string | null
   position: number
-}
-
-export interface MissionChallengesInput {
-  challenge_ids: number[]
 }
 
 export interface SolveStats {

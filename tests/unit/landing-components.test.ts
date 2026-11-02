@@ -7,7 +7,12 @@ import HintDemo from '~/components/landing/HintDemo.vue'
 import LandingHeader from '~/components/landing/LandingHeader.vue'
 import OctalysisMap from '~/components/landing/OctalysisMap.vue'
 import { useAuthStore } from '~/stores/auth'
-import { DEMO_COOLDOWN_SECONDS, DEMO_HINTS, demoChallenge } from '~/utils/landingDemo'
+import { DEMO_CHALLENGES, DEMO_COOLDOWN_SECONDS, DEMO_HINTS } from '~/utils/landingDemo'
+import type { ChallengeType } from '~/types/challenge'
+
+function demoChallenge(type: ChallengeType) {
+  return DEMO_CHALLENGES.find((c) => c.type === type)!
+}
 
 const testid = (wrapper: VueWrapper, id: string) => wrapper.get(`[data-testid="${id}"]`)
 
