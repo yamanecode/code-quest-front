@@ -13,16 +13,23 @@ import {
   ringPoints,
   spokePoints,
   toPoints,
+  elementCount,
   wedgePoints,
   type Hat,
   type TermKey,
 } from '~/utils/octalysis'
 
-// The 8 core drives of Octalysis as an octagon: each wedge is filled according to how much
-// CodeQuest uses the drive. Choosing a core (by button or by clicking the drawing) shows
+// The 8 core drives of Octalysis as an octagon: each wedge is filled by the number of
+// CodeQuest elements that apply the drive, on a scale of 0 to 5. Choosing a core (by button or by clicking the drawing) shows
 // what it means and where it appears in the platform.
 const selected = ref(2)
 const core = computed(() => CORES.find((c) => c.number === selected.value)!)
+const coreCount = computed(() => elementCount(core.value))
+const countLabel = computed(() =>
+  coreCount.value === 0 ? 'não usado' : `${coreCount.value} ${coreCount.value === 1 ? 'elemento' : 'elementos'}`,
+)
+
+const SCALE_MAX = 5
 
 const HAT_FILL: Record<Hat, string> = {
   white: 'var(--cq-hat-white)',
@@ -60,7 +67,7 @@ function wedgeOpacity(number: number): number {
         :viewBox="`0 0 ${VIEW_SIZE} ${VIEW_SIZE}`"
         class="block h-auto w-full overflow-visible"
         role="img"
-        aria-label="Octógono com os 8 impulsos do Octalysis, cada fatia preenchida conforme o uso no CodeQuest"
+        aria-label="Octógono com os 8 impulsos do Octalysis, cada fatia preenchida conforme o número de elementos do CodeQuest que aplicam o impulso"
         data-testid="octalysis-svg"
       >
         <g
@@ -72,7 +79,7 @@ function wedgeOpacity(number: number): number {
         >
           <polygon :points="toPoints(wedgePoints(item.number, 1))" fill="var(--cq-panel)" />
           <polygon
-            :points="toPoints(wedgePoints(item.number, item.intensity / 5))"
+            :points="toPoints(wedgePoints(item.number, elementCount(item) / SCALE_MAX))"
             :fill="HAT_FILL[item.hat]"
             :opacity="wedgeOpacity(item.number)"
           />
@@ -129,7 +136,7 @@ function wedgeOpacity(number: number): number {
           >{{ item.number }}</text>
         </g>
       </svg>
-      <p class="mt-2 text-sm text-muted">Quanto mais cheia a fatia, mais o CodeQuest usa aquele impulso (escala de 0 a 5; fatia vazia = não usado).</p>
+      <p class="mt-2 text-sm text-muted">Cada fatia mostra quantos elementos do CodeQuest aplicam aquele impulso (escala de 0 a 5; fatia vazia = não usado).</p>
       <div class="mt-3 grid gap-2 text-sm" data-testid="octalysis-legend">
         <div class="flex flex-wrap items-center gap-1.5" role="group" aria-label="Chapéus">
           <TermTag
@@ -210,13 +217,13 @@ function wedgeOpacity(number: number): number {
           <span>Uso no CodeQuest</span>
           <span class="inline-flex gap-1" aria-hidden="true">
             <i
-              v-for="n in 5"
+              v-for="n in SCALE_MAX"
               :key="n"
               class="inline-block h-3 w-3 rounded-full border-2 border-line-strong"
-              :class="n <= core.intensity ? 'bg-ink' : ''"
+              :class="n <= coreCount ? 'bg-ink' : ''"
             />
           </span>
-          <small class="font-normal text-muted" data-testid="octalysis-intensity">{{ core.intensity === 0 ? 'não usado' : `${core.intensity} de 5` }}</small>
+          <small class="font-normal text-muted" data-testid="octalysis-intensity">{{ countLabel }}</small>
         </p>
         <ul class="grid list-disc gap-1.5 pl-5" data-testid="octalysis-uses">
           <li v-for="use in core.uses" :key="use.text">

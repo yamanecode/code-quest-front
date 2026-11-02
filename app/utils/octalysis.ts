@@ -20,8 +20,12 @@ export interface Core {
   motivation: Motivation | null // cores 1 and 8 are not placed on either side
   meaning: string
   uses: CoreUse[]
-  // How much CodeQuest relies on the drive, from 0 (not used) to 5.
-  intensity: 0 | 1 | 2 | 3 | 4 | 5
+}
+
+// How many elements of the platform apply the drive: the uses that name a technique (0 when the
+// only entry says why the core is not used). The octagon draws this count on a scale of 0 to 5.
+export function elementCount(core: Core): number {
+  return core.uses.filter((use) => use.technique !== null).length
 }
 
 export const HAT_LABEL: Record<Hat, string> = {
@@ -61,14 +65,14 @@ export const TERM_NOTE: Record<TermKey, string> = {
 
 export const CORES: readonly Core[] = [
   {
-    number: 1, name: 'Significado épico e chamado', short: 'Significado', hat: 'white', motivation: null, intensity: 0,
+    number: 1, name: 'Significado épico e chamado', short: 'Significado', hat: 'white', motivation: null,
     meaning: 'A sensação de fazer parte de algo maior do que você.',
     uses: [
       { text: 'Não usado: o CodeQuest não tem história, missão épica nem "chamado". A página inicial só diz para que servem as quatro habilidades.', technique: null },
     ],
   },
   {
-    number: 2, name: 'Desenvolvimento e realização', short: 'Realização', hat: 'white', motivation: 'extrinsic', intensity: 5,
+    number: 2, name: 'Desenvolvimento e realização', short: 'Realização', hat: 'white', motivation: 'extrinsic',
     meaning: 'A vontade de progredir, ficar melhor e mostrar o que conquistou.',
     uses: [
       { text: 'XP no primeiro acerto, nível a cada 30 XP e título por faixa, de Iniciante a Mestre.', technique: 'Status Points' },
@@ -78,7 +82,7 @@ export const CORES: readonly Core[] = [
     ],
   },
   {
-    number: 3, name: 'Empoderamento da criatividade e feedback', short: 'Criatividade', hat: 'white', motivation: 'intrinsic', intensity: 3,
+    number: 3, name: 'Empoderamento da criatividade e feedback', short: 'Criatividade', hat: 'white', motivation: 'intrinsic',
     meaning: 'O prazer de testar caminhos e ver o resultado na hora.',
     uses: [
       { text: 'Missões sem ordem fixa: qualquer desafio pode ser aberto.', technique: 'Plant Picker (Meaningful Choices)' },
@@ -86,7 +90,7 @@ export const CORES: readonly Core[] = [
     ],
   },
   {
-    number: 4, name: 'Propriedade e posse', short: 'Posse', hat: 'neutral', motivation: 'extrinsic', intensity: 3,
+    number: 4, name: 'Propriedade e posse', short: 'Posse', hat: 'neutral', motivation: 'extrinsic',
     meaning: 'O apego ao que é seu e a vontade de completar uma coleção.',
     uses: [
       { text: 'Coleção de 26 insígnias em famílias: uma por habilidade, nível, missões e acertos de primeira.', technique: 'Collection Sets' },
@@ -94,7 +98,7 @@ export const CORES: readonly Core[] = [
     ],
   },
   {
-    number: 5, name: 'Influência social e pertencimento', short: 'Social', hat: 'neutral', motivation: 'intrinsic', intensity: 3,
+    number: 5, name: 'Influência social e pertencimento', short: 'Social', hat: 'neutral', motivation: 'intrinsic',
     meaning: 'A motivação que vem dos outros: colaborar, comparar-se e ser reconhecido.',
     uses: [
       { text: 'Meta semanal da turma, alcançada em conjunto e sem chat.', technique: 'Group Quests' },
@@ -102,21 +106,21 @@ export const CORES: readonly Core[] = [
     ],
   },
   {
-    number: 6, name: 'Escassez e impaciência', short: 'Escassez', hat: 'black', motivation: 'extrinsic', intensity: 2,
+    number: 6, name: 'Escassez e impaciência', short: 'Escassez', hat: 'black', motivation: 'extrinsic',
     meaning: 'Querer algo que ainda não se pode ter.',
     uses: [
       { text: 'As insígnias que faltam ficam visíveis no perfil, com a condição para ganhar; as de ouro avisam que pedem desafios de turma.', technique: 'Dangling' },
     ],
   },
   {
-    number: 7, name: 'Imprevisibilidade e curiosidade', short: 'Curiosidade', hat: 'black', motivation: 'intrinsic', intensity: 1,
+    number: 7, name: 'Imprevisibilidade e curiosidade', short: 'Curiosidade', hat: 'black', motivation: 'intrinsic',
     meaning: 'A curiosidade pelo que ainda não se sabe.',
     uses: [
       { text: 'Três insígnias secretas, reveladas só quando conquistadas.', technique: 'Easter Eggs' },
     ],
   },
   {
-    number: 8, name: 'Perda e prevenção', short: 'Perda', hat: 'black', motivation: null, intensity: 0,
+    number: 8, name: 'Perda e prevenção', short: 'Perda', hat: 'black', motivation: null,
     meaning: 'Agir para não perder algo que já se tem.',
     uses: [
       { text: 'Não usado. Sem vidas, sem perda de XP, sem contagem de dias seguidos e sem ranking de todos os tempos: errar ou passar uns dias fora não tira nada do estudante.', technique: null },

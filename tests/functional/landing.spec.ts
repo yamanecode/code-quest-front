@@ -47,11 +47,13 @@ test('FT-UI-20 choosing a core of the Octalysis shows what it means and how the 
   await page.goto('/')
   const detail = page.getByTestId('octalysis-detail')
   await expect(detail).toContainText('Desenvolvimento e realização')
+  await expect(page.getByTestId('octalysis-intensity')).toHaveText('4 elementos')
 
   await page.getByTestId('octalysis-core-8').click()
   await expect(page.getByTestId('octalysis-core-8')).toHaveAttribute('aria-pressed', 'true')
   await expect(detail).toContainText('Perda e prevenção')
   await expect(detail).toContainText('Sem vidas')
+  await expect(page.getByTestId('octalysis-intensity')).toHaveText('não usado')
 
   await page.getByTestId('octalysis-wedge-5').click()
   await expect(detail).toContainText('Influência social e pertencimento')

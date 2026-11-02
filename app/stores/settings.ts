@@ -49,7 +49,8 @@ function applyTheme(theme: Theme) {
 }
 
 export const useSettingsStore = defineStore('settings', () => {
-  const muted = ref(read(MUTED_KEY) === 'true')
+  // Sound starts off (decision 2026-10-27); only a saved 'false' turns it on.
+  const muted = ref(read(MUTED_KEY) !== 'false')
   const dismissedWelcome = ref<Set<string>>(new Set())
   const theme = ref<Theme>(initialTheme())
   applyTheme(theme.value)

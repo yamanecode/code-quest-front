@@ -114,6 +114,27 @@ describe('professor pages', () => {
     expect(page.get('[data-testid="review-panel"]').text()).toContain('Parece claro.')
   })
 
+  it('T-FE-EDIT-RACE-01 while a saved challenge loads, no form or action is offered, so nothing can be created twice', async () => {
+    let finishLoad: (value: typeof draft) => void = () => {}
+    vi.mocked(professorService.getChallenge).mockReturnValue(new Promise((resolve) => { finishLoad = resolve }))
+
+    const page = await mountSuspended(EditChallengePage, { route: '/professor/desafios/31' })
+    await flushPromises()
+
+    expect(page.get('[data-testid="challenge-loading"]').text()).toBe('Carregando desafio…')
+    expect(page.find('[data-testid="publish"]').exists()).toBe(false)
+    expect(page.find('[data-testid="save"]').exists()).toBe(false)
+    expect(page.find('[data-testid="field-title"]').exists()).toBe(false)
+
+    finishLoad(draft)
+    await flushPromises()
+
+    expect(page.find('[data-testid="challenge-loading"]').exists()).toBe(false)
+    expect(page.get('[data-testid="field-title"]').element).toHaveProperty('value', draft.title)
+    expect(page.find('[data-testid="publish"]').exists()).toBe(true)
+    expect(professorService.createChallenge).not.toHaveBeenCalled()
+  })
+
   it('T-FE-PROF-16 a save that breaks a rule shows the errors and asks for no review', async () => {
     vi.mocked(professorService.getChallenge).mockResolvedValue(draft)
     vi.mocked(professorService.updateChallenge).mockRejectedValue(

@@ -27,6 +27,7 @@ describe('octalysis map', () => {
 
     expect(testid(wrapper, 'octalysis-core-2').attributes('aria-pressed')).toBe('true')
     expect(testid(wrapper, 'octalysis-detail').text()).toContain('Desenvolvimento e realização')
+    expect(testid(wrapper, 'octalysis-intensity').text()).toBe('4 elementos')
 
     await testid(wrapper, 'octalysis-core-6').trigger('click')
 
@@ -34,7 +35,7 @@ describe('octalysis map', () => {
     expect(testid(wrapper, 'octalysis-core-2').attributes('aria-pressed')).toBe('false')
     expect(testid(wrapper, 'octalysis-detail').text()).toContain('Escassez e impaciência')
     expect(testid(wrapper, 'octalysis-hat').text()).toBe('Chapéu preto')
-    expect(testid(wrapper, 'octalysis-intensity').text()).toBe('2 de 5')
+    expect(testid(wrapper, 'octalysis-intensity').text()).toBe('1 elemento')
     expect(testid(wrapper, 'octalysis-technique').text()).toContain('Dangling')
 
     await testid(wrapper, 'octalysis-core-8').trigger('click')

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { DEMO_CHALLENGES, DEMO_HINTS, demoXp, isDemoCorrect } from '~/utils/landingDemo'
-import { CENTRE, CORES, HAT_LABEL, TERM_NOTE, VIEW_SIZE, badgePoint, coresOfTerm, ringPoints, wedgePoints } from '~/utils/octalysis'
+import { CENTRE, CORES, HAT_LABEL, TERM_NOTE, VIEW_SIZE, badgePoint, coresOfTerm, ringPoints, elementCount, wedgePoints } from '~/utils/octalysis'
 
 const byType = (type: string) => DEMO_CHALLENGES.find((c) => c.type === type)!
 
@@ -66,22 +66,28 @@ describe('landing demo rules', () => {
 })
 
 describe('octalysis data', () => {
-  it('T-FE-LAND-06 has the 8 cores, numbered 1 to 8, with intensity from 0 to 5', () => {
+  it('T-FE-LAND-10 the fill of each core is the number of elements listed under it, never more than 5', () => {
+    for (const core of CORES) {
+      expect(elementCount(core)).toBe(core.uses.filter((u) => u.technique).length)
+      expect(elementCount(core)).toBeLessThanOrEqual(5)
+    }
+    expect(CORES.map(elementCount)).toEqual([0, 4, 2, 2, 2, 1, 1, 0])
+  })
+
+  it('T-FE-LAND-06 has the 8 cores, numbered 1 to 8, each with at least one listed use', () => {
     expect(CORES.map((c) => c.number)).toEqual([1, 2, 3, 4, 5, 6, 7, 8])
     for (const core of CORES) {
-      expect(core.intensity).toBeGreaterThanOrEqual(0)
-      expect(core.intensity).toBeLessThanOrEqual(5)
       expect(core.uses.length).toBeGreaterThan(0)
       expect(HAT_LABEL[core.hat]).toBeTruthy()
     }
   })
 
   it('T-FE-LAND-07 every used core names the Chou technique of each element; cores 1 and 8 are not used', () => {
-    const notUsed = CORES.filter((c) => c.intensity === 0).map((c) => c.number)
+    const notUsed = CORES.filter((c) => elementCount(c) === 0).map((c) => c.number)
     expect(notUsed).toEqual([1, 8])
     for (const core of CORES) {
       for (const use of core.uses) {
-        if (core.intensity === 0) {
+        if (elementCount(core) === 0) {
           expect(use.technique).toBeNull()
           expect(use.text).toMatch(/^Não usado/)
         }

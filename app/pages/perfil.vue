@@ -316,7 +316,7 @@ onMounted(() => profileStore.load())
             >
             <span>
               <span class="block font-semibold">Sem som</span>
-              <span class="block text-sm text-muted">Desliga o som de acerto, de novo nível e de insígnia nova.</span>
+              <span class="block text-sm text-muted">Desliga o som de acerto, de novo nível e de insígnia nova. O som começa desligado.</span>
             </span>
           </label>
         </div>

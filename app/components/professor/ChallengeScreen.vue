@@ -20,6 +20,9 @@ const form = ref<FormState>(emptyForm('ordering'))
 const challenge = ref<ProfChallenge | null>(null)
 const locked = ref(false)
 const loadError = ref<string | null>(null)
+// Until a saved challenge arrives the form would be empty, and Publicar or Salvar would create a
+// second challenge instead of acting on this one, so nothing is shown while it loads.
+const loading = ref(false)
 const errors = ref<string[]>([])
 // Errors of the "Gerar rascunho" box are shown inside it, not under the long form below.
 const draftErrors = ref<string[]>([])
@@ -43,6 +46,7 @@ async function load(id: number | null) {
     form.value = emptyForm('ordering')
     return
   }
+  loading.value = true
   try {
     const loaded = await professor.getChallenge(id)
     challenge.value = loaded
@@ -51,6 +55,9 @@ async function load(id: number | null) {
   }
   catch (e) {
     loadError.value = errorMessage(e)
+  }
+  finally {
+    loading.value = false
   }
 }
 
@@ -157,6 +164,7 @@ const remove = () => run(async () => {
 <template>
   <div class="max-w-3xl">
     <p v-if="loadError" role="alert" class="cq-alert px-4 py-3 text-error-ink" data-testid="challenge-load-error">{{ loadError }}</p>
+    <p v-else-if="loading" class="text-muted" aria-live="polite" data-testid="challenge-loading">Carregando desafio…</p>
 
     <template v-else>
       <div class="flex flex-wrap items-center gap-3">
