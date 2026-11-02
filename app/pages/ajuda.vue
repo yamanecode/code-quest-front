@@ -225,7 +225,7 @@ function levelRange(from: number, to: number | null) {
         <li>Monte missões com desafios dos quatro tipos. O editor confere as regras de cada tipo enquanto você preenche.</li>
         <li>Use <strong>Revisar com IA</strong> para receber sugestões sobre um desafio; nada é alterado sem você.</li>
         <li>Use <strong>Gerar rascunho com IA</strong> para começar um desafio a partir de um tema. O rascunho só chega aos estudantes depois que você publicar.</li>
-        <li>Depois que um desafio recebe respostas, só os textos podem mudar. Use <strong>Duplicar</strong> para alterar a estrutura.</li>
+        <li>Depois que um desafio recebe respostas, só o título, o enunciado, a explicação e os textos dos itens podem mudar (a sequência de um desafio de padrões e a pergunta de um de abstração ficam fixas). Use <strong>Duplicar</strong> para alterar a estrutura.</li>
         <li>Para tirar alguém da turma, use <strong>Remover</strong> na tabela de progresso. Quem entrou por engano pode voltar com o mesmo código: primeiro remova, depois use <strong>Gerar novo código</strong>.</li>
         <li>Defina a meta semanal da turma ou deixe que ela seja calculada automaticamente.</li>
         <li>Contas de professor não têm código de recuperação: se esquecer a senha, peça a quem administra a plataforma para redefini-la.</li>

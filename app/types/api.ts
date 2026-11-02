@@ -110,6 +110,14 @@ export interface MissionDetail {
   challenges: ChallengeSummary[]
 }
 
+export type HintSource = 'request' | 'after_wrong'
+
+export interface ShownHint {
+  level: number
+  source: HintSource
+  text: string
+}
+
 interface ChallengeForStudentBase {
   id: number
   title: string
@@ -119,6 +127,7 @@ interface ChallengeForStudentBase {
   is_new: boolean
   explanation: string | null // only when solved
   cooldown_seconds_left: number
+  hints_shown: ShownHint[] // oldest first
 }
 
 export type ChallengeForStudent = ChallengeForStudentBase & TypedStudentContent
@@ -258,6 +267,7 @@ export interface ProfMission {
   description: string | null
   position: number
   status: Status
+  has_published_challenge: boolean
   challenges: ChallengeRef[]
 }
 

@@ -51,6 +51,12 @@ const hintLabel = computed(() => {
   return 'Dica'
 })
 
+// The automatic hint (after a wrong answer) has its own label; requested ones are numbered.
+const hintTitles = computed(() => {
+  let requested = 0
+  return hints.value.map((hint) => (hint.source === 'after_wrong' ? 'Dica automática' : `Dica ${++requested}`))
+})
+
 // Why Enviar is disabled, in the words of the challenge type (shown under the buttons).
 const SUBMIT_HELP: Record<string, string> = {
   ordering: 'Mexa nos passos para montar a sequência.',
@@ -180,15 +186,15 @@ async function goNext() {
       >
         <ol class="grid gap-3" aria-live="polite">
           <li v-for="(hint, index) in hints" :key="index" :data-testid="`hint-${index + 1}`">
-            <p class="text-sm font-semibold text-muted">Dica {{ index + 1 }}</p>
-            <p class="mt-1 leading-relaxed">{{ hint }}</p>
+            <p class="text-sm font-semibold text-muted">{{ hintTitles[index] }}</p>
+            <p class="mt-1 leading-relaxed">{{ hint.text }}</p>
           </li>
         </ol>
         <p v-if="hintError" role="status" class="mt-2 text-sm text-muted" data-testid="hint-error">{{ hintError }}</p>
       </section>
 
       <div class="mt-4" aria-live="polite" data-testid="feedback-region">
-        <AnswerFeedback v-if="outcome" :outcome="outcome" @retry="retry" />
+        <AnswerFeedback v-if="outcome" :outcome="outcome" :show-hint="false" @retry="retry" />
       </div>
 
       <button

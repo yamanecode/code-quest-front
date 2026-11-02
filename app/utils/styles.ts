@@ -18,4 +18,4 @@ export const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
   danger: 'border-error-line bg-error-bg text-error-ink hover:border-error-ink',
 }
 
-export const TEXT_FIELD = `min-h-11 min-w-0 flex-1 border-2 border-line-strong bg-panel px-3 py-2 text-ink ${FOCUS_RING}`
+export const TEXT_FIELD = `min-h-11 min-w-0 flex-1 border-2 border-line-strong bg-panel px-3 py-2 text-ink disabled:cursor-not-allowed disabled:text-muted ${FOCUS_RING}`

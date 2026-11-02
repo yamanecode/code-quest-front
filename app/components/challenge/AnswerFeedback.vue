@@ -4,7 +4,8 @@ import { badgeFamily, TIER_LABEL } from '~/utils/badges'
 import { levelLabel } from '~/utils/levels'
 
 // Result of one answer (spec §9.2). Badges always appear together with XP, level and title.
-const props = defineProps<{ outcome: AnswerOutcome }>()
+// showHint: false where the page lists the hint with the others instead.
+const props = withDefaults(defineProps<{ outcome: AnswerOutcome; showHint?: boolean }>(), { showHint: true })
 const emit = defineEmits<{ retry: [] }>()
 </script>
 
@@ -60,7 +61,7 @@ const emit = defineEmits<{ retry: [] }>()
     <div class="px-5 py-4">
       <p class="font-display text-2xl font-bold text-ink" data-testid="feedback-message">{{ props.outcome.message }}</p>
       <p class="mt-1 text-sm text-muted">Sem pressa: você pode tentar quantas vezes quiser e nada se perde.</p>
-      <div v-if="props.outcome.hint" class="mt-3" data-testid="feedback-hint">
+      <div v-if="props.showHint && props.outcome.hint" class="mt-3" data-testid="feedback-hint">
         <p class="text-sm font-semibold text-muted">Dica</p>
         <p class="mt-1 leading-relaxed">{{ props.outcome.hint }}</p>
       </div>

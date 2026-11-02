@@ -75,6 +75,15 @@ const setIds = (ids: number[]) => run(async () => {
   await professor.setMissionChallenges(missionId.value, ids)
 })
 
+// A published mission with no published challenge stays hidden from students (spec §3).
+const hiddenFromStudents = computed(() =>
+  professor.mission?.status === 'published' && !professor.mission.has_published_challenge,
+)
+const visibilityText = computed(() => {
+  if (professor.mission?.status === 'draft') return 'Os alunos da turma só veem a missão depois de publicada.'
+  if (hiddenFromStudents.value) return 'A missão está publicada, mas ainda sem desafio publicado.'
+  return 'Os alunos da turma já veem esta missão.'
+})
 const hasPublished = computed(() => professor.mission?.challenges.some((c) => c.status === 'published') ?? false)
 
 const currentIds = () => professor.mission?.challenges.map((c) => c.id) ?? []
@@ -124,8 +133,14 @@ const button = SMALL_BUTTON
       <section class="cq-sheet mt-6 bg-panel p-5" aria-labelledby="h-publication">
         <h2 id="h-publication" class="font-display text-xl font-bold">Publicação</h2>
         <p class="mt-1 text-muted">
-          {{ professor.mission.status === 'draft' ? 'Os alunos da turma só veem a missão depois de publicada.' : 'Os alunos da turma já veem esta missão.' }}
+          {{ visibilityText }}
         </p>
+        <p
+          v-if="hiddenFromStudents"
+          role="note"
+          class="cq-alert mt-3 px-4 py-3 text-error-ink"
+          data-testid="mission-hidden-warning"
+        >Esta missão está publicada, mas os estudantes não a veem: publique pelo menos um desafio dela.</p>
         <p
           v-if="professor.mission.status === 'draft' && !hasPublished"
           class="cq-alert mt-3 px-4 py-3 text-error-ink"

@@ -21,7 +21,7 @@ const area = `w-full border-2 border-line-strong bg-panel px-3 py-2.5 text-ink $
       role="note"
       class="border-2 border-line-strong bg-raised px-4 py-3"
       data-testid="locked-note"
-    >Este desafio já foi respondido: só os textos podem mudar. Use Duplicar para alterar a estrutura.</p>
+    >Este desafio já foi respondido: só o título, o enunciado, a explicação e os textos dos itens podem mudar. Use Duplicar para alterar a estrutura.</p>
 
     <TextField v-model="form.title" label="Título" testid="field-title" :maxlength="80" autocomplete="off" />
 

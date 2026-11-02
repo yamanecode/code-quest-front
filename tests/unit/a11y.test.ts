@@ -47,7 +47,7 @@ const wrong: SubmissionResult = {
 function challengeOf(type: ChallengeType): ChallengeForStudent {
   return {
     id: 7, title: 'Desafio', statement: 'Uma situação do dia a dia para você resolver agora.', type,
-    ...byType[type], solved: false, explanation: null, cooldown_seconds_left: 0,
+    ...byType[type], solved: false, is_new: false, explanation: null, cooldown_seconds_left: 0, hints_shown: [],
   } as ChallengeForStudent
 }
 

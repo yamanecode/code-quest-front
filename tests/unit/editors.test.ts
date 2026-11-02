@@ -146,7 +146,7 @@ describe('challenge editors', () => {
 
     const { wrapper, state } = await open(form, true)
     expect(wrapper.get('[data-testid="locked-note"]').text()).toBe(
-      'Este desafio já foi respondido: só os textos podem mudar. Use Duplicar para alterar a estrutura.',
+      'Este desafio já foi respondido: só o título, o enunciado, a explicação e os textos dos itens podem mudar. Use Duplicar para alterar a estrutura.',
     )
     for (const testid of ['editor-add', 'editor-up-1', 'editor-down-0', 'editor-remove-0']) {
       expect(wrapper.get(`[data-testid="${testid}"]`).attributes('disabled')).toBeDefined()
@@ -159,6 +159,31 @@ describe('challenge editors', () => {
       expect(input.content.solution).toEqual(['z', 'y', 'x'])
       expect(input.content.items[0]).toEqual({ id: 'z', text: 'Ferver a água da chaleira' })
     }
+  })
+
+  it('T-FE-F10-04 a locked pattern keeps its sequence fixed and a locked filtering keeps its question fixed', async () => {
+    const pattern: FormState = {
+      ...emptyForm('pattern'), title: 'Dobro', statement: STATEMENT,
+      sequence: ['2', '4', '8'],
+      options: [{ id: 'a', text: '16' }, { id: 'b', text: '10' }, { id: 'c', text: '12' }, { id: 'd', text: '9' }],
+      correct: 'a',
+    }
+    const locked = (await open(pattern, true)).wrapper
+    for (const testid of ['editor-term-0', 'editor-term-2', 'editor-add-term', 'editor-term-remove-0']) {
+      expect(locked.get(`[data-testid="${testid}"]`).attributes('disabled')).toBeDefined()
+    }
+    expect(locked.get('[data-testid="editor-item-0"]').attributes('disabled')).toBeUndefined()
+    const open_ = (await open(pattern, false)).wrapper
+    expect(open_.get('[data-testid="editor-term-0"]').attributes('disabled')).toBeUndefined()
+
+    const filtering: FormState = {
+      ...emptyForm('filtering'), title: 'Ônibus', statement: STATEMENT, question: 'Quantos ônibus a escola precisa?',
+    }
+    const lockedFiltering = (await open(filtering, true)).wrapper
+    expect(lockedFiltering.get('[data-testid="editor-question"]').attributes('disabled')).toBeDefined()
+    expect(lockedFiltering.get('[data-testid="editor-item-0"]').attributes('disabled')).toBeUndefined()
+    const openFiltering = (await open(filtering, false)).wrapper
+    expect(openFiltering.get('[data-testid="editor-question"]').attributes('disabled')).toBeUndefined()
   })
 })
 

@@ -66,6 +66,7 @@ const challenge: ChallengeForStudent = {
   is_new: false,
   explanation: null,
   cooldown_seconds_left: 0,
+  hints_shown: [],
 }
 
 const correct: SubmissionResult = {
@@ -263,7 +264,6 @@ describe('challenge page', () => {
 
     expect(wrapper.find('[data-testid="feedback-wrong"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="feedback-explanation"]').exists()).toBe(false)
-    expect(wrapper.get('[data-testid="feedback-hint"]').text()).toContain('Compare cada número')
     expect(wrapper.find('[data-testid="challenge-next"]').exists()).toBe(false)
     expect(wrapper.get('[data-testid="pattern-option-a"]').attributes('disabled')).toBeDefined()
 
@@ -272,6 +272,43 @@ describe('challenge page', () => {
     expect(wrapper.find('[data-testid="feedback-wrong"]').exists()).toBe(false)
     expect(wrapper.get('[data-testid="pattern-option-a"]').attributes('disabled')).toBeUndefined()
     expect(wrapper.get('[data-testid="challenge-submit"]').attributes('disabled')).toBeUndefined()
+  })
+
+  it('T-FE-F10-01 the hints already shown come back on load, the automatic one labelled', async () => {
+    const wrapper = await open('/desafios/7', {
+      hints_shown: [
+        { level: 1, source: 'after_wrong', text: 'Compare cada número com o anterior.' },
+        { level: 1, source: 'request', text: 'Pense no que muda de um termo para o outro.' },
+        { level: 2, source: 'request', text: 'Olhe para o 4 e o 8. Qual seria a regra?' },
+      ],
+    })
+
+    expect(wrapper.get('[data-testid="hint-1"]').text()).toContain('Dica automática')
+    expect(wrapper.get('[data-testid="hint-1"]').text()).toContain('Compare cada número')
+    expect(wrapper.get('[data-testid="hint-2"]').text()).toContain('Dica 1')
+    expect(wrapper.get('[data-testid="hint-3"]').text()).toContain('Dica 2')
+    expect(wrapper.get('[data-testid="hint-3"]').text()).toContain('Olhe para o 4 e o 8')
+  })
+
+  it('T-FE-F10-02 the hint after a wrong answer joins the list once and stays after "Tentar novamente"', async () => {
+    const wrapper = await open()
+
+    await answer(wrapper, wrong)
+
+    expect(wrapper.find('[data-testid="feedback-hint"]').exists()).toBe(false)
+    expect(wrapper.findAll('[data-testid^="hint-"]').filter((h) => /^hint-\d+$/.test(h.attributes('data-testid')!))).toHaveLength(1)
+    expect(wrapper.get('[data-testid="hint-1"]').text()).toContain('Dica automática')
+    expect(wrapper.get('[data-testid="hint-1"]').text()).toContain('Compare cada número')
+
+    await wrapper.get('[data-testid="feedback-retry"]').trigger('click')
+
+    expect(wrapper.get('[data-testid="hint-1"]').text()).toContain('Compare cada número')
+
+    vi.mocked(studentService.requestHint).mockResolvedValue({ hint: 'Dica nível 1: o que dobra?', level: 1, cooldown_seconds: 0 })
+    await hintButton(wrapper).trigger('click')
+    await flushPromises()
+    expect(wrapper.get('[data-testid="hint-2"]').text()).toContain('Dica 1')
+    expect(wrapper.get('[data-testid="hint-2"]').text()).toContain('o que dobra?')
   })
 
   it('T-FE-PLAY-02 a correct answer shows level-up and new badges with level and title', async () => {

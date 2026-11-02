@@ -59,6 +59,7 @@ const mission: ProfMission = {
   description: null,
   position: 2,
   status: 'draft',
+  has_published_challenge: false,
   challenges: [],
 }
 

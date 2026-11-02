@@ -33,7 +33,7 @@ const field = TEXT_FIELD
       <legend class="font-display text-xl font-bold">Sequência mostrada</legend>
       <ol class="grid gap-2">
         <li v-for="(_, index) in form.sequence" :key="index" class="flex flex-wrap items-center gap-2">
-          <input v-model="form.sequence[index]" type="text" maxlength="40" :aria-label="`Termo ${index + 1}`" :class="field" :data-testid="`editor-term-${index}`">
+          <input v-model="form.sequence[index]" type="text" maxlength="40" :disabled="locked" :aria-label="`Termo ${index + 1}`" :class="field" :data-testid="`editor-term-${index}`">
           <button type="button" :class="button" :disabled="locked || form.sequence.length <= 3" :aria-label="`Remover o termo ${index + 1}`" :data-testid="`editor-term-remove-${index}`" @click="removeTerm(index)">Remover</button>
         </li>
       </ol>

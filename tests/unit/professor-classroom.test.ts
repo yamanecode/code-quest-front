@@ -19,7 +19,7 @@ vi.mock('~/services/professor', () => ({
 const classroom: ProfClassroom = { id: 4, name: 'Turma A', join_code: 'ABC123', weekly_goal: null, closed: false, goal: null }
 
 function mission(id: number, position: number, challenges: ProfMission['challenges'] = []): ProfMission {
-  return { id, classroom_id: 4, title: `Missão ${id}`, description: null, position, status: 'draft', challenges }
+  return { id, classroom_id: 4, title: `Missão ${id}`, description: null, position, status: 'draft', has_published_challenge: challenges.some((c) => c.status === 'published'), challenges }
 }
 
 const published = (id: number, type: ProfMission['challenges'][number]['type']) => ({ id, title: `D${id}`, type, status: 'published' as const })

@@ -147,10 +147,18 @@ test('FT-UI-06 a wrong answer shows message, the hint and "Tentar novamente"', {
 
   await expect(page.getByTestId('feedback-wrong')).toBeVisible()
   await expect(page.getByTestId('feedback-message')).not.toBeEmpty()
-  await expect(page.getByTestId('feedback-hint')).toContainText('Dica nível 1')
+  await expect(page.getByTestId('hint-1')).toContainText('Dica automática')
+  await expect(page.getByTestId('hint-1')).toContainText('Dica nível 1')
   await expect(page.getByTestId('feedback-retry')).toHaveText(/Tentar novamente/)
   // the explanation stays hidden until the answer is right
   await expect(page.getByTestId('feedback-wrong')).not.toContainText('Porque sim')
+
+  // the automatic hint stays after a retry and comes back after a reload
+  await page.getByTestId('feedback-retry').click()
+  await expect(page.getByTestId('hint-1')).toContainText('Dica nível 1')
+  await page.reload()
+  await expect(page.getByTestId('hint-1')).toContainText('Dica automática')
+  await expect(page.getByTestId('hint-1')).toContainText('Dica nível 1')
 })
 
 test('FT-UI-06 reaching 30 XP shows the level-up with the level and title', { tag: ['@UI-06'] }, async ({ page }) => {

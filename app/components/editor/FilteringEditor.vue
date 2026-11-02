@@ -31,6 +31,7 @@ const field = TEXT_FIELD
         v-model="form.question"
         type="text"
         maxlength="200"
+        :disabled="locked"
         :class="field"
         data-testid="editor-question"
       >

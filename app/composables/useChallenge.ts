@@ -3,7 +3,7 @@ import * as studentService from '~/services/student'
 import { ApiError } from '~/services/http'
 import { useProfileStore } from '~/stores/profile'
 import { useSettingsStore } from '~/stores/settings'
-import type { ChallengeForStudent, SubmissionResult } from '~/types/api'
+import type { ChallengeForStudent, ShownHint, SubmissionResult } from '~/types/api'
 import type { Answer } from '~/types/challenge'
 import { CORRECT_MESSAGES, WRONG_MESSAGES, pickMessage } from '~/utils/feedback'
 import { errorMessage } from '~/utils/format'
@@ -28,7 +28,9 @@ export function useChallenge(id: Ref<number>) {
   const outcome = ref<AnswerOutcome | null>(null)
   const submitError = ref<string | null>(null)
 
-  const hints = ref<string[]>([])
+  // Every hint this student saw on the challenge, oldest first: the ones of earlier visits
+  // (from the API) and the new ones, so a retry or a reload keeps them.
+  const hints = ref<ShownHint[]>([])
   const hintLoading = ref(false)
   const hintError = ref<string | null>(null)
   const cooldown = ref(0)
@@ -69,6 +71,7 @@ export function useChallenge(id: Ref<number>) {
     try {
       const loaded = await studentService.getChallenge(id.value)
       challenge.value = loaded
+      hints.value = [...loaded.hints_shown]
       startCooldown(loaded.cooldown_seconds_left)
     }
     catch (e) {
@@ -97,6 +100,7 @@ export function useChallenge(id: Ref<number>) {
       const result = await studentService.submitAnswer(challenge.value.id, answer.value)
       const message = pickMessage(result.is_correct ? CORRECT_MESSAGES : WRONG_MESSAGES)
       outcome.value = { ...result, message }
+      if (result.hint) hints.value = [...hints.value, { level: 1, source: 'after_wrong', text: result.hint }]
       if (result.is_correct) {
         challenge.value = { ...challenge.value, solved: true }
         stopCooldown()
@@ -127,7 +131,7 @@ export function useChallenge(id: Ref<number>) {
     hintError.value = null
     try {
       const result = await studentService.requestHint(challenge.value.id)
-      hints.value = [...hints.value, result.hint]
+      hints.value = [...hints.value, { level: result.level, source: 'request', text: result.hint }]
       startCooldown(result.cooldown_seconds)
     }
     catch (e) {

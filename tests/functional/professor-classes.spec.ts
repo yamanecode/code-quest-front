@@ -178,6 +178,28 @@ test('FT-UI-14 an empty mission cannot be published; after adding a published ch
   await studentContext.close()
 })
 
+test('FT-UI-14 a published mission whose only challenge is unpublished warns that students do not see it', { tag: ['@UI-14'] }, async ({ page }) => {
+  const prof = await professorToken()
+  const challenge = await createChallenge(prof, 'filtering')
+  const classroom = await createClassroom(prof)
+  const mission = await createMission(prof, classroom.id, [challenge.id])
+  const warning = 'Esta missão está publicada, mas os estudantes não a veem: publique pelo menos um desafio dela.'
+
+  await loginProfessorUi(page)
+  await page.goto(`/professor/missoes/${mission.id}`)
+  await expect(page.getByTestId('mission-status')).toHaveText('Publicada')
+  await expect(page.getByTestId('mission-hidden-warning')).toHaveCount(0)
+
+  await api(`/api/professor/challenges/${challenge.id}/unpublish`, { token: prof, method: 'POST' })
+  await page.reload()
+  await expect(page.getByTestId('mission-hidden-warning')).toHaveText(warning)
+
+  await api(`/api/professor/challenges/${challenge.id}/publish`, { token: prof, method: 'POST' })
+  await page.reload()
+  await expect(page.getByTestId('mission-status')).toHaveText('Publicada')
+  await expect(page.getByTestId('mission-hidden-warning')).toHaveCount(0)
+})
+
 test('FT-UI-14 the professor reorders the challenges of a mission', { tag: ['@UI-14'] }, async ({ page }) => {
   const prof = await professorToken()
   const classroom = await createClassroom(prof)

@@ -9,7 +9,7 @@ const fetchMock = vi.fn()
 
 const classroom: ProfClassroom = { id: 4, name: 'Turma A', join_code: 'ABC123', weekly_goal: null, closed: false, goal: null }
 const mission = (id: number, position: number): ProfMission => ({
-  id, classroom_id: 4, title: `Missão ${id}`, description: null, position, status: 'draft', challenges: [],
+  id, classroom_id: 4, title: `Missão ${id}`, description: null, position, status: 'draft', has_published_challenge: false, challenges: [],
 })
 
 beforeEach(() => {

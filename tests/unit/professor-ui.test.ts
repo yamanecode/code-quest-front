@@ -33,7 +33,7 @@ vi.mock('~/services/professor', () => ({
 const classroom: ProfClassroom = { id: 4, name: 'Turma A', join_code: 'ABC123', weekly_goal: null, closed: false, goal: null }
 const ROW = { username: 'ana', xp_in_class: 0, level: 1, solved_in_class: 0, missions_completed_in_class: 0, hints_used: 0 }
 const mission = (id: number, position: number): ProfMission => ({
-  id, classroom_id: 4, title: `Missão ${id}`, description: null, position, status: 'draft', challenges: [],
+  id, classroom_id: 4, title: `Missão ${id}`, description: null, position, status: 'draft', has_published_challenge: false, challenges: [],
 })
 
 beforeEach(() => {
@@ -123,6 +123,30 @@ describe('mission page', () => {
     expect(sizeOf(remove.classes())).toEqual(sizeOf(publish.classes()))
     expect(remove.classes()).not.toContain('bg-go')
     expect(page.get('[aria-labelledby="h-publication"]').find('[data-testid="mission-delete"]').exists()).toBe(false)
+  })
+
+  it('T-FE-F10-03 a published mission without a published challenge warns that students do not see it', async () => {
+    vi.mocked(professorService.listChallenges).mockResolvedValue([])
+    const draftChallenge = { id: 3, title: 'D3', type: 'ordering' as const, status: 'draft' as const }
+    vi.mocked(professorService.getMission).mockResolvedValue({
+      ...mission(9, 0), status: 'published', has_published_challenge: false, challenges: [draftChallenge],
+    })
+    const hidden = await mountSuspended(MissionPage, { route: '/professor/missoes/9' })
+    await flushPromises()
+    const block = hidden.get('[aria-labelledby="h-publication"]')
+    expect(block.get('[data-testid="mission-hidden-warning"]').text()).toBe(
+      'Esta missão está publicada, mas os estudantes não a veem: publique pelo menos um desafio dela.',
+    )
+    expect(block.text()).not.toContain('Os alunos da turma já veem esta missão.')
+
+    vi.mocked(professorService.getMission).mockResolvedValue({
+      ...mission(9, 0), status: 'published', has_published_challenge: true,
+      challenges: [{ ...draftChallenge, status: 'published' }],
+    })
+    const visible = await mountSuspended(MissionPage, { route: '/professor/missoes/9' })
+    await flushPromises()
+    expect(visible.find('[data-testid="mission-hidden-warning"]').exists()).toBe(false)
+    expect(visible.text()).toContain('Os alunos da turma já veem esta missão.')
   })
 })
 

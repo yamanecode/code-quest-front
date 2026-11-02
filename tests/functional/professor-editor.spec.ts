@@ -174,7 +174,7 @@ test('FT-UI-11 a challenge already answered disables the structure fields and ex
   await loginProfessorUi(page)
   await page.goto(`/professor/desafios/${challenge.id}`)
   await expect(page.getByTestId('locked-note')).toHaveText(
-    'Este desafio já foi respondido: só os textos podem mudar. Use Duplicar para alterar a estrutura.',
+    'Este desafio já foi respondido: só o título, o enunciado, a explicação e os textos dos itens podem mudar. Use Duplicar para alterar a estrutura.',
   )
   await expect(page.getByTestId('editor-add')).toBeDisabled()
   await expect(page.getByTestId('editor-remove-0')).toBeDisabled()
@@ -189,6 +189,23 @@ test('FT-UI-11 a challenge already answered disables the structure fields and ex
   await expect(page.getByTestId('field-title')).toHaveValue('Título corrigido')
   await expect(page.getByTestId('editor-item-0')).toHaveValue('Pegar o pão fresco')
   await expect(page.getByTestId('duplicate')).toBeEnabled()
+})
+
+test('FT-UI-11 an answered pattern challenge keeps its sequence fixed, its option texts editable', { tag: ['@UI-11'] }, async ({ page }) => {
+  const prof = await professorToken()
+  const challenge = await createChallenge(prof, 'pattern')
+  const classroom = await createClassroom(prof)
+  await createMission(prof, classroom.id, [challenge.id])
+  const student = await createStudent()
+  await joinClassroom(student, classroom.join_code)
+  await solveViaApi(student, challenge)
+
+  await loginProfessorUi(page)
+  await page.goto(`/professor/desafios/${challenge.id}`)
+  await expect(page.getByTestId('locked-note')).toBeVisible()
+  await expect(page.getByTestId('editor-term-0')).toBeDisabled()
+  await expect(page.getByTestId('editor-add-term')).toBeDisabled()
+  await expect(page.getByTestId('editor-item-0')).toBeEnabled()
 })
 
 test('FT-UI-11 a challenge nobody answered keeps its structure fields enabled', { tag: ['@UI-11'] }, async ({ page }) => {
