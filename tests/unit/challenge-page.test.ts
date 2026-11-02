@@ -137,6 +137,25 @@ describe('challenge page', () => {
     expect(wrapper.get('[data-testid="challenge-submit"]').attributes('disabled')).toBeDefined()
   })
 
+  it('T-FE-PLAY-05 an ordering challenge keeps Enviar disabled, with its help line, until the first move', async () => {
+    const wrapper = await open('/desafios/7', {
+      type: 'ordering',
+      skill: 'Pensamento algorítmico',
+      content: { items: [{ id: 'a', text: 'Servir o café' }, { id: 'b', text: 'Ferver a água' }, { id: 'c', text: 'Passar o café' }] },
+    } as Partial<ChallengeForStudent>)
+
+    expect(wrapper.get('[data-testid="challenge-submit"]').attributes('disabled')).toBeDefined()
+    expect(wrapper.get('[data-testid="submit-help"]').text()).toContain('Mexa nos passos')
+
+    await wrapper.get('[data-testid="ordering-up-b"]').trigger('click')
+
+    expect(wrapper.get('[data-testid="challenge-submit"]').attributes('disabled')).toBeUndefined()
+    expect(wrapper.find('[data-testid="submit-help"]').exists()).toBe(false)
+    vi.mocked(studentService.submitAnswer).mockResolvedValue(correct)
+    await wrapper.get('[data-testid="challenge-submit"]').trigger('click')
+    expect(studentService.submitAnswer).toHaveBeenCalledWith(7, { order: ['b', 'a', 'c'] })
+  })
+
   it('T-FE-NEW-03 the header shows "Novo" only for a new challenge', async () => {
     const plain = await open()
     expect(plain.find('[data-testid="challenge-new"]').exists()).toBe(false)

@@ -86,14 +86,18 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  // A full page load (not navigateTo) starts every store empty, so the next user
+  // on this browser never sees the turmas, ranking or challenge of the previous one.
+  function signOut() {
+    logout()
+    window.location.assign('/entrar')
+  }
+
   configureHttp({
     baseURL: useRuntimeConfig().public.apiBase as string,
     getToken: () => token.value,
-    onUnauthorized: () => {
-      logout()
-      navigateTo('/entrar')
-    },
+    onUnauthorized: signOut,
   })
 
-  return { token, role, username, isLoggedIn, home, restore, login, register, resetPassword, logout }
+  return { token, role, username, isLoggedIn, home, restore, login, register, resetPassword, logout, signOut }
 })

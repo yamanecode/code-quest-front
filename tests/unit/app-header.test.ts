@@ -86,13 +86,15 @@ describe('AppHeader', () => {
     expect(wrapper.find('[data-testid="nav-ranking"]').exists()).toBe(false)
   })
 
-  it('T-FE-LAYOUT-01 Sair logs out and goes to the login page', async () => {
+  it('T-FE-LAYOUT-01 Sair logs out and reloads the login page', async () => {
+    const assign = vi.spyOn(window.location, 'assign').mockImplementation(() => {})
     const auth = signIn('professor')
     const wrapper = await mountSuspended(AppHeader)
 
     await wrapper.get('[data-testid="nav-sair"]').trigger('click')
 
     expect(auth.isLoggedIn).toBe(false)
-    expect(navigateToMock).toHaveBeenCalledWith('/entrar')
+    expect(assign).toHaveBeenCalledWith('/entrar')
+    assign.mockRestore()
   })
 })

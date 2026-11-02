@@ -61,12 +61,6 @@ const links = computed(() => (isStudent.value ? STUDENT_LINKS : PROFESSOR_LINKS)
 onMounted(() => {
   if (isStudent.value && !profileStore.profile) profileStore.load()
 })
-
-function logout() {
-  auth.logout()
-  profileStore.clear()
-  navigateTo('/entrar')
-}
 </script>
 
 <template>
@@ -102,7 +96,7 @@ function logout() {
             type="button"
             class="min-h-11 px-3 py-2 font-semibold text-muted transition-colors hover:text-ink"
             data-testid="nav-sair"
-            @click="logout"
+            @click="auth.signOut()"
           >Sair</button>
         </div>
       </div>

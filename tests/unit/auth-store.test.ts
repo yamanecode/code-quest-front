@@ -3,6 +3,7 @@ import { createPinia, setActivePinia } from 'pinia'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { useAuthStore } from '~/stores/auth'
 import * as authService from '~/services/auth'
+import { apiFetch } from '~/services/http'
 
 const { navigateToMock } = vi.hoisted(() => ({ navigateToMock: vi.fn() }))
 mockNuxtImport('navigateTo', () => navigateToMock)
@@ -76,6 +77,39 @@ describe('auth store', () => {
     expect(auth.username).toBeNull()
     expect(auth.isLoggedIn).toBe(false)
     expect(localStorage.getItem(SESSION_KEY)).toBeNull()
+  })
+
+  it('T-FE-AUTH-04 signOut clears the session and reloads the login page, so no store keeps old data', async () => {
+    const assign = vi.spyOn(window.location, 'assign').mockImplementation(() => {})
+    localStorage.setItem(SESSION_KEY, JSON.stringify({ token: 'tok', role: 'student', username: 'ana' }))
+    const auth = useAuthStore()
+    auth.restore()
+
+    auth.signOut()
+
+    expect(auth.isLoggedIn).toBe(false)
+    expect(localStorage.getItem(SESSION_KEY)).toBeNull()
+    expect(assign).toHaveBeenCalledWith('/entrar')
+    expect(navigateToMock).not.toHaveBeenCalled()
+    assign.mockRestore()
+  })
+
+  it('T-FE-AUTH-04 a 401 from the API signs out the same way', async () => {
+    const assign = vi.spyOn(window.location, 'assign').mockImplementation(() => {})
+    vi.stubGlobal('$fetch', vi.fn().mockRejectedValue(Object.assign(new Error('HTTP 401'), {
+      data: { detail: 'unauthorized', message: 'Entre de novo.' },
+      response: { status: 401, headers: new Headers() },
+    })))
+    localStorage.setItem(SESSION_KEY, JSON.stringify({ token: 'tok', role: 'student', username: 'ana' }))
+    const auth = useAuthStore()
+    auth.restore()
+
+    await apiFetch('/api/me').catch(() => {})
+
+    expect(auth.isLoggedIn).toBe(false)
+    expect(assign).toHaveBeenCalledWith('/entrar')
+    vi.unstubAllGlobals()
+    assign.mockRestore()
   })
 
   it('T-FE-AUTH-03 restore reads the saved session', () => {

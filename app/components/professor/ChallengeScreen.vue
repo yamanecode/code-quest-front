@@ -122,9 +122,11 @@ const duplicate = () => run(async () => {
   await navigateTo(withMission(`/professor/desafios/${copy.id}`))
 })
 
+// Saves first, as publish does, so the review is about what the professor sees on screen.
 const runReview = () => run(async () => {
   if (!challenge.value) return
-  review.value = await professor.reviewChallenge(challenge.value.id)
+  const saved = await persist()
+  review.value = await professor.reviewChallenge(saved.id)
   await nextTick()
   reviewHeading.value?.focus()
   reviewHeading.value?.scrollIntoView({ block: 'center' })

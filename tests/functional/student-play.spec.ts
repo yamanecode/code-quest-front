@@ -106,6 +106,22 @@ for (const type of TYPES) {
   })
 }
 
+test('FT-UI-05 an ordering challenge keeps Enviar disabled until the student moves a step', { tag: ['@UI-05'] }, async ({ page }) => {
+  const { student, challenges } = await setup(['ordering'])
+  await loginStudentUi(page, student)
+  await page.goto(`/desafios/${challenges[0]!.id}`)
+  const submit = page.getByTestId('challenge-submit')
+
+  await expect(page.getByTestId('ordering-list')).toBeVisible()
+  await expect(submit).toBeDisabled()
+  await expect(page.getByTestId('submit-help')).toContainText('Mexa nos passos')
+
+  const [firstStep] = await page.getByTestId('ordering-text').allTextContents()
+  await page.getByRole('button', { name: `Mover para baixo: ${firstStep!.trim()}` }).click()
+  await expect(submit).toBeEnabled()
+  await expect(page.getByTestId('submit-help')).toHaveCount(0)
+})
+
 test('FT-UI-06 a correct answer shows message, explanation, XP and the new badge', { tag: ['@UI-06'] }, async ({ page }) => {
   const { student, challenges } = await setup(['ordering'])
   await loginStudentUi(page, student)

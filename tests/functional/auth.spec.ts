@@ -1,5 +1,14 @@
 import { expect, test } from '@playwright/test'
-import { createStudent, loginProfessorUi, loginUi, STUDENT_PASSWORD, unique } from './helpers'
+import {
+  createClassroom,
+  createStudent,
+  joinClassroom,
+  loginProfessorUi,
+  loginUi,
+  professorToken,
+  STUDENT_PASSWORD,
+  unique,
+} from './helpers'
 
 test('FT-UI-01 a visitor signs up with username and password and lands on the student home', { tag: ['@UI-01'] }, async ({ page }) => {
   await page.goto('/cadastro')
@@ -65,4 +74,36 @@ test('FT-UI-02 a professor lands on the professor home', { tag: ['@UI-02'] }, as
   await page.goto('/')
   await expect(page).toHaveURL('/')
   await expect(page.getByTestId('landing-go-home')).toBeVisible()
+})
+
+test('FT-UI-02 after Sair, the next user on the same browser never sees the turmas of the previous one', { tag: ['@UI-02'] }, async ({ page }) => {
+  const prof = await professorToken()
+  const classroom = await createClassroom(prof, unique('Turma de A '))
+  const first = await createStudent('alunoa')
+  const second = await createStudent('alunob')
+  await joinClassroom(first, classroom.join_code)
+
+  await loginUi(page, first.username, first.password)
+  await expect(page).toHaveURL('/inicio')
+  await expect(page.getByRole('heading', { name: classroom.name })).toBeVisible()
+  await page.getByTestId('nav-ranking').click()
+  await expect(page.getByTestId('ranking-scope')).toContainText(classroom.name)
+  await page.getByTestId('nav-sair').click()
+  await expect(page).toHaveURL(/\/entrar/)
+
+  // Same tab, no page.goto: the second user signs in on the screen the first one left.
+  await page.getByTestId('login-username').fill(second.username)
+  await page.getByTestId('login-password').fill(second.password)
+  await page.getByTestId('login-submit').click()
+  await expect(page).toHaveURL('/inicio')
+  await expect(page.getByText(classroom.name)).toHaveCount(0)
+  await expect(page.getByTestId('header-level')).toBeVisible()
+  await expect(page.getByText(classroom.name)).toHaveCount(0)
+
+  await page.getByTestId('nav-ranking').click()
+  await expect(page.getByTestId('ranking-scope')).toBeVisible()
+  await expect(page.getByTestId('ranking-scope')).not.toContainText(classroom.name)
+  await page.getByTestId('nav-turmas').click()
+  await expect(page.getByTestId('header-level')).toBeVisible()
+  await expect(page.getByText(classroom.name)).toHaveCount(0)
 })

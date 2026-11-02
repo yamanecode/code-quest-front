@@ -288,13 +288,20 @@ export async function answerInBrowser(page: Page, spec: ChallengeSpec, mode: 'co
   if (spec.type === 'ordering') {
     await page.getByTestId('ordering-list').waitFor()
     const order = mode === 'correct' ? spec.steps : [...spec.steps].reverse()
+    let moves = 0
     for (let target = 0; target < order.length; target++) {
       const current = await page.getByTestId('ordering-text').allTextContents()
       let index = current.findIndex((text) => text.trim() === order[target])
       while (index > target) {
         await page.getByRole('button', { name: `Mover para cima: ${order[target]}` }).click()
         index -= 1
+        moves += 1
       }
+    }
+    // Enviar waits for a first move; when the steps already came in this order, move one and back.
+    if (moves === 0) {
+      await page.getByRole('button', { name: `Mover para baixo: ${order[0]}` }).click()
+      await page.getByRole('button', { name: `Mover para cima: ${order[0]}` }).click()
     }
   } else if (spec.type === 'grouping') {
     // wrong mode puts every item in the first group, which is wrong for the items of the second

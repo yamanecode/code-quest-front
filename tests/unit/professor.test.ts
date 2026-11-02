@@ -3,6 +3,7 @@ import { flushPromises } from '@vue/test-utils'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import ChallengesPage from '~/pages/professor/desafios/index.vue'
 import NewChallengePage from '~/pages/professor/desafios/novo.vue'
+import EditChallengePage from '~/pages/professor/desafios/[id].vue'
 import MissionPage from '~/pages/professor/missoes/[id].vue'
 import GoalEditor from '~/components/professor/GoalEditor.vue'
 import * as professorService from '~/services/professor'
@@ -88,6 +89,45 @@ describe('professor pages', () => {
     expect(row.get('[data-testid="challenge-status"]').text()).toBe('Rascunho')
     // a draft has no solve stats to show
     expect(row.find('[data-testid="challenge-stats"]').exists()).toBe(false)
+  })
+
+  it('T-FE-PROF-16 "Revisar com IA" saves what is on screen first, then asks for the review', async () => {
+    const calls: string[] = []
+    vi.mocked(professorService.getChallenge).mockResolvedValue(draft)
+    vi.mocked(professorService.updateChallenge).mockImplementation(async (_id, input) => {
+      calls.push('update')
+      return { ...draft, title: input.title }
+    })
+    vi.mocked(professorService.reviewChallenge).mockImplementation(async () => {
+      calls.push('review')
+      return { rule_violations: [], suggestions: 'Parece claro.' }
+    })
+
+    const page = await mountSuspended(EditChallengePage, { route: '/professor/desafios/31' })
+    await flushPromises()
+    await page.get('[data-testid="field-title"]').setValue('Ciclo da água revisto')
+    await page.get('[data-testid="review"]').trigger('click')
+    await flushPromises()
+
+    expect(calls).toEqual(['update', 'review'])
+    expect(vi.mocked(professorService.updateChallenge).mock.calls[0]![1]).toMatchObject({ title: 'Ciclo da água revisto' })
+    expect(page.get('[data-testid="review-panel"]').text()).toContain('Parece claro.')
+  })
+
+  it('T-FE-PROF-16 a save that breaks a rule shows the errors and asks for no review', async () => {
+    vi.mocked(professorService.getChallenge).mockResolvedValue(draft)
+    vi.mocked(professorService.updateChallenge).mockRejectedValue(
+      new ApiError(422, 'validation_error', 'Dados inválidos.', null, ['O título deve ter até 80 caracteres.']),
+    )
+
+    const page = await mountSuspended(EditChallengePage, { route: '/professor/desafios/31' })
+    await flushPromises()
+    await page.get('[data-testid="review"]').trigger('click')
+    await flushPromises()
+
+    expect(professorService.reviewChallenge).not.toHaveBeenCalled()
+    expect(page.text()).toContain('O título deve ter até 80 caracteres.')
+    expect(page.find('[data-testid="review-panel"]').exists()).toBe(false)
   })
 
   it('T-FE-PROF-04 the list shows stats only for published challenges and sorts by column', async () => {

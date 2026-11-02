@@ -116,6 +116,15 @@ describe('demo challenge', () => {
     }
   }
 
+  // One move down and back up: the order stays as received (wrong), but it is now an answer.
+  async function touchOrdering(wrapper: VueWrapper) {
+    const challenge = demoChallenge('ordering')
+    if (challenge.type !== 'ordering') throw new Error('unexpected type')
+    const first = challenge.content.items[0]!.id
+    await testid(wrapper, `ordering-down-${first}`).trigger('click')
+    await testid(wrapper, `ordering-up-${first}`).trigger('click')
+  }
+
   async function answerGrouping(wrapper: VueWrapper, rightAnswer: boolean) {
     const challenge = demoChallenge('grouping')
     if (challenge.type !== 'grouping') throw new Error('unexpected type')
@@ -139,6 +148,8 @@ describe('demo challenge', () => {
   it('T-FE-LAND-03 ordering: a first wrong answer shows the automatic hint, then the right order gives 5 XP', async () => {
     const wrapper = await mountSuspended(DemoChallenge)
 
+    expect(testid(wrapper, 'demo-submit').attributes('disabled')).toBeDefined()
+    await touchOrdering(wrapper)
     await testid(wrapper, 'demo-submit').trigger('click')
     expect(wrapper.find('[data-testid="feedback-wrong"]').exists()).toBe(true)
     expect(testid(wrapper, 'feedback-hint').text()).toContain(demoChallenge('ordering').hint)
@@ -155,6 +166,7 @@ describe('demo challenge', () => {
   it('T-FE-LAND-03 a second wrong answer shows no new hint', async () => {
     const wrapper = await mountSuspended(DemoChallenge)
 
+    await touchOrdering(wrapper)
     await testid(wrapper, 'demo-submit').trigger('click')
     await testid(wrapper, 'feedback-retry').trigger('click')
     await testid(wrapper, 'demo-submit').trigger('click')

@@ -68,7 +68,7 @@ afterEach(() => {
 })
 
 describe('OrderingChallenge', () => {
-  it('T-FE-CH-01 ordering emits the order payload with the received ids, starting from the received order', async () => {
+  it('T-FE-CH-01 ordering shows the received order and emits the order with the received ids only after the first move', async () => {
     const wrapper = await mountSuspended(OrderingChallenge, { props: { content: ordering } })
 
     expect(texts(wrapper, '[data-testid^="ordering-item-"] [data-testid="ordering-text"]')).toEqual([
@@ -76,7 +76,8 @@ describe('OrderingChallenge', () => {
       'Ferver a água',
       'Passar o café no filtro',
     ])
-    expect(lastPayload(wrapper)).toEqual({ order: ['a', 'b', 'c'] })
+    // the shuffled order as received is not an answer yet
+    expect(lastPayload(wrapper)).toBeNull()
 
     await wrapper.get('[data-testid="ordering-up-b"]').trigger('click')
 

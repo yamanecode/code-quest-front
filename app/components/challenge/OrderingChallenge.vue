@@ -4,8 +4,10 @@ import type { Item, OrderingAnswer, OrderingContent } from '~/types/challenge'
 
 // Pensamento algorítmico: the student puts the steps in order with ▲/▼ buttons.
 // Items start in the order received and keep the ids received (spec §4.2).
+// The order as received is not an answer yet: it is emitted only after the
+// first move, so Enviar waits for the student to arrange the steps.
 const props = withDefaults(defineProps<{ content: OrderingContent; disabled?: boolean }>(), { disabled: false })
-const emit = defineEmits<{ change: [answer: OrderingAnswer] }>()
+const emit = defineEmits<{ change: [answer: OrderingAnswer | null] }>()
 
 const items = ref<Item[]>([])
 const list = ref<ComponentPublicInstance | null>(null)
@@ -14,7 +16,7 @@ watch(
   () => props.content,
   (content) => {
     items.value = [...content.items]
-    emitAnswer()
+    emit('change', null)
   },
   { immediate: true },
 )
