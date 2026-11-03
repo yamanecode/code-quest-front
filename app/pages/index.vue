@@ -60,13 +60,13 @@ const sectionWidth = 'mx-auto max-w-6xl px-4 sm:px-6'
     <!-- Hero: the quote that states the idea, and a challenge to try right away -->
     <section :class="[sectionWidth, 'grid items-start gap-10 py-10 sm:py-14 lg:grid-cols-2 lg:gap-16']" aria-labelledby="hero-title">
       <div>
-        <h1 id="hero-title" class="max-w-xl font-display text-2xl font-bold leading-snug sm:text-3xl lg:text-[2.125rem]" data-testid="hero-quote">
+        <h1 id="hero-title" class="max-w-xl font-sans text-xl/[1.45] font-normal italic sm:text-2xl/[1.45] lg:text-[1.875rem]/[1.45]" data-testid="hero-quote">
           “Pensamento computacional é uma habilidade fundamental <span class="cq-mark cq-mark-in">para todos</span>, não apenas para cientistas da computação.”
         </h1>
         <p class="mt-3 text-sm text-label" data-testid="hero-source">
           Jeannette M. Wing, “Computational thinking”, Communications of the ACM, 2006. Tradução nossa.
         </p>
-        <p class="mt-6 max-w-xl text-xl leading-relaxed text-muted">
+        <p class="mt-6 max-w-xl text-lg leading-relaxed text-muted">
           O CodeQuest é uma plataforma de desafios de lógica, sem programação, que une gamificação e um tutor de inteligência artificial. O tutor guia o raciocínio do estudante com dicas, mas nunca entrega a resposta.
         </p>
         <div class="mt-7 flex flex-wrap gap-x-4 gap-y-3">
