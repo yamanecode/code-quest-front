@@ -60,7 +60,7 @@ const sectionWidth = 'mx-auto max-w-6xl px-4 sm:px-6'
     <!-- Hero: the quote that states the idea, and a challenge to try right away -->
     <section :class="[sectionWidth, 'grid items-start gap-10 py-10 sm:py-14 lg:grid-cols-2 lg:gap-16']" aria-labelledby="hero-title">
       <div>
-        <h1 id="hero-title" class="font-display text-3xl font-extrabold leading-[1.12] sm:text-4xl lg:text-5xl" data-testid="hero-quote">
+        <h1 id="hero-title" class="max-w-xl font-display text-2xl font-bold leading-snug sm:text-3xl lg:text-[2.125rem]" data-testid="hero-quote">
           “Pensamento computacional é uma habilidade fundamental <span class="cq-mark cq-mark-in">para todos</span>, não apenas para cientistas da computação.”
         </h1>
         <p class="mt-3 text-sm text-label" data-testid="hero-source">
