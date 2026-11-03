@@ -138,6 +138,48 @@ test('FT-UI-06 a correct answer shows message, explanation, XP and the new badge
   await expect(page.getByTestId('header-xp')).toContainText('10 XP')
 })
 
+test('FT-UI-06 a first-try solve opens the result dialog with "Primeira tentativa!", +10 XP and the first badge', { tag: ['@UI-06'] }, async ({ page }) => {
+  const { student, challenges } = await setup(['pattern'])
+  await loginStudentUi(page, student)
+  await page.goto(`/desafios/${challenges[0]!.id}`)
+  await answerInBrowser(page, challenges[0]!.spec)
+  await page.getByTestId('challenge-submit').click()
+
+  const dialog = page.getByRole('dialog', { name: 'Primeira tentativa!' })
+  await expect(dialog).toBeVisible()
+  await expect(dialog.getByTestId('feedback-xp')).toContainText('+10 XP')
+  await expect(dialog.getByTestId('result-xp-count')).toHaveText('+10 XP')
+  await expect(dialog.getByTestId('feedback-badge-first_solve')).toContainText('Primeiro desafio')
+  await expect(dialog.getByTestId('feedback-status')).toContainText('Nível 1 · Iniciante')
+  await expect(dialog.getByTestId('result-next')).toBeFocused()
+})
+
+test('FT-UI-06 Escape closes the result dialog and the focus goes to "Próximo desafio"', { tag: ['@UI-06'] }, async ({ page }) => {
+  const { student, challenges } = await setup(['pattern'])
+  await loginStudentUi(page, student)
+  await page.goto(`/desafios/${challenges[0]!.id}`)
+  await answerInBrowser(page, challenges[0]!.spec)
+  await page.getByTestId('challenge-submit').click()
+  await expect(page.getByTestId('result-modal')).toBeVisible()
+
+  await page.keyboard.press('Escape')
+
+  await expect(page.getByTestId('result-modal')).toHaveCount(0)
+  await expect(page.getByTestId('challenge-next')).toBeFocused()
+  await expect(page.getByTestId('challenge-already-solved')).toContainText('Porque sim pattern.')
+})
+
+test('FT-UI-06 a wrong answer opens no dialog', { tag: ['@UI-06'] }, async ({ page }) => {
+  const { student, challenges } = await setup(['pattern'])
+  await loginStudentUi(page, student)
+  await page.goto(`/desafios/${challenges[0]!.id}`)
+  await answerInBrowser(page, challenges[0]!.spec, 'wrong')
+  await page.getByTestId('challenge-submit').click()
+
+  await expect(page.getByTestId('feedback-wrong')).toBeVisible()
+  await expect(page.getByTestId('result-modal')).toHaveCount(0)
+})
+
 test('FT-UI-06 a wrong answer shows message, the hint and "Tentar novamente"', { tag: ['@UI-06'] }, async ({ page }) => {
   const { student, challenges } = await setup(['pattern'])
   await loginStudentUi(page, student)

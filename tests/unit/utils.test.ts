@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { CHALLENGE_TYPES } from '~/types/challenge'
 import { XP_PER_LEVEL, bandRange, levelLabel, levelTitle } from '~/utils/levels'
 import { SKILLS } from '~/utils/skills'
-import { CORRECT_MESSAGES, WRONG_MESSAGES, pickMessage } from '~/utils/feedback'
+import { CORRECT_MESSAGES, WRONG_MESSAGES, pickMessage, resultHeadline } from '~/utils/feedback'
 
 afterEach(() => {
   vi.unstubAllGlobals()
@@ -57,6 +57,13 @@ describe('feedback messages', () => {
   it('picks a message from the list', () => {
     expect(pickMessage(CORRECT_MESSAGES, () => 0)).toBe(CORRECT_MESSAGES[0])
     expect(pickMessage(WRONG_MESSAGES, () => 0.999)).toBe(WRONG_MESSAGES[WRONG_MESSAGES.length - 1])
+  })
+
+  it('T-FE-RESULT-01 the result headline follows the XP earned', () => {
+    expect(resultHeadline(10)).toBe('Primeira tentativa!')
+    expect(resultHeadline(5)).toBe('Muito bem!')
+    expect(resultHeadline(2)).toBe('Conseguiu!')
+    expect(resultHeadline(0)).toBe('Resposta certa!')
   })
 })
 

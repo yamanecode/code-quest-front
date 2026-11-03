@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { useChallenge } from '~/composables/useChallenge'
 import { usePlayStore } from '~/stores/play'
 import { HELP } from '~/utils/help'
@@ -71,6 +71,22 @@ const submitHelp = computed(() => {
 
 const goingNext = ref(false)
 
+// A correct answer opens the result dialog; a wrong one stays inline (spec §9.2).
+const resultOpen = ref(false)
+const nextButton = ref<HTMLButtonElement | null>(null)
+const titleHeading = ref<HTMLElement | null>(null)
+
+watch(outcome, (value) => {
+  resultOpen.value = value?.is_correct ?? false
+})
+
+// Enviar is gone once the challenge is solved, so the focus goes to "Próximo desafio".
+async function closeResult() {
+  resultOpen.value = false
+  await nextTick()
+  ;(nextButton.value ?? titleHeading.value)?.focus()
+}
+
 async function goNext() {
   goingNext.value = true
   try {
@@ -107,9 +123,9 @@ async function goNext() {
         <SkillTag :type="challenge.type" />
         <NewTag v-if="challenge.is_new" testid="challenge-new" />
       </p>
-      <h1 class="mt-3 font-display text-4xl font-extrabold leading-tight" data-testid="challenge-title">{{ challenge.title }}</h1>
+      <h1 ref="titleHeading" tabindex="-1" class="mt-3 font-display text-4xl font-extrabold leading-tight focus:outline-none" data-testid="challenge-title">{{ challenge.title }}</h1>
       <p class="mt-3 whitespace-pre-line text-lg leading-relaxed" data-testid="challenge-statement">{{ challenge.statement }}</p>
-      <div v-if="solved && !outcome" class="cq-sheet mt-4 px-5 py-4" data-testid="challenge-already-solved">
+      <div v-if="solved && !resultOpen" class="cq-sheet mt-4 px-5 py-4" data-testid="challenge-already-solved">
         <p class="text-sm font-semibold text-success">✓ Você já resolveu este desafio</p>
         <p class="mt-1 text-sm text-muted">Ele está encerrado: não dá para responder de novo nem pedir dicas.</p>
         <div v-if="challenge.explanation" class="mt-3 border-t border-line pt-3" data-testid="challenge-explanation">
@@ -194,11 +210,21 @@ async function goNext() {
       </section>
 
       <div class="mt-4" aria-live="polite" data-testid="feedback-region">
-        <AnswerFeedback v-if="outcome" :outcome="outcome" :show-hint="false" @retry="retry" />
+        <AnswerFeedback v-if="outcome && !outcome.is_correct" :outcome="outcome" :show-hint="false" @retry="retry" />
+        <p v-else-if="outcome" class="sr-only">Resposta certa! +{{ outcome.xp_earned }} XP</p>
       </div>
+
+      <ResultModal
+        v-if="outcome?.is_correct && resultOpen"
+        :outcome="outcome"
+        :busy="goingNext"
+        @next="goNext"
+        @close="closeResult"
+      />
 
       <button
         v-if="solved && (outcome?.is_correct ?? true)"
+        ref="nextButton"
         type="button"
         :disabled="goingNext"
         class="mt-6 bg-go px-6 py-3 font-display text-lg font-bold text-on-go transition-colors hover:bg-go-hover disabled:cursor-wait disabled:opacity-60 cq-go-shadow"

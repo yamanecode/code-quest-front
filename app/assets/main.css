@@ -354,6 +354,14 @@ li:nth-child(even) .cq-sticker {
   .cq-medal-in {
     animation: cq-medal-in 0.6s 0.2s cubic-bezier(0.25, 1, 0.5, 1) both;
   }
+
+  /* Badge cards of the result dialog: each one comes in after the one before (delay set inline). */
+  @keyframes cq-result-in {
+    from { transform: scale(0.9); opacity: 0; }
+  }
+  .cq-result-in {
+    animation: cq-result-in 0.2s cubic-bezier(0.25, 1, 0.5, 1) both;
+  }
 }
 
 /* Reduced motion: events stop animating, but a bar still moves to its new value. */

@@ -352,6 +352,130 @@ describe('challenge page', () => {
   })
 })
 
+describe('result dialog', () => {
+  const firstSolve = { code: 'first_solve', name: 'Primeiro desafio', description: '1 desafio resolvido', tier: 'bronze' as const, emoji: '⭐' }
+  const firstTry = { code: 'first_try_5', name: 'Precisão', description: '5 acertos de primeira', tier: 'bronze' as const, emoji: '🎯' }
+
+  function stubReducedMotion(reduce: boolean) {
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: reduce && query.includes('prefers-reduced-motion: reduce'),
+      media: query,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    }))
+  }
+
+  async function openAttached(route = '/desafios/7') {
+    vi.mocked(studentService.getChallenge).mockResolvedValue({ ...challenge })
+    const wrapper = await mountSuspended(ChallengePage, { route, attachTo: document.body })
+    await flushPromises()
+    return wrapper
+  }
+
+  const testidOfFocus = () => (document.activeElement as HTMLElement | null)?.dataset.testid
+
+  it('T-FE-RESULT-02 a correct answer opens a labelled dialog with XP, level, title and the explanation', async () => {
+    stubReducedMotion(true)
+    const wrapper = await open()
+
+    await answer(wrapper, correct)
+
+    const dialog = wrapper.get('[data-testid="result-modal"] [role="dialog"]')
+    expect(dialog.attributes('aria-modal')).toBe('true')
+    const headline = wrapper.get(`#${dialog.attributes('aria-labelledby')}`)
+    expect(headline.text()).toBe('Primeira tentativa!')
+    expect(dialog.get('[data-testid="feedback-xp"]').text()).toContain('+10 XP')
+    expect(dialog.get('[data-testid="feedback-status"]').text()).toContain('Nível 3 · Aprendiz')
+    expect(dialog.get('[data-testid="feedback-status"]').text()).toContain('60 XP')
+    expect(dialog.get('[data-testid="feedback-explanation"]').text()).toContain('Cada termo é o dobro do anterior.')
+    expect(dialog.find('[data-testid="result-next"]').exists()).toBe(true)
+    expect(dialog.find('[data-testid="result-close"]').exists()).toBe(true)
+  })
+
+  it('T-FE-RESULT-02 the headline and the level-up line follow the result', async () => {
+    stubReducedMotion(true)
+    const wrapper = await open()
+
+    await answer(wrapper, { ...correct, xp_earned: 5, xp: 30, level: 2, title: 'Iniciante', level_up: true })
+
+    expect(wrapper.get('[data-testid="result-headline"]').text()).toBe('Muito bem!')
+    expect(wrapper.get('[data-testid="feedback-level-up"]').text()).toContain('Nível 2 · Iniciante')
+  })
+
+  it('T-FE-RESULT-03 a wrong answer opens no dialog and keeps the inline panel', async () => {
+    const wrapper = await open()
+
+    await answer(wrapper, wrong)
+
+    expect(wrapper.find('[data-testid="result-modal"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="feedback-wrong"]').exists()).toBe(true)
+  })
+
+  it('T-FE-RESULT-04 Escape and "Fechar" close the dialog and the focus goes to "Próximo desafio"', async () => {
+    stubReducedMotion(true)
+    const wrapper = await openAttached()
+    await answer(wrapper, correct)
+    await flushPromises()
+    expect(testidOfFocus()).toBe('result-next')
+
+    await wrapper.get('[data-testid="result-modal"] [role="dialog"]').trigger('keydown', { key: 'Escape' })
+    await flushPromises()
+    expect(wrapper.find('[data-testid="result-modal"]').exists()).toBe(false)
+    expect(testidOfFocus()).toBe('challenge-next')
+    // the closed challenge keeps the explanation on the page
+    expect(wrapper.get('[data-testid="challenge-explanation"]').text()).toContain('Cada termo é o dobro do anterior.')
+    wrapper.unmount()
+
+    const second = await openAttached()
+    await answer(second, correct)
+    await second.get('[data-testid="result-close"]').trigger('click')
+    await flushPromises()
+    expect(second.find('[data-testid="result-modal"]').exists()).toBe(false)
+    expect(testidOfFocus()).toBe('challenge-next')
+    second.unmount()
+  })
+
+  it('T-FE-RESULT-04 "Próximo desafio" in the dialog follows the next-challenge rule', async () => {
+    stubReducedMotion(true)
+    const wrapper = await open('/desafios/7')
+    await answer(wrapper, correct)
+
+    await wrapper.get('[data-testid="result-next"]').trigger('click')
+    await flushPromises()
+
+    expect(navigateToMock).toHaveBeenCalledWith('/inicio')
+  })
+
+  it('T-FE-RESULT-05 with reduced motion the final values show at once, without stagger', async () => {
+    stubReducedMotion(true)
+    const wrapper = await open()
+
+    await answer(wrapper, { ...correct, new_badges: [firstSolve, firstTry] })
+
+    expect(wrapper.get('[data-testid="result-xp-count"]').text()).toBe('+10 XP')
+    const cards = wrapper.findAll('[data-testid^="feedback-badge-"]')
+    expect(cards).toHaveLength(2)
+    for (const card of cards) {
+      expect(card.classes()).not.toContain('cq-result-in')
+      expect(card.attributes('style') ?? '').not.toContain('animation-delay')
+    }
+  })
+
+  it('T-FE-RESULT-05 without reduced motion the XP counts up and the badges come in one after another', async () => {
+    stubReducedMotion(false)
+    const wrapper = await open()
+
+    await answer(wrapper, { ...correct, new_badges: [firstSolve, firstTry] })
+
+    expect(wrapper.get('[data-testid="result-xp-count"]').text()).not.toBe('+10 XP')
+    const cards = wrapper.findAll('[data-testid^="feedback-badge-"]')
+    expect(cards.map((card) => card.classes().includes('cq-result-in'))).toEqual([true, true])
+    expect(cards[0]!.attributes('style')).toContain('animation-delay: 0ms')
+    expect(cards[1]!.attributes('style')).toContain('animation-delay: 120ms')
+    await vi.waitFor(() => expect(wrapper.get('[data-testid="result-xp-count"]').text()).toBe('+10 XP'), { timeout: 2000 })
+  })
+})
+
 describe('next challenge', () => {
   const mission: MissionDetail = {
     id: 3,

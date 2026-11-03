@@ -102,7 +102,7 @@ export function useChallenge(id: Ref<number>) {
       outcome.value = { ...result, message }
       if (result.hint) hints.value = [...hints.value, { level: 1, source: 'after_wrong', text: result.hint }]
       if (result.is_correct) {
-        challenge.value = { ...challenge.value, solved: true }
+        challenge.value = { ...challenge.value, solved: true, explanation: result.explanation }
         stopCooldown()
         cooldown.value = 0
         playTone(toneFor(result), { muted: settings.muted })

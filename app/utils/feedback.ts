@@ -22,3 +22,11 @@ export function pickMessage(messages: readonly string[], random: () => number = 
   const index = Math.min(Math.floor(random() * messages.length), messages.length - 1)
   return messages[index]!
 }
+
+// Headline of the result dialog, by the XP of the first solve (10 / 5 / 2, spec §5).
+export function resultHeadline(xpEarned: number): string {
+  if (xpEarned >= 10) return 'Primeira tentativa!'
+  if (xpEarned >= 5) return 'Muito bem!'
+  if (xpEarned > 0) return 'Conseguiu!'
+  return 'Resposta certa!'
+}
