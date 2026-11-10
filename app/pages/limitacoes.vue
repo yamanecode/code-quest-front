@@ -78,7 +78,7 @@ const LIMITATIONS = [
         </div>
       </dl>
 
-      <p class="bg-raised px-5 py-4">Tem uma dúvida sobre o projeto? Fale com o autor ou com a orientadora, indicados no rodapé.</p>
+      <p class="bg-raised px-5 py-4">Tem uma dúvida sobre o projeto? Fale com o autor, indicado no rodapé.</p>
 
       <p>
         <NuxtLink
