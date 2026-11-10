@@ -23,7 +23,8 @@ export interface Core {
 }
 
 // How many elements of the platform apply the drive: the uses that name a technique (0 when the
-// only entry says why the core is not used). The octagon draws this count on a scale of 0 to 5.
+// only entry says why the core is not used). The octagon draws this count on a scale from 0 to
+// SCALE_MAX.
 export function elementCount(core: Core): number {
   return core.uses.filter((use) => use.technique !== null).length
 }
@@ -77,8 +78,8 @@ export const CORES: readonly Core[] = [
     uses: [
       { text: 'XP no primeiro acerto, nível a cada 30 XP e título por faixa, de Iniciante a Mestre.', technique: 'Status Points' },
       { text: 'Insígnias de bronze, prata e ouro, sempre ao lado do XP e do nível.', technique: 'Achievement Symbols' },
-      { text: 'Ranking semanal e mensal que mostra só a sua posição e as mais próximas.', technique: 'Leaderboard' },
       { text: 'Barras de progresso do nível, das missões e da meta da turma.', technique: 'Progress Bar' },
+      { text: 'Botão Dica e cartão Continuar, que apontam o próximo passo e reforçam a sensação de competência.', technique: 'Glowing Choice' },
     ],
   },
   {
@@ -86,7 +87,7 @@ export const CORES: readonly Core[] = [
     meaning: 'O prazer de testar caminhos e ver o resultado na hora.',
     uses: [
       { text: 'Missões sem ordem fixa: qualquer desafio pode ser aberto.', technique: 'Plant Picker (Meaningful Choices)' },
-      { text: 'Resposta corrigida na hora, com tentativas ilimitadas.', technique: 'Dynamic Feedback' },
+      { text: 'Resposta corrigida na hora, com tentativas ilimitadas.', technique: 'Instant Feedback' },
     ],
   },
   {
@@ -101,6 +102,7 @@ export const CORES: readonly Core[] = [
     number: 5, name: 'Influência social e pertencimento', short: 'Social', hat: 'neutral', motivation: 'intrinsic',
     meaning: 'A motivação que vem dos outros: colaborar, comparar-se e ser reconhecido.',
     uses: [
+      { text: 'Ranking semanal e mensal que mostra só a sua posição e as mais próximas.', technique: 'Leaderboard' },
       { text: 'Meta semanal da turma, alcançada em conjunto e sem chat.', technique: 'Group Quests' },
       { text: 'Perfil público opcional, desligado no início, com nível, título e insígnias.', technique: 'Trophy Shelves' },
     ],
@@ -117,6 +119,7 @@ export const CORES: readonly Core[] = [
     meaning: 'A curiosidade pelo que ainda não se sabe.',
     uses: [
       { text: 'Três insígnias secretas, reveladas só quando conquistadas.', technique: 'Easter Eggs' },
+      { text: 'Botão Dica e cartão Continuar, que conduzem o estudante na direção certa quando ele não sabe por onde seguir.', technique: 'Glowing Choice' },
     ],
   },
   {
@@ -127,6 +130,10 @@ export const CORES: readonly Core[] = [
     ],
   },
 ]
+
+// Top of the octagon's scale: the largest number of elements any core has, so the fullest core
+// reaches the outer edge.
+export const SCALE_MAX = Math.max(...CORES.map(elementCount))
 
 export type Point = [number, number]
 

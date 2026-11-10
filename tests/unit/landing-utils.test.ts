@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { DEMO_CHALLENGES, DEMO_HINTS, demoXp, isDemoCorrect } from '~/utils/landingDemo'
-import { CENTRE, CORES, HAT_LABEL, TERM_NOTE, VIEW_SIZE, badgePoint, coresOfTerm, ringPoints, elementCount, wedgePoints } from '~/utils/octalysis'
+import { CENTRE, CORES, HAT_LABEL, TERM_NOTE, VIEW_SIZE, badgePoint, coresOfTerm, ringPoints, elementCount, SCALE_MAX, wedgePoints } from '~/utils/octalysis'
 
 const byType = (type: string) => DEMO_CHALLENGES.find((c) => c.type === type)!
 
@@ -66,12 +66,13 @@ describe('landing demo rules', () => {
 })
 
 describe('octalysis data', () => {
-  it('T-FE-LAND-10 the fill of each core is the number of elements listed under it, never more than 5', () => {
+  it('T-FE-LAND-10 the fill of each core is the number of elements listed under it; the scale ends at the largest count', () => {
     for (const core of CORES) {
       expect(elementCount(core)).toBe(core.uses.filter((u) => u.technique).length)
-      expect(elementCount(core)).toBeLessThanOrEqual(5)
+      expect(elementCount(core)).toBeLessThanOrEqual(SCALE_MAX)
     }
-    expect(CORES.map(elementCount)).toEqual([0, 4, 2, 2, 2, 1, 1, 0])
+    expect(CORES.map(elementCount)).toEqual([0, 4, 2, 2, 3, 1, 2, 0])
+    expect(SCALE_MAX).toBe(4)
   })
 
   it('T-FE-LAND-06 has the 8 cores, numbered 1 to 8, each with at least one listed use', () => {
@@ -97,12 +98,16 @@ describe('octalysis data', () => {
       }
     }
     const techniques = CORES.flatMap((c) => c.uses.map((u) => u.technique))
-    expect(techniques).toEqual(expect.arrayContaining(['Status Points', 'Achievement Symbols', 'Leaderboard', 'Collection Sets', 'Group Quests', 'Trophy Shelves', 'Dangling', 'Easter Eggs']))
-    // The leaderboard is an accomplishment technique (core 2), as in spec §5.
-    expect(CORES.find((c) => c.number === 2)!.uses.map((u) => u.technique)).toContain('Leaderboard')
+    expect(techniques).toEqual(expect.arrayContaining(['Status Points', 'Achievement Symbols', 'Progress Bar', 'Glowing Choice', 'Instant Feedback', 'Leaderboard', 'Collection Sets', 'Group Quests', 'Trophy Shelves', 'Dangling', 'Easter Eggs']))
+    // The leaderboard sits under social influence (core 5), not under accomplishment (core 2).
+    const techniquesOf = (n: number) => CORES.find((c) => c.number === n)!.uses.map((u) => u.technique)
+    expect(techniquesOf(5)).toContain('Leaderboard')
+    expect(techniquesOf(2)).not.toContain('Leaderboard')
+    expect(techniquesOf(2)).toContain('Glowing Choice')
+    expect(techniquesOf(7)).toContain('Glowing Choice')
     // Nothing that is not a game element of the platform is claimed.
     const text = CORES.flatMap((c) => c.uses.map((u) => u.text)).join(' ').toLowerCase()
-    for (const word of ['dica', 'diário', 'mensagens']) expect(text).not.toContain(word)
+    for (const word of ['diário', 'mensagens']) expect(text).not.toContain(word)
     expect(TERM_NOTE.black).toContain('não usa o 8')
   })
 

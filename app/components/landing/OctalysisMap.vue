@@ -4,6 +4,7 @@ import {
   CORES,
   HAT_LABEL,
   MOTIVATION_LABEL,
+  SCALE_MAX,
   MOTIVATION_NOTE,
   TERM_LABEL,
   TERM_NOTE,
@@ -20,8 +21,8 @@ import {
 } from '~/utils/octalysis'
 
 // The 8 core drives of Octalysis as an octagon: each wedge is filled by the number of
-// CodeQuest elements that apply the drive, on a scale of 0 to 5. Choosing a core (by button or by clicking the drawing) shows
-// what it means and where it appears in the platform.
+// CodeQuest elements that apply the drive, on a scale from 0 to SCALE_MAX. Choosing a core (by
+// button or by clicking the drawing) shows what it means and where it appears in the platform.
 const selected = ref(2)
 const core = computed(() => CORES.find((c) => c.number === selected.value)!)
 const coreCount = computed(() => elementCount(core.value))
@@ -29,15 +30,14 @@ const countLabel = computed(() =>
   coreCount.value === 0 ? 'não usado' : `${coreCount.value} ${coreCount.value === 1 ? 'elemento' : 'elementos'}`,
 )
 
-const SCALE_MAX = 5
-
 const HAT_FILL: Record<Hat, string> = {
   white: 'var(--cq-hat-white)',
   black: 'var(--cq-hat-black)',
   neutral: 'var(--cq-hat-neutral)',
 }
 
-const GUIDE_RINGS = [0.2, 0.4, 0.6, 0.8]
+// One inner ring per step of the scale (the outer outline is the last step).
+const GUIDE_RINGS = Array.from({ length: SCALE_MAX - 1 }, (_, i) => (i + 1) / SCALE_MAX)
 
 // Ends of the dividing lines between cores.
 const spokes = spokePoints()
@@ -136,7 +136,7 @@ function wedgeOpacity(number: number): number {
           >{{ item.number }}</text>
         </g>
       </svg>
-      <p class="mt-2 text-sm text-muted">Cada fatia mostra quantos elementos do CodeQuest aplicam aquele impulso (escala de 0 a 5; fatia vazia = não usado).</p>
+      <p class="mt-2 text-sm text-muted">Cada fatia mostra quantos elementos do CodeQuest aplicam aquele impulso (escala de 0 a {{ SCALE_MAX }}; fatia vazia = não usado).</p>
       <div class="mt-3 grid gap-2 text-sm" data-testid="octalysis-legend">
         <div class="flex flex-wrap items-center gap-1.5" role="group" aria-label="Chapéus">
           <TermTag
